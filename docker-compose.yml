@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: incidencias_db
+      MYSQL_DATABASE: campus_incidencias_db
       MYSQL_USER: incidencias_user
       MYSQL_PASSWORD: incidencias_pass
     ports:
