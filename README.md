@@ -2,130 +2,219 @@
 
 Sistema web para la gestión y seguimiento de incidencias universitarias.
 
-**Stack:** React 19 + TypeScript + Vite | Spring Boot 3 + Java 21 | MySQL 8
+**Stack tecnológico:** React 19 + TypeScript + Tailwind CSS | Spring Boot 3 (Java 21) | MySQL 8 (Docker)
 
 ---
 
-## 📋 Requisitos previos
+## 📦 Requisitos previos (instalar una sola vez)
 
-Asegúrate de tener instalado:
+### 🐧 En Linux (Arch / CachyOS / Ubuntu / Debian)
+```bash
+# Para distribuciones basadas en Arch (CachyOS, Manjaro):
+sudo pacman -S jdk21-openjdk nodejs npm docker docker-compose
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
+# Cierra sesión y vuelve a entrar para que Docker funcione sin sudo
+```
 
-| Herramienta | Versión mínima | Descripción |
-|---|---|---|
-| [Node.js](https://nodejs.org/) | 18+ | Para el frontend |
-| [pnpm](https://pnpm.io/) | 8+ | Gestor de paquetes (`npm i -g pnpm`) |
-| [Java JDK](https://adoptium.net/) | 21 | Para el backend |
-| [Docker](https://www.docker.com/) | 20+ | Para levantar MySQL |
-| [Docker Compose](https://docs.docker.com/compose/) | 2+ | Viene incluido con Docker Desktop |
+### 🪟 En Windows
+Instalar en este orden:
+1. **[Java JDK 21](https://adoptium.net)** → Descargar el instalador `.msi`
+2. **[Node.js 18+](https://nodejs.org)** → Descargar la versión LTS `.msi`
+3. **[Docker Desktop](https://www.docker.com/products/docker-desktop/)** → Instalar y asegurarse de abrirlo al menos una vez para que inicie el servicio
+
+> 💡 **Nota para Windows:** Docker Desktop ya incluye MySQL y phpMyAdmin, por lo que **no** necesitas instalar MySQL por separado.
 
 ---
 
-## 🚀 Configuración inicial (primera vez)
+## 🚀 Pasos para correr el proyecto (primera vez)
 
-### 1. Clonar el repositorio
+### 1️⃣ Clonar el repositorio
 
 ```bash
 git clone https://github.com/ElPapu399/SistemaIncidencias_AsiU.git
 cd SistemaIncidencias_AsiU
 ```
 
-### 2. Levantar la base de datos MySQL con Docker
+---
 
+### 2️⃣ Levantar la base de datos con Docker
+
+Desde la **raíz del proyecto**:
 ```bash
 docker compose up -d
 ```
 
-Esto levanta MySQL en el puerto `3306`. Puedes verificarlo con:
+Esto inicia dos servicios en contenedores:
+- **MySQL 8:** Puerto `3307`
+- **phpMyAdmin (panel web):** Puerto `8081` → [http://localhost:8081](http://localhost:8081)
 
+Para verificar que están activos:
 ```bash
 docker compose ps
+# Debes ver incidencias_db y incidencias_phpmyadmin en estado "running"
 ```
 
-### 3. Correr el backend (Spring Boot)
+> 🐧 **Linux:** Si obtienes un error de permisos (`permission denied`), ejecuta `newgrp docker` en tu terminal antes de continuar.
 
+---
+
+### 3️⃣ Correr el backend (Spring Boot)
+
+Abre una **segunda terminal**:
+
+**🐧 En Linux / Mac:**
 ```bash
-cd backend/incidenciasback
+cd backend
 ./mvnw spring-boot:run
 ```
 
-> En Windows usa `mvnw.cmd spring-boot:run`
-
-El backend estará disponible en: **http://localhost:8080**
-
-### 4. Correr el frontend (React)
-
-En otra terminal, desde la raíz del proyecto:
-
+**🪟 En Windows (CMD o PowerShell):**
 ```bash
-pnpm install
-pnpm dev
+cd backend
+mvnw.cmd spring-boot:run
 ```
 
-El frontend estará disponible en: **http://localhost:5173**
+> ⏳ La primera ejecución descargará las librerías de Maven automáticamente.
+
+Cuando el backend esté listo, verás en consola:
+```
+✅ Usuario creado: admin@universidad.edu.pe / admin123 [ADMIN]
+✅ Usuario creado: tecnico@universidad.edu.pe / tecnico123 [TECNICO]
+✅ Usuario creado: alumno@universidad.edu.pe / alumno123 [ESTUDIANTE]
+Started IncidenciasbackApplication in X.X seconds
+```
+
+API REST disponible en: **http://localhost:8080**
 
 ---
 
-## 🗂️ Estructura del proyecto
+### 4️⃣ Correr el frontend (React)
+
+Abre una **tercera terminal** desde la **raíz del proyecto**:
+
+```bash
+npm install    # Solo la primera vez
+npm run dev
+```
+
+Aplicación web disponible en: **http://localhost:5173**
+
+---
+
+## 🔑 Acceso inicial al sistema
+
+Ingresa en tu navegador a **[http://localhost:5173](http://localhost:5173)** con cualquiera de estos usuarios creados automáticamente:
+
+| Rol | Correo | Contraseña |
+|---|---|---|
+| **Admin** | `admin@universidad.edu.pe` | `admin123` |
+| **Técnico** | `tecnico@universidad.edu.pe` | `tecnico123` |
+| **Estudiante** | `alumno@universidad.edu.pe` | `alumno123` |
+
+---
+
+## 🗄️ Ver y administrar la Base de Datos (phpMyAdmin)
+
+Abre en tu navegador **[http://localhost:8081](http://localhost:8081)**:
+
+| Parámetro | Valor |
+|---|---|
+| **Servidor** | `db` |
+| **Usuario** | `root` |
+| **Contraseña** | `root` |
+
+Podrás ver la base de datos `campus_incidencias_db` con todas sus tablas (`usuarios`, `roles`, `incidencias`, etc.).
+
+---
+
+## 📋 Resumen rápido de trabajo diario
+
+Para trabajar en el proyecto necesitas 3 terminales abiertas:
+
+| # | Servicio | Carpeta | Comando |
+|---|---|---|---|
+| 1️⃣ | **Base de Datos** | Raíz del proyecto | `docker compose up -d` |
+| 2️⃣ | **Backend** | `backend/` | `./mvnw spring-boot:run` (o `mvnw.cmd spring-boot:run`) |
+| 3️⃣ | **Frontend** | Raíz del proyecto | `npm run dev` |
+
+Para apagar la base de datos al terminar:
+```bash
+docker compose down
+```
+
+---
+
+## 🗂️ Estructura del repositorio
 
 ```
 SistemaIncidencias_AsiU/
-├── src/                    ← Frontend React (TypeScript + Vite + Tailwind)
-│   ├── components/         ← Componentes reutilizables
-│   ├── pages/              ← Páginas (Login, Dashboard, etc.)
-│   ├── layouts/            ← Layouts compartidos
-│   └── types/              ← Tipos TypeScript
-├── backend/
-│   └── incidenciasback/    ← Backend Spring Boot (Java 21 + JPA + MySQL)
-│       └── src/main/
-│           ├── java/       ← Código Java
-│           └── resources/  ← application.yaml
+├── src/                        ← Frontend React (TypeScript + Tailwind)
+│   ├── components/             ← Componentes reutilizables (Button, InputBox, etc.)
+│   ├── pages/                  ← Vistas (Login, Dashboard, etc.)
+│   ├── layouts/                ← Plantillas y navegación
+│   └── types/                  ← Modelos e interfaces TypeScript
+├── backend/                    ← Backend Spring Boot (Java 21)
+│   ├── src/main/java/.../
+│   │   ├── config/             ← Seguridad (CORS, BCrypt) y Carga Inicial de Datos
+│   │   ├── controller/         ← Controladores REST (/api/auth, etc.)
+│   │   ├── dto/                ← Objetos de transferencia de datos
+│   │   ├── model/              ← Entidades JPA (Usuario, Rol, etc.)
+│   │   ├── repository/         ← Repositorios Spring Data JPA
+│   │   └── service/            ← Lógica de negocio (AuthService, etc.)
+│   ├── src/main/resources/
+│   │   └── application.yaml    ← Configuración del servidor y conexión a BD
+│   ├── pom.xml                 ← Dependencias Maven
+│   └── mvnw / mvnw.cmd         ← Maven Wrapper
 ├── database/
-│   └── init.sql            ← Script inicial de la base de datos
-├── docker-compose.yml      ← Levanta MySQL con Docker
-└── README.md
+│   └── init.sql                ← Script DDL de tablas y datos semilla iniciales
+├── docker-compose.yml          ← Configuración de contenedores MySQL y phpMyAdmin
+└── README.md                   ← Guía del proyecto
 ```
 
 ---
 
-## 🔧 Variables de entorno del backend
+## 🌿 Flujo de trabajo en equipo con Git
 
-El `application.yaml` usa valores por defecto que funcionan con el `docker-compose.yml` sin configuración adicional.
+Para evitar conflictos de código, seguimos el flujo de ramas:
 
-Si necesitas cambiarlos, crea un archivo `.env` en `backend/incidenciasback/` (ya está en `.gitignore`):
-
-```env
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=incidencias_db
-DB_USER=incidencias_user
-DB_PASSWORD=incidencias_pass
-```
-
----
-
-## 🌿 Flujo de trabajo con Git
-
-1. **Nunca trabajar directo en `main`**
-2. Crear tu rama desde `develop`:
+1. **Partir siempre desde la rama `develop` actualizada:**
    ```bash
    git checkout develop
-   git pull
-   git checkout -b feature/nombre-de-tu-feature
+   git pull origin develop
    ```
-3. Hacer commits descriptivos:
+
+2. **Crear una rama para tu tarea específica:**
    ```bash
-   git commit -m "feat: agregar formulario de nueva incidencia"
+   git checkout -b feature/nombre-de-tu-tarea
    ```
-4. Abrir un Pull Request hacia `develop` cuando termines
+
+3. **Guardar tus avances con mensajes claros:**
+   ```bash
+   git add .
+   git commit -m "feat: agregar validación en formulario de incidencias"
+   ```
+
+4. **Publicar tu rama y crear Pull Request:**
+   ```bash
+   git push -u origin feature/nombre-de-tu-tarea
+   ```
+   *Luego ve a GitHub y abre un Pull Request hacia la rama `develop`.*
 
 ---
 
-## 👥 Equipo
+## ❓ Solución a problemas frecuentes
 
-<!-- Agrega aquí a los integrantes del equipo -->
+| Problema | Causa | Solución |
+|---|---|---|
+| `permission denied` al usar Docker en Linux | Tu usuario aún no tiene la sesión de grupo activa | Ejecuta `newgrp docker` o cierra e inicia sesión en el sistema. |
+| El backend dice `Access denied for user` | Docker no está corriendo o los puertos cambiaron | Verifica con `docker compose ps` y levántalo con `docker compose up -d`. |
+| `./mvnw: Permission denied` en Linux/Mac | Falta permiso de ejecución en el wrapper | Ejecuta `chmod +x backend/mvnw`. |
+| Error `Port 3307 is already in use` | Otro proceso tiene tomado el puerto | Cambia el puerto del host en `docker-compose.yml` y en `backend/src/main/resources/application.yaml`. |
+| El frontend no conecta con el backend | El backend no está corriendo en el puerto 8080 | Asegúrate de haber iniciado el backend con `./mvnw spring-boot:run`. |
 
 ---
 
-## 📡 API Endpoints
+## 👥 Equipo de desarrollo
 
-*En construcción — se documentará con Swagger en `/swagger-ui.html`*
+<!-- Lista de integrantes del equipo -->

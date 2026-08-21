@@ -45,6 +45,12 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Spring Security (BCrypt + auth) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
 		<!-- Lombok (reduce código boilerplate: @Getter, @Setter, @Builder, etc.) -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>

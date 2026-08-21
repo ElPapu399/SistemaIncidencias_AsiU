@@ -3,9 +3,9 @@ spring:
     name: incidenciasback
 
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:campus_incidencias_db}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Mexico_City
-    username: ${DB_USER:incidencias_user}
-    password: ${DB_PASSWORD:incidencias_pass}
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:campus_incidencias_db}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Mexico_City
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
