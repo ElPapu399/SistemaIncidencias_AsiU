@@ -1,5 +1,4 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import type { ReactNode } from 'react';
 
 interface ButtonProps {
   text: string;
@@ -7,10 +6,11 @@ interface ButtonProps {
   variant?: 'primary';
   type?: 'button' | 'submit' | 'reset';
   fullWidth?: boolean;
-  icon?: IconDefinition;
+  icon?: ReactNode;
+  disabled?: boolean;
 }
 
-const Button = ({ text, onClick, variant = 'primary', type = 'button', icon }: ButtonProps) => {
+const Button = ({ text, onClick, variant = 'primary', type = 'button', icon, disabled = false }: ButtonProps) => {
   const baseClasses = 'px-6 py-3 rounded-full font-semibold';
 
   const variants = {
@@ -19,8 +19,8 @@ const Button = ({ text, onClick, variant = 'primary', type = 'button', icon }: B
   };
 
   return (
-    <button type={type} onClick={onClick} className={`${baseClasses} ${variants[variant]}`}>
-      {icon && <FontAwesomeIcon icon={icon} className="w-5 h-5" />}
+    <button type={type} onClick={onClick} disabled={disabled} className={`${baseClasses} ${variants[variant]}`}>
+      {icon && <span className="mr-2">{icon}</span>}
       {text}
     </button>
   );
