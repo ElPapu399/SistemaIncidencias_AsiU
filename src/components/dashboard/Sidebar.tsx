@@ -24,7 +24,7 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    navigate("/");
+    navigate("/login");
   }
 
   return (
@@ -70,7 +70,7 @@ export default function Sidebar() {
             <p className="text-sm text-slate-200 mt-1 font-medium">2026 - Semestre II</p>
           </div>
           <div className="p-3 border-t border-sidebar-border flex-shrink-0">
-            <button onClick={() => navigate("/src/pages/Login.tsx")} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white hover:bg-red-500/10 hover:text-red-400 transition-colors">
+            <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white hover:bg-red-500/10 hover:text-red-400 transition-colors">
               Cerrar Sesión
             </button>
           </div>
