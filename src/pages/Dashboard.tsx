@@ -23,10 +23,10 @@ export default function Dashboard() {
         subtitle="Resumen de incidencias universitarias — miércoles, 19 ago 2026"
       />
 
-      <main className="flex-1 overflow-y-auto p-6 space-y-6">
+      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-200">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="text-left">
-            <h3 className="text-2xl font-bold text-white">Bienvenido al ASIU</h3>
+            <h3 className="text-2xl font-bold text-black">Bienvenido al ASIU</h3>
             <p className="text-sm text-slate-400 mt-1">
               Sistema de Atención y Seguimiento de Incidencias Universitarias
             </p>

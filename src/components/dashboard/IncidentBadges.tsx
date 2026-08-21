@@ -41,7 +41,7 @@ export function PriorityBadge({ priority }: { priority: IncidentPriority }) {
 }
 
 export function CategoryLabel({ category }: { category: IncidentCategory }) {
-  return <span className="text-slate-300 text-sm">{categoryLabels[category]}</span>;
+  return <span className="text-slate-500 text-sm">{categoryLabels[category]}</span>;
 }
 
 export function formatDate(isoDate: string) {

@@ -82,17 +82,4 @@ export const recentIncidents: Incident[] = [
     createdAt: '2026-08-17T11:00:00',
     updatedAt: '2026-08-18T17:30:00',
   },
-  {
-    id: 'INC-2026-0137',
-    title: 'Iluminación deficiente en estacionamiento norte',
-    description: 'Lámparas apagadas generan inseguridad nocturna.',
-    category: 'seguridad',
-    priority: 'alta',
-    status: 'en_proceso',
-    reporter: 'Vigilancia Campus',
-    assignee: 'Seguridad y Mantenimiento',
-    location: 'Estacionamiento Norte',
-    createdAt: '2026-08-17T20:00:00',
-    updatedAt: '2026-08-18T08:00:00',
-  },
 ];

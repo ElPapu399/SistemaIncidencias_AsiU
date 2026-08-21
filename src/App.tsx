@@ -20,6 +20,15 @@ function App() {
           }
         />
         <Route
+          path="usuarios"
+          element={
+            <PlaceholderPage
+              title="Usuarios"
+              description="Podrás ver cuántos usuarios están en el sistema."
+            />
+          }
+        />
+        <Route
           path="nueva"
           element={
             <PlaceholderPage

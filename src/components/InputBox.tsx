@@ -17,7 +17,7 @@ const InputBox = ({ label, type = 'text', placeholder, name, value, readOnly = f
         placeholder={placeholder}
         value={value}
         readOnly={readOnly}
-        className="w-full bg-slate-950/80 border border-slate-700 rounded-xl py-3 px-4 pl-10.5 pr-12"
+        className="w-full bg-white border border-slate-700 rounded-xl py-3 px-4 pl-10.5 pr-12"
       />
     </div>
   );
