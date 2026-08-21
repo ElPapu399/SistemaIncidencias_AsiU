@@ -1,0 +1,22 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: incidencias_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: incidencias_db
+      MYSQL_USER: incidencias_user
+      MYSQL_PASSWORD: incidencias_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 5
+
+volumes:
+  mysql_data:

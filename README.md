@@ -1,77 +1,131 @@
-# React + TypeScript + Vite
+# 🎓 SistemaIncidencias AsiU
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sistema web para la gestión y seguimiento de incidencias universitarias.
 
-Currently, two official plugins are available:
+**Stack:** React 19 + TypeScript + Vite | Spring Boot 3 + Java 21 | MySQL 8
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 📋 Requisitos previos
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+Asegúrate de tener instalado:
 
-Note: This will impact Vite dev & build performances.
+| Herramienta | Versión mínima | Descripción |
+|---|---|---|
+| [Node.js](https://nodejs.org/) | 18+ | Para el frontend |
+| [pnpm](https://pnpm.io/) | 8+ | Gestor de paquetes (`npm i -g pnpm`) |
+| [Java JDK](https://adoptium.net/) | 21 | Para el backend |
+| [Docker](https://www.docker.com/) | 20+ | Para levantar MySQL |
+| [Docker Compose](https://docs.docker.com/compose/) | 2+ | Viene incluido con Docker Desktop |
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Configuración inicial (primera vez)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 1. Clonar el repositorio
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+git clone https://github.com/ElPapu399/SistemaIncidencias_AsiU.git
+cd SistemaIncidencias_AsiU
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Levantar la base de datos MySQL con Docker
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+docker compose up -d
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Esto levanta MySQL en el puerto `3306`. Puedes verificarlo con:
+
+```bash
+docker compose ps
+```
+
+### 3. Correr el backend (Spring Boot)
+
+```bash
+cd backend/incidenciasback
+./mvnw spring-boot:run
+```
+
+> En Windows usa `mvnw.cmd spring-boot:run`
+
+El backend estará disponible en: **http://localhost:8080**
+
+### 4. Correr el frontend (React)
+
+En otra terminal, desde la raíz del proyecto:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+El frontend estará disponible en: **http://localhost:5173**
+
+---
+
+## 🗂️ Estructura del proyecto
 
 ```
+SistemaIncidencias_AsiU/
+├── src/                    ← Frontend React (TypeScript + Vite + Tailwind)
+│   ├── components/         ← Componentes reutilizables
+│   ├── pages/              ← Páginas (Login, Dashboard, etc.)
+│   ├── layouts/            ← Layouts compartidos
+│   └── types/              ← Tipos TypeScript
+├── backend/
+│   └── incidenciasback/    ← Backend Spring Boot (Java 21 + JPA + MySQL)
+│       └── src/main/
+│           ├── java/       ← Código Java
+│           └── resources/  ← application.yaml
+├── database/
+│   └── init.sql            ← Script inicial de la base de datos
+├── docker-compose.yml      ← Levanta MySQL con Docker
+└── README.md
+```
+
+---
+
+## 🔧 Variables de entorno del backend
+
+El `application.yaml` usa valores por defecto que funcionan con el `docker-compose.yml` sin configuración adicional.
+
+Si necesitas cambiarlos, crea un archivo `.env` en `backend/incidenciasback/` (ya está en `.gitignore`):
+
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=incidencias_db
+DB_USER=incidencias_user
+DB_PASSWORD=incidencias_pass
+```
+
+---
+
+## 🌿 Flujo de trabajo con Git
+
+1. **Nunca trabajar directo en `main`**
+2. Crear tu rama desde `develop`:
+   ```bash
+   git checkout develop
+   git pull
+   git checkout -b feature/nombre-de-tu-feature
+   ```
+3. Hacer commits descriptivos:
+   ```bash
+   git commit -m "feat: agregar formulario de nueva incidencia"
+   ```
+4. Abrir un Pull Request hacia `develop` cuando termines
+
+---
+
+## 👥 Equipo
+
+<!-- Agrega aquí a los integrantes del equipo -->
+
+---
+
+## 📡 API Endpoints
+
+*En construcción — se documentará con Swagger en `/swagger-ui.html`*

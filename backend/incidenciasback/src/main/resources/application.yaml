@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: incidenciasback
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:incidencias_db}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Mexico_City
+    username: ${DB_USER:incidencias_user}
+    password: ${DB_PASSWORD:incidencias_pass}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update          # Crea/actualiza tablas automáticamente (cambiar a 'validate' en producción)
+    show-sql: true              # Ver las queries en la consola (útil para desarrollo)
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+server:
+  port: ${SERVER_PORT:8080}
+
+# Configuración de CORS para el frontend React
+# Ajustar si el puerto del frontend cambia
+spring.web.cors:
+  allowed-origins: "http://localhost:5173"
+  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowed-headers: "*"
