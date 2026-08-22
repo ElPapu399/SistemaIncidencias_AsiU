@@ -1,14 +1,14 @@
-# 🎓 SistemaIncidencias AsiU
+# APP AsiU
 
 Sistema web para la gestión y seguimiento de incidencias universitarias.
 
-**Stack tecnológico:** React 19 + TypeScript + Tailwind CSS | Spring Boot 3 (Java 21) | MySQL 8 (Docker)
+**Stack:** React 19 + TypeScript + Tailwind CSS | Spring Boot 3 (Java 21) | MySQL 8 (Docker)
 
 ---
 
-## 📦 Requisitos previos (instalar una sola vez)
+## Prerrequisitos para correr el programa la primera vez
 
-### 🐧 En Linux (Arch / CachyOS / Ubuntu / Debian)
+### 🐧 En Linux 
 ```bash
 sudo pacman -S jdk21-openjdk nodejs npm docker docker-compose
 sudo systemctl enable --now docker
@@ -16,7 +16,7 @@ sudo usermod -aG docker $USER
 ```
 
 ### 🪟 En Windows
-Instalar en este orden:
+Instalar:
 1. **[Java JDK 21](https://adoptium.net)** → Descargar el instalador `.msi`
 2. **[Node.js 18+](https://nodejs.org)** → Descargar la versión LTS `.msi`
 3. **[Docker Desktop](https://www.docker.com/products/docker-desktop/)** → Instalar y asegurarse de abrirlo al menos una vez para que inicie el servicio
@@ -36,6 +36,8 @@ cd SistemaIncidencias_AsiU
 
 ### 2️⃣ Levantar la base de datos con Docker
 
+Abre una **la primera terminal**:
+
 Desde la **raíz del proyecto**:
 ```bash
 docker compose up -d
@@ -45,12 +47,7 @@ Esto inicia dos servicios en contenedores:
 - **MySQL 8:** Puerto `3307`
 - **phpMyAdmin (panel web):** Puerto `8081` → [http://localhost:8081](http://localhost:8081)
 
-Para verificar que están activos:
-```bash
-docker compose ps
-```
-
-> 🐧 **Linux:** Si obtienes un error de permisos (`permission denied`), ejecuta `newgrp docker` en tu terminal antes de continuar.
+> 🐧 **Linux:** Si hay error a veces  es necesario `newgrp docker`.
 
 ---
 
@@ -79,7 +76,7 @@ API REST disponible en: **http://localhost:8080**
 Abre una **tercera terminal** desde la **raíz del proyecto/carpeta principal**:
 
 ```bash
-npm install    # Solo la primera vez
+npm install    # Solo la primera vez para las dependencias
 
 npm run dev    
 ```
@@ -90,7 +87,7 @@ Se abrirá en: **http://localhost:5173**
 
 ## 🔑 Acceso inicial al sistema (solo login)
 
-Ingresa en tu navegador a **[http://localhost:5173](http://localhost:5173)** con cualquiera de estos usuarios creados automáticamente:
+Ingresa en tu navegador a **[http://localhost:5173](http://localhost:5173)** con cualquiera de estos usuarios creados automáticamente (revisen DataLoader.java):
 
 | Rol | Correo | Contraseña|
 
@@ -103,22 +100,20 @@ Ingresa en tu navegador a **[http://localhost:5173](http://localhost:5173)** con
 
 Abre en tu navegador **[http://localhost:8081](http://localhost:8081)**:
 
-| Parámetro | Valor |
-
-| **Servidor** | `db` |
-| **Usuario** | `root` |
-| **Contraseña** | `root` |
+**Servidor** : `db`
+**Usuario** : `root`
+**Contraseña** : `root` 
 
 
-## 📋 Resumen rápido de trabajo diario
+## Después del primer arranque solo necesitas 3 comandos
 
-Para trabajar en el proyecto necesitas 3 terminales abiertas:
+En 3 terminales abiertas:
 
 | # | Servicio | Carpeta | Comando |
 |---|---|---|---|
-| 1️⃣ | **Base de Datos** | Raíz del proyecto | `docker compose up -d` |
-| 2️⃣ | **Backend** | `backend/` | `./mvnw spring-boot:run` (o `mvnw.cmd spring-boot:run`) |
-| 3️⃣ | **Frontend** | Raíz del proyecto | `npm run dev` |
+| 1️⃣ | **Base de Datos** | En la raíz del proyecto | `docker compose up -d` |
+| 2️⃣ | **Backend** | desde la carpeta `backend/` | `./mvnw spring-boot:run` (o `mvnw.cmd spring-boot:run`) |
+| 3️⃣ | **Frontend** | en la raíz del proyecto | `npm run dev` |
 
 Para apagar la base de datos al terminar:
 ```bash
