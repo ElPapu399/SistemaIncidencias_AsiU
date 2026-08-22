@@ -1,17 +1,52 @@
+import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InputBox from '../components/InputBox';
 import Button from '../components/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faLock, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faLock, faGraduationCap, faSpinner } from '@fortawesome/free-solid-svg-icons';
+
 
 const Login = () => {
   const navigate = useNavigate();
+  const [correo, setCorreo] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  //añadido async (asincronia :v) para que la pag espere respuesta del servidor
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    navigate('/dashboard');
+    setError('');
+    setLoading(true);
+
+    //PETICION HTTP
+
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ correo, password }),
+      });
+
+      if (response.ok) {
+        const usuario = await response.json();
+        // Guardar datos del usuario en sessionStorage para uso en otras páginas
+        sessionStorage.setItem('usuario', JSON.stringify(usuario));
+        navigate('/dashboard');
+      } else {
+        const msg = await response.text();
+        setError(msg || 'Correo o contraseña incorrectos');
+      }
+    } catch {
+      setError('No se pudo conectar al servidor. ¿Está corriendo el backend?');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  //
 
   return (
     <div className="flex min-h-screen">
@@ -33,24 +68,24 @@ const Login = () => {
 
           <div className="space-y-6">
             <div className="text-white text-5xl font-bold">
-              Gestión eficiente de <br/>
+              Gestión eficiente de <br />
               <span className="text-yellow-500">incidencias tecnológicas</span>
             </div>
             <p className="text-blue-200/80 text-base leading-relaxed max-w-sm">Plataforma centralizada para reportar, asignar y resolver problemas técincos en laboratorios universitarios</p>
           </div>
 
           <div className="mt-12 grid grid-cols-3 gap-4">
-              {[
-                { v: "98%", l: "Incidencias resueltas" },
-                { v: "<2h", l: "Tiempo promedio" },
-                { v: "5", l: "Laboratorios activos" },
-              ].map(s => (
-                <div key={s.l} className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                  <div className="text-white text-2xl font-bold">{s.v}</div>
-                  <div className="text-blue-300 text-xs mt-1">{s.l}</div>
-                </div>
-              ))}
-            </div>
+            {[
+              { v: "98%", l: "Incidencias resueltas" },
+              { v: "<2h", l: "Tiempo promedio" },
+              { v: "5", l: "Laboratorios activos" },
+            ].map(s => (
+              <div key={s.l} className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+                <div className="text-white text-2xl font-bold">{s.v}</div>
+                <div className="text-blue-300 text-xs mt-1">{s.l}</div>
+              </div>
+            ))}
+          </div>
         </div>
         <p className="relative text-blue-200/70 text-xs">© 2024 Universidad Tecnológica del Perú · ASIU v1.0</p>
       </div>
@@ -61,14 +96,14 @@ const Login = () => {
           {/* Logo Móvil */}
           <div className="lg:hidden flex items-center gap-3 mb-8">
             <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20 mb-4">
-                <FontAwesomeIcon icon={faGraduationCap} className="text-slate-950 text-xl" />
-              </div>
-              <div>
-                <div className="font-extrabold text-xl text-foreground">ASIU</div>
-                <p className="text-xs text-slate-400">
-                  Sistema de Incidencias Universitarias
-                </p>
-              </div>
+              <FontAwesomeIcon icon={faGraduationCap} className="text-slate-950 text-xl" />
+            </div>
+            <div>
+              <div className="font-extrabold text-xl text-foreground">ASIU</div>
+              <p className="text-xs text-slate-400">
+                Sistema de Incidencias Universitarias
+              </p>
+            </div>
           </div>
 
           <div className="mb-8">
@@ -86,7 +121,13 @@ const Login = () => {
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
                     <FontAwesomeIcon icon={faUser} />
                   </span>
-                  <InputBox name="user" type="text" placeholder="Ingrese usuario" />
+                  <InputBox
+                    name="correo"
+                    type="email"
+                    placeholder="Ingrese su correo"
+                    value={correo}
+                    onChange={(e) => setCorreo(e.target.value)}
+                  />
                 </div>
               </div>
               <div className="relative w-full">
@@ -97,11 +138,32 @@ const Login = () => {
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
                     <FontAwesomeIcon icon={faLock} />
                   </span>
-                  <InputBox name="password" type="password" placeholder="Ingrese contraseña" />
+                  <InputBox
+                    name="password"
+                    type="password"
+                    placeholder="Ingrese contraseña"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
                 </div>
               </div>
+
+              {/* Mensaje de error */}
+              {error && (
+                <div className="text-red-400 text-sm bg-red-950/40 border border-red-800/50 rounded-xl px-4 py-3">
+                  {error}
+                </div>
+              )}
+
+
               <div>
-                <Button type="submit" variant="primary" text="Ingresar" />
+                <Button
+                  type="submit"
+                  variant="primary"
+                  text={loading ? '' : 'Ingresar'}
+                  disabled={loading}
+                  icon={loading ? <FontAwesomeIcon icon={faSpinner} spin /> : undefined}
+                />
               </div>
               <div className="flex items-center justify-between">
                 <button type="button" className="text-sm hover:text-base hover:underline font-medium transition-all duration-200">
