@@ -1,11 +1,9 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faClipboardList,
   faClock,
   faSpinner,
   faCircleCheck,
   faTriangleExclamation,
-  faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import Header from '../components/dashboard/Header';
 import StatCard from '../components/dashboard/StatCard';
@@ -27,7 +25,7 @@ export default function Dashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="text-left">
             <h3 className="text-2xl font-bold text-black">Bienvenido al ASIU</h3>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-slate-500 mt-1">
               Sistema de Atención y Seguimiento de Incidencias Universitarias
             </p>
           </div>

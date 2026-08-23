@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import Header from '../components/dashboard/Header';
-import IncidentsTable from '../components/dashboard/IncidentesTable';
+import IncidentsTable from '../components/dashboard/IncidentsTable';
 import { recentIncidents } from '../data/mockIncidents';
 
 interface IncidenciasPageProps {
@@ -9,7 +9,7 @@ interface IncidenciasPageProps {
   description: string;
 }
 
-export default function IncidenciasPage({ title, description }: IncidenciasPageProps) {
+export default function IncidenciasPage({ title }: IncidenciasPageProps) {
   
   const usuarioGuardado = sessionStorage.getItem('usuario');
 
@@ -42,8 +42,8 @@ export default function IncidenciasPage({ title, description }: IncidenciasPageP
             <IncidentsTable
               incidents={recentIncidents}
               role = {currentUserRole}
-              onView = {(incident) => {}}
-              onAssign = {(incident) => {}}
+              onView = {(_incident) => {}}
+              onAssign = {(_incident) => {}}
             />
           </div>
       </main>

@@ -1,11 +1,14 @@
-import { useState } from 'react';
 import { Search } from 'lucide-react';
 
-export default function SearchBar({ value, onSearch, placeholder }) {
-  const [query, setQuery] = useState('');
+interface SearchBarProps {
+  value: string;
+  onSearch: (value: string) => void;
+  placeholder?: string;
+}
 
-  const handleChange = (e) => {
-    setQuery(e.target.value);
+export default function SearchBar({ value, onSearch, placeholder }: SearchBarProps) {
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onSearch(e.target.value);
   };
 
@@ -15,7 +18,7 @@ export default function SearchBar({ value, onSearch, placeholder }) {
         <input
             type="text"
             placeholder={placeholder}
-            value={query}
+            value={value}
             onChange={handleChange}
             className="pl-9 pr-4 py-2 text-sm bg-card border border-border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-colors"
         />
