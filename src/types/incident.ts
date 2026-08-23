@@ -19,6 +19,7 @@ export interface Incident {
   location: string;
   createdAt: string;
   updatedAt: string;
+  action: string;
 }
 
 export interface DashboardStats {

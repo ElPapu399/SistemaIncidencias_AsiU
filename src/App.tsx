@@ -1,8 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import PlaceholderPage from './pages/PlaceholderPage';
 import DashboardLayout from './layouts/DashboardLayout';
+
+import PlaceholderPage from './pages/PlaceholderPage';
+import IncidenciasPage from './pages/IncidenciasPage';
 
 function App() {
   return (
@@ -13,7 +15,7 @@ function App() {
         <Route
           path="incidencias"
           element={
-            <PlaceholderPage
+            <IncidenciasPage
               title="Incidencias"
               description="Aquí podrás consultar, filtrar y gestionar todas las incidencias del campus."
             />

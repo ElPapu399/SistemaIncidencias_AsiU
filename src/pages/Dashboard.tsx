@@ -31,13 +31,6 @@ export default function Dashboard() {
               Sistema de Atención y Seguimiento de Incidencias Universitarias
             </p>
           </div>
-          <button
-            type="button"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 cursor-pointer"
-          >
-            <FontAwesomeIcon icon={faPlus} />
-            Nueva incidencia
-          </button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">

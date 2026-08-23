@@ -7,6 +7,11 @@ interface HeaderProps {
 }
 
 export default function Header({ title, subtitle }: HeaderProps) {
+
+  const usuarioGuardado = sessionStorage.getItem('usuario');
+  const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+  const currentUserRole = usuario?.rol;
+
   return (
     <header className="h-20 shrink-0 border-b border-slate-800 bg-white backdrop-blur-xl flex items-center justify-between px-6">
       <div className="text-left">
@@ -42,8 +47,8 @@ export default function Header({ title, subtitle }: HeaderProps) {
             <FontAwesomeIcon icon={faUser} className="text-white text-sm" />
           </div>
           <div className="hidden md:block text-left">
-            <p className="text-sm font-medium text-slate-800">Admin Campus</p>
-            <p className="text-xs text-slate-600">Coordinador</p>
+            <p className="text-sm font-medium text-slate-800">{usuario.nombre}</p>
+            <p className="text-xs text-slate-600">{currentUserRole}</p>
           </div>
         </div>
       </div>
