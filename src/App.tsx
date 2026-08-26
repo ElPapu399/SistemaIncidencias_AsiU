@@ -5,6 +5,7 @@ import DashboardLayout from './layouts/DashboardLayout';
 
 import PlaceholderPage from './pages/PlaceholderPage';
 import IncidenciasPage from './pages/IncidenciasPage';
+import UsuariosPage from './pages/UsuariosPage';
 
 function App() {
   return (
@@ -24,9 +25,9 @@ function App() {
         <Route
           path="usuarios"
           element={
-            <PlaceholderPage
+            <UsuariosPage
               title="Usuarios"
-              description="Podrás ver cuántos usuarios están en el sistema."
+              description="Gestión de usuarios del sistema."
             />
           }
         />

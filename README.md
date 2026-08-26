@@ -89,8 +89,8 @@ Se abrirá en: **http://localhost:5173**
 
 Ingresa en tu navegador a **[http://localhost:5173](http://localhost:5173)** con cualquiera de estos usuarios creados automáticamente (revisen DataLoader.java):
 
-| Rol | Correo | Contraseña|
-
+| Rol | Correo | Contraseña |
+|---|---|---|
 | **Admin** | `admin@universidad.edu.pe` | `admin123` |
 | **Técnico** | `tecnico@universidad.edu.pe` | `tecnico123` |
 | **Estudiante** | `alumno@universidad.edu.pe` | `alumno123` |
@@ -126,25 +126,74 @@ docker compose down
 
 ```
 SistemaIncidencias_AsiU/
-├── src/                        ← Frontend React (TypeScript + Tailwind)
-│   ├── components/             ← Componentes reutilizables (Button, InputBox, etc.)
-│   ├── pages/                  ← Vistas (Login, Dashboard, etc.)
-│   ├── layouts/                ← Plantillas y navegación
-│   └── types/                  ← Modelos e interfaces TypeScript
-├── backend/                    ← Backend Spring Boot (Java 21)
-│   ├── src/main/java/.../
-│   │   ├── config/             ← Seguridad (CORS, BCrypt) y Carga Inicial de Datos
-│   │   ├── controller/         ← Controladores REST (/api/auth, etc.)
-│   │   ├── dto/                ← Objetos de transferencia de datos
-│   │   ├── model/              ← Entidades JPA (Usuario, Rol, etc.)
-│   │   ├── repository/         ← Repositorios Spring Data JPA
-│   │   └── service/            ← Lógica de negocio (AuthService, etc.)
-│   ├── src/main/resources/
-│   │   └── application.yaml    ← Configuración del servidor y conexión a BD
-│   ├── pom.xml                 ← Dependencias Maven
-│   └── mvnw / mvnw.cmd         ← Maven Wrapper
+├── src/                             ← Frontend React (TypeScript + Tailwind)
+│   ├── assets/                      ← Imágenes y recursos estáticos
+│   ├── components/                  ← Componentes reutilizables
+│   │   ├── dashboard/               ← Componentes del panel principal
+│   │   │   ├── CategoryBreakdown.tsx
+│   │   │   ├── Header.tsx
+│   │   │   ├── IncidentBadges.tsx
+│   │   │   ├── IncidentsTable.tsx
+│   │   │   ├── RecentIncidentsTable.tsx
+│   │   │   ├── SearchBar.tsx
+│   │   │   ├── Sidebar.tsx
+│   │   │   ├── StatCard.tsx
+│   │   │   └── UserForm.tsx
+│   │   ├── Button.tsx
+│   │   └── InputBox.tsx
+│   ├── data/
+│   │   └── mockIncidents.ts         ← Datos de prueba para incidencias
+│   ├── layouts/
+│   │   └── DashboardLayout.tsx      ← Layout general del panel
+│   ├── pages/                       ← Vistas principales
+│   │   ├── Dashboard.tsx
+│   │   ├── IncidenciasPage.tsx
+│   │   ├── Login.tsx
+│   │   ├── PlaceholderPage.tsx
+│   │   └── UsuariosPage.tsx
+│   ├── types/                       ← Interfaces TypeScript
+│   │   ├── incident.ts
+│   │   └── user.ts
+│   ├── App.tsx
+│   ├── App.css
+│   ├── index.css
+│   └── main.tsx
+├── backend/                         ← Backend Spring Boot (Java 21)
+│   └── src/main/java/.../
+│       ├── config/                  ← Seguridad (CORS, BCrypt) y DataLoader
+│       │   ├── DataLoader.java
+│       │   └── SecurityConfig.java
+│       ├── controller/              ← Controladores REST
+│       │   ├── AuthController.java
+│       │   └── UsuarioController.java
+│       ├── dto/                     ← Objetos de transferencia de datos
+│       │   ├── LoginRequest.java
+│       │   ├── LoginResponse.java
+│       │   ├── UsuarioRequest.java
+│       │   ├── UsuarioResponse.java
+│       │   └── UsuarioUpdateRequest.java
+│       ├── model/                   ← Entidades JPA
+│       │   ├── Especialidad.java
+│       │   ├── Rol.java
+│       │   └── Usuario.java
+│       ├── repository/              ← Repositorios Spring Data JPA
+│       │   ├── EspecialidadRepository.java
+│       │   ├── RolRepository.java
+│       │   └── UsuarioRepository.java
+│       └── service/                 ← Lógica de negocio
+│           ├── AuthService.java
+│           └── UsuarioService.java
+│   └── src/main/resources/
+│       └── application.yaml         ← Configuración del servidor y BD
+│   ├── pom.xml                      ← Dependencias Maven
+│   └── mvnw / mvnw.cmd              ← Maven Wrapper
 ├── database/
-│   └── init.sql                ← Script DDL de tablas y datos semilla iniciales
-├── docker-compose.yml          ← Configuración de contenedores MySQL y phpMyAdmin
-└── README.md                   ← Guía del proyecto
+│   └── init.sql                     ← Script DDL inicial
+├── public/
+│   ├── favicon.svg
+│   └── icons.svg
+├── docker-compose.yml               ← Contenedores MySQL y phpMyAdmin
+├── package.json
+├── index.html
+└── README.md
 ```
