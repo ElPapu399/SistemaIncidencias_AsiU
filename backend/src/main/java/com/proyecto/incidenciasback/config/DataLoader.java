@@ -1,7 +1,9 @@
 package com.proyecto.incidenciasback.config;
 
+import com.proyecto.incidenciasback.model.Especialidad;
 import com.proyecto.incidenciasback.model.Rol;
 import com.proyecto.incidenciasback.model.Usuario;
+import com.proyecto.incidenciasback.repository.EspecialidadRepository;
 import com.proyecto.incidenciasback.repository.RolRepository;
 import com.proyecto.incidenciasback.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -13,25 +15,35 @@ public class DataLoader implements CommandLineRunner {
 
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
+    private final EspecialidadRepository especialidadRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     public DataLoader(UsuarioRepository usuarioRepository,
                       RolRepository rolRepository,
+                      EspecialidadRepository especialidadRepository,
                       BCryptPasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
+        this.especialidadRepository = especialidadRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) {
-        crearUsuarioSiNoExiste("Admin",   "Sistema", "admin@universidad.edu.pe",   "admin123",   "ADMIN");
-        crearUsuarioSiNoExiste("Técnico", "Soporte", "tecnico@universidad.edu.pe", "tecnico123", "TECNICO");
-        crearUsuarioSiNoExiste("Alumno",  "Prueba",  "alumno@universidad.edu.pe",  "alumno123",  "ESTUDIANTE");
+        // Admin
+        crearUsuarioSiNoExiste("Admin", "Sistema", "admin@universidad.edu.pe", "admin123", "ADMIN", null);
+
+        // Técnicos con especialidades
+        crearUsuarioSiNoExiste("Carlos", "Mendoza", "tecnico.hw@universidad.edu.pe", "tecnico123", "TECNICO", "Hardware");
+        crearUsuarioSiNoExiste("Laura", "Ríos", "tecnico.redes@universidad.edu.pe", "tecnico123", "TECNICO", "Redes");
+        crearUsuarioSiNoExiste("Diego", "Vargas", "tecnico.sw@universidad.edu.pe", "tecnico123", "TECNICO", "Software");
+
+        // Estudiante de prueba
+        crearUsuarioSiNoExiste("Alumno", "Prueba", "alumno@universidad.edu.pe", "alumno123", "ESTUDIANTE", null);
     }
 
     private void crearUsuarioSiNoExiste(String nombre, String apellido, String correo,
-                                        String password, String nombreRol) {
+                                        String password, String nombreRol, String nombreEspecialidad) {
         if (usuarioRepository.findByCorreo(correo).isPresent()) {
             return; // Ya existe, no hacer nada
         }
@@ -47,7 +59,15 @@ public class DataLoader implements CommandLineRunner {
         usuario.setPasswordHash(passwordEncoder.encode(password));
         usuario.setRol(rol);
 
+        if (nombreEspecialidad != null) {
+            Especialidad especialidad = especialidadRepository.findByNombre(nombreEspecialidad)
+                    .orElseThrow(() -> new RuntimeException(
+                            "Especialidad '" + nombreEspecialidad + "' no encontrada."));
+            usuario.setEspecialidad(especialidad);
+        }
+
         usuarioRepository.save(usuario);
-        System.out.println("✅ Usuario creado: " + correo + " / " + password + " [" + nombreRol + "]");
+        System.out.println("✅ Usuario creado: " + correo + " / " + password + " [" + nombreRol + "]"
+                + (nombreEspecialidad != null ? " - " + nombreEspecialidad : ""));
     }
 }

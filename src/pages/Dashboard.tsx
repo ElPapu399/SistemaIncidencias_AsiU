@@ -12,8 +12,18 @@ import StatCard from '../components/dashboard/StatCard';
 import RecentIncidentsTable from '../components/dashboard/RecentIncidentsTable';
 import CategoryBreakdown from '../components/dashboard/CategoryBreakdown';
 
-import { obtenerIncidencias } from '../services/incidenciasService'
+import { obtenerIncidencias } from '../services/incidenciasService';
 import type { Incident } from '../types/incident';
+
+const categoryColorPalette = [
+  '#8b5cf6', // Violet
+  '#3b82f6', // Blue
+  '#f59e0b', // Amber
+  '#10b981', // Emerald
+  '#ef4444', // Red
+  '#06b6d4', // Cyan
+  '#ec4899', // Pink
+];
 
 export default function Dashboard() {
   const [incidencias, setIncidencias] = useState<Incident[]>([]);
@@ -37,56 +47,37 @@ export default function Dashboard() {
   const total = incidencias.length;
 
   const pendientes = incidencias.filter(
-    (incidencia) => incidencia.status === 'pendiente'
+    (incidencia) => incidencia.status === 'Pendiente'
   ).length;
 
   const enProceso = incidencias.filter(
-    (incidencia) => incidencia.status === 'en_proceso'
+    (incidencia) => incidencia.status === 'En Proceso'
   ).length;
 
   const resueltas = incidencias.filter(
-    (incidencia) => incidencia.status === 'resuelta'
+    (incidencia) => incidencia.status === 'Resuelto'
   ).length;
 
-  const urgentes = incidencias.filter(
-    (incidencia) => incidencia.priority === 'urgente'
+  const altas = incidencias.filter(
+    (incidencia) => incidencia.priority === 'Alta'
   ).length;
 
   const categoryCounts = incidencias.reduce<Record<string, number>>(
     (acc, incidencia) => {
-      acc[incidencia.category] = (acc[incidencia.category] || 0) + 1;
+      const cat = incidencia.category || 'Otros';
+      acc[cat] = (acc[cat] || 0) + 1;
       return acc;
     },
     {}
   );
 
   const categoryBreakdown = Object.entries(categoryCounts).map(
-  ([category, count]) => {
-    const labels: Record<Incident['category'], string> = {
-      infraestructura: 'Infraestructura',
-      tecnologia: 'Tecnología',
-      academico: 'Académico',
-      servicios: 'Servicios',
-      seguridad: 'Seguridad',
-    };
-
-    const colors: Record<Incident['category'], string> = {
-      infraestructura: '#8b5cf6',
-      tecnologia: '#3b82f6',
-      academico: '#f59e0b',
-      servicios: '#10b981',
-      seguridad: '#ef4444',
-    };
-
-    const categoryKey = category as Incident['category'];
-
-    return {
-      label: labels[categoryKey],
+    ([category, count], idx) => ({
+      label: category,
       count,
-      color: colors[categoryKey],
-    };
-  }
-);
+      color: categoryColorPalette[idx % categoryColorPalette.length],
+    })
+  );
 
   const categoryTotal = categoryBreakdown.reduce(
     (sum, item) => sum + item.count,
@@ -179,8 +170,8 @@ export default function Dashboard() {
           />
 
           <StatCard
-            title="Urgentes"
-            value={urgentes}
+            title="Alta prioridad"
+            value={altas}
             icon={faTriangleExclamation}
             trend="Atención prioritaria"
             accent="bg-rose-500/15 text-rose-400"

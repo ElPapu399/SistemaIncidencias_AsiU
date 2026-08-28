@@ -1,29 +1,23 @@
-import type { IncidentPriority, IncidentStatus, IncidentCategory } from '../../types/incident';
+import type { IncidentPriority, IncidentStatus } from '../../types/incident';
 
-const statusConfig: Record<IncidentStatus, { label: string; className: string }> = {
-  pendiente: { label: 'Pendiente', className: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
-  en_proceso: { label: 'En proceso', className: 'bg-blue-500/15 text-blue-400 border-blue-500/30' },
-  resuelta: { label: 'Resuelta', className: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
-  cerrada: { label: 'Cerrada', className: 'bg-slate-500/15 text-slate-400 border-slate-500/30' },
+const statusConfig: Record<string, { label: string; className: string }> = {
+  Pendiente: { label: 'Pendiente', className: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
+  'En Proceso': { label: 'En Proceso', className: 'bg-blue-500/15 text-blue-400 border-blue-500/30' },
+  Resuelto: { label: 'Resuelto', className: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+  Cancelado: { label: 'Cancelado', className: 'bg-slate-500/15 text-slate-400 border-slate-500/30' },
 };
 
-const priorityConfig: Record<IncidentPriority, { label: string; className: string }> = {
-  baja: { label: 'Baja', className: 'bg-slate-500/15 text-slate-400' },
-  media: { label: 'Media', className: 'bg-sky-500/15 text-sky-400' },
-  alta: { label: 'Alta', className: 'bg-orange-500/15 text-orange-400' },
-  urgente: { label: 'Urgente', className: 'bg-rose-500/15 text-rose-400' },
+const priorityConfig: Record<string, { label: string; className: string }> = {
+  Baja: { label: 'Baja', className: 'bg-slate-500/15 text-slate-400 border-slate-500/30' },
+  Media: { label: 'Media', className: 'bg-sky-500/15 text-sky-400 border-sky-500/30' },
+  Alta: { label: 'Alta', className: 'bg-rose-500/15 text-rose-400 border-rose-500/30' },
 };
 
-const categoryLabels: Record<IncidentCategory, string> = {
-  infraestructura: 'Infraestructura',
-  tecnologia: 'Tecnología',
-  academico: 'Académico',
-  servicios: 'Servicios',
-  seguridad: 'Seguridad',
-};
-
-export function StatusBadge({ status }: { status: IncidentStatus }) {
-  const config = statusConfig[status];
+export function StatusBadge({ status }: { status: IncidentStatus | string }) {
+  const config = statusConfig[status] || {
+    label: status,
+    className: 'bg-slate-500/15 text-slate-400 border-slate-500/30',
+  };
   return (
     <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border ${config.className}`}>
       {config.label}
@@ -31,24 +25,39 @@ export function StatusBadge({ status }: { status: IncidentStatus }) {
   );
 }
 
-export function PriorityBadge({ priority }: { priority: IncidentPriority }) {
-  const config = priorityConfig[priority];
+export function PriorityBadge({ priority }: { priority: IncidentPriority | string }) {
+  const config = priorityConfig[priority] || {
+    label: priority,
+    className: 'bg-slate-500/15 text-slate-400 border-slate-500/30',
+  };
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold ${config.className}`}>
+    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border ${config.className}`}>
       {config.label}
     </span>
   );
 }
 
-export function CategoryLabel({ category }: { category: IncidentCategory }) {
-  return <span className="text-slate-500 text-sm">{categoryLabels[category]}</span>;
+export function CategoryLabel({ category, especialidad }: { category: string; especialidad?: string }) {
+  return (
+    <div className="flex flex-col">
+      <span className="text-slate-800 font-medium text-xs">{category}</span>
+      {especialidad && (
+        <span className="text-[10px] text-slate-500 uppercase tracking-wider">{especialidad}</span>
+      )}
+    </div>
+  );
 }
 
-export function formatDate(isoDate: string) {
-  return new Intl.DateTimeFormat('es-CO', {
-    day: '2-digit',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(isoDate));
+export function formatDate(isoDate?: string | null) {
+  if (!isoDate) return '—';
+  try {
+    return new Intl.DateTimeFormat('es-PE', {
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(isoDate));
+  } catch {
+    return isoDate;
+  }
 }
