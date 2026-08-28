@@ -4,8 +4,6 @@ import { StatusBadge, PriorityBadge, CategoryLabel, formatDate } from './Inciden
 import SearchBar from '../dashboard/SearchBar';
 import { UserCheck, Eye } from 'lucide-react';
 
-type IncidentStatus = "Pendiente" | "En proceso" | "Resuelta" | "No resuelta";
-
 interface IncidentsTableProps {
   incidents: Incident[];
   role: "ADMIN" | "TECNICO" | "ESTUDIANTE"
@@ -46,8 +44,7 @@ export default function IncidentsTable({ incidents, role, onAssign, onView }: In
   
   const categoryOptions: { label: string, value: string }[] = [
     {label: "Infraestructura", value: "infraestructura"},
-    {label: "Media", value: "media"},
-    {label: "Baja", value: "baja"}
+    {label: "Tecnología", value: "tecnologia"},
   ];
 
   const clearFilters = () => {
