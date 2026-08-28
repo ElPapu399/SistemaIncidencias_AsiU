@@ -16,8 +16,46 @@ interface IncidentsTableProps {
 export default function IncidentsTable({ incidents, role, onAssign, onView }: IncidentsTableProps) {
 
   const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
-  const [filterPriority, setFilterPriority] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterPriority, setFilterPriority] = useState("all");
+  const [filterCategory, setFilterCategory] = useState("all");
+
+  const filtered = incidents.filter(i => 
+    (filterStatus === "all" || i.status === filterStatus) &&
+    (filterPriority === "all" || i.priority === filterPriority) &&
+    (filterCategory === "all" || i.category === filterCategory) &&
+    (
+      i.title.toLowerCase().includes(search.toLowerCase()) ||
+      i.id.toLowerCase().includes(search.toLowerCase()) ||
+      (i.reporter ?? "").toLowerCase().includes(search.toLowerCase())
+    )
+  )
+
+  const statusOptions: { label: string, value: string }[] = [
+    {label: "Pendiente", value: "pendiente"},
+    {label: "En proceso", value: "en_proceso"},
+    {label: "Resuelta", value: "resuelta"},
+    {label: "Cerrada", value: "cerrada"}
+  ];
+
+  const priorityOptions: { label: string, value: string }[] = [
+    {label: "Alta", value: "alta"},
+    {label: "Media", value: "media"},
+    {label: "Baja", value: "baja"}
+  ];
+  
+  const categoryOptions: { label: string, value: string }[] = [
+    {label: "Infraestructura", value: "infraestructura"},
+    {label: "Media", value: "media"},
+    {label: "Baja", value: "baja"}
+  ];
+
+  const clearFilters = () => {
+    setSearch("");
+    setFilterStatus("all");
+    setFilterPriority("all");
+    setFilterCategory("all");
+  }
 
   return (
     <div className="bg-white backdrop-blur-xl border border-slate-700/50 rounded-2xl overflow-hidden">
@@ -27,12 +65,29 @@ export default function IncidentsTable({ incidents, role, onAssign, onView }: In
         </div>  
         <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="px-3 py-2 text-sm bg-slate-100 border border-border rounded-lg focus:outline-none">
           <option value="all">Estado</option>
-          {(["Pendiente", "En proceso", "Resuelta", "No resuelta"] as IncidentStatus[]).map(s => <option key={s} value={s}>{s}</option>)}
+          {statusOptions.map(({ label, value }) => (
+            <option key={value} value={value}>{label}</option>
+          ))}
         </select>
         <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} className="px-3 py-2 text-sm bg-slate-100 border border-border rounded-lg focus:outline-none">
           <option value="all">Prioridad</option>
-          {["Urgente","Alta", "Media", "Baja"].map(p => <option key={p} value={p}>{p}</option>)}
+          {priorityOptions.map(({ label, value }) => (
+            <option key={value} value={value}>{label}</option>
+          ))}
         </select>
+        <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)} className="px-3 py-2 text-sm bg-slate-100 border border-border rounded-lg focus:outline-none">
+          <option value="all">Categoría</option>
+          {categoryOptions.map(({ label, value }) => (
+            <option key={value} value={value}>{label}</option>
+          ))}
+        </select>
+        <button
+          type="button"
+          onClick={clearFilters}
+          className="px-3 py-2 text-sm hover:font-bold text-white bg-red-500 hover:bg-red-600 border border-border rounded-lg transition-all"
+        >
+          Limpiar
+        </button>
       </div>
 
       <div className="overflow-x-auto">
@@ -50,7 +105,7 @@ export default function IncidentsTable({ incidents, role, onAssign, onView }: In
             </tr>
           </thead>
           <tbody>
-            {incidents.map((incident) => (
+            {filtered.map((incident) => (
               <tr
                 key={incident.id}
                 className="group border-b border-slate-800/50 hover:bg-slate-400/30 transition-colors"
@@ -88,6 +143,9 @@ export default function IncidentsTable({ incidents, role, onAssign, onView }: In
             ))}
           </tbody>
         </table>
+        <div className="px-5 py-3 border-t border-border text-xs text-muted-foreground">
+          Mostrando {filtered.length} de {incidents.length} incidencias.
+        </div>
       </div>
     </div>
   );

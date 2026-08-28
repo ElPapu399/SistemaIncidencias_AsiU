@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import type { Incident } from '../../types/incident';
 import { StatusBadge, PriorityBadge, CategoryLabel, formatDate } from './IncidentBadges';
 
@@ -13,12 +14,12 @@ export default function RecentIncidentsTable({ incidents }: RecentIncidentsTable
           <h3 className="text-base font-semibold text-black">Incidencias recientes</h3>
           <p className="text-xs text-slate-500 mt-0.5">Últimas reportadas en el campus</p>
         </div>
-        <button
-          type="button"
+        <Link
+          to='/dashboard/incidencias'
           className="text-xs font-semibold text-orange-400 hover:text-orange-300 transition-colors"
         >
           Ver todas →
-        </button>
+        </Link>
       </div>
 
       <div className="overflow-x-auto">
@@ -35,7 +36,7 @@ export default function RecentIncidentsTable({ incidents }: RecentIncidentsTable
             </tr>
           </thead>
           <tbody>
-            {incidents.map((incident) => (
+            {incidents.slice(0, 4).map((incident) => (
               <tr
                 key={incident.id}
                 className="border-b border-slate-800/50 hover:bg-slate-400/30 transition-colors"

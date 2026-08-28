@@ -165,11 +165,6 @@ const Login = () => {
                   icon={loading ? <FontAwesomeIcon icon={faSpinner} spin /> : undefined}
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <button type="button" className="text-sm hover:text-base hover:underline font-medium transition-all duration-200">
-                  <p className="text-blue-300 hover:text-red-400 transition-colors">¿Olvidaste tu contraseña?</p>
-                </button>
-              </div>
             </form>
           </div>
         </div>
