@@ -48,6 +48,10 @@ public class Incidencia {
     @JoinColumn(name = "ubicacion_id", nullable = false)
     private Ubicacion ubicacion;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "equipo_id")
+    private Equipo equipo;
+
     @Column(name = "solucion_tecnica", columnDefinition = "TEXT")
     private String solucionTecnica;
 

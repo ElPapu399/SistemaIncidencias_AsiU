@@ -26,4 +26,7 @@ public class IncidenciaRequest {
 
     @NotNull(message = "El estudiante es obligatorio")
     private Integer estudianteId;
+
+    // Opcional: equipo asociado a la incidencia
+    private Integer equipoId;
 }

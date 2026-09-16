@@ -40,6 +40,13 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
+    public List<UsuarioResponse> listarPorRol(String rolNombre) {
+        return usuarioRepository.findByRolNombre(rolNombre.toUpperCase())
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     public UsuarioResponse obtenerPorId(Integer id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
@@ -59,8 +66,11 @@ public class UsuarioService {
         usuario.setNombre(request.getNombre());
         usuario.setApellido(request.getApellido());
         usuario.setCorreo(request.getCorreo());
-        usuario.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        usuario.setPasswordHash(passwordEncoder.encode(request.getPassword() != null ? request.getPassword() : "123456"));
         usuario.setRol(rol);
+        usuario.setTelefono(request.getTelefono());
+        usuario.setCarrera(request.getCarrera());
+        usuario.setEstado(request.getEstado() != null ? request.getEstado() : "Activo");
 
         if (request.getEspecialidadId() != null) {
             Especialidad especialidad = especialidadRepository.findById(request.getEspecialidadId())
@@ -91,6 +101,11 @@ public class UsuarioService {
         usuario.setApellido(request.getApellido());
         usuario.setCorreo(request.getCorreo());
         usuario.setRol(rol);
+        usuario.setTelefono(request.getTelefono());
+        usuario.setCarrera(request.getCarrera());
+        if (request.getEstado() != null) {
+            usuario.setEstado(request.getEstado());
+        }
 
         if (request.getEspecialidadId() != null) {
             Especialidad especialidad = especialidadRepository.findById(request.getEspecialidadId())
@@ -105,14 +120,26 @@ public class UsuarioService {
         return toResponse(usuario);
     }
 
+    public void eliminarUsuario(Integer id) {
+        if (!usuarioRepository.existsById(id)) {
+            throw new RuntimeException("Usuario no encontrado con id: " + id);
+        }
+        usuarioRepository.deleteById(id);
+    }
+
     private UsuarioResponse toResponse(Usuario usuario) {
         return new UsuarioResponse(
                 usuario.getId(),
                 usuario.getNombre(),
                 usuario.getApellido(),
                 usuario.getCorreo(),
-                usuario.getRol().getNombre(),
+                usuario.getRol() != null ? usuario.getRol().getId() : null,
+                usuario.getRol() != null ? usuario.getRol().getNombre() : null,
+                usuario.getEspecialidad() != null ? usuario.getEspecialidad().getId() : null,
                 usuario.getEspecialidad() != null ? usuario.getEspecialidad().getNombre() : null,
+                usuario.getTelefono(),
+                usuario.getCarrera(),
+                usuario.getEstado() != null ? usuario.getEstado() : "Activo",
                 usuario.getFechaCreacion());
     }
 }

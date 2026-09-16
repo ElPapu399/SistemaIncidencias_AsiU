@@ -1,9 +1,6 @@
 package com.proyecto.incidenciasback.controller;
 
-import com.proyecto.incidenciasback.dto.AsignarTecnicoRequest;
-import com.proyecto.incidenciasback.dto.CambiarEstadoRequest;
-import com.proyecto.incidenciasback.dto.IncidenciaRequest;
-import com.proyecto.incidenciasback.dto.IncidenciaResponse;
+import com.proyecto.incidenciasback.dto.*;
 import com.proyecto.incidenciasback.service.IncidenciaService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -28,10 +25,14 @@ public class IncidenciaController {
         return ResponseEntity.ok(incidenciaService.listarTodas());
     }
 
+    /**
+     * Detalle enriquecido de una incidencia (con historial + adjuntos + equipo).
+     * Usar este endpoint para el modal de detalle.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerIncidencia(@PathVariable Integer id) {
         try {
-            return ResponseEntity.ok(incidenciaService.obtenerPorId(id));
+            return ResponseEntity.ok(incidenciaService.obtenerDetallePorId(id));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         }
@@ -76,6 +77,19 @@ public class IncidenciaController {
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Historial de cambios de estado (timeline) de una incidencia.
+     */
+    @GetMapping("/{id}/historial")
+    public ResponseEntity<?> obtenerHistorial(@PathVariable Integer id) {
+        try {
+            List<HistorialEstadoResponse> historial = incidenciaService.obtenerHistorial(id);
+            return ResponseEntity.ok(historial);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         }
     }
 }

@@ -1,12 +1,10 @@
 package com.proyecto.incidenciasback.service;
 
-import com.proyecto.incidenciasback.dto.AsignarTecnicoRequest;
-import com.proyecto.incidenciasback.dto.CambiarEstadoRequest;
-import com.proyecto.incidenciasback.dto.IncidenciaRequest;
-import com.proyecto.incidenciasback.dto.IncidenciaResponse;
+import com.proyecto.incidenciasback.dto.*;
 import com.proyecto.incidenciasback.model.*;
 import com.proyecto.incidenciasback.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.Year;
@@ -16,22 +14,35 @@ import java.util.stream.Collectors;
 @Service
 public class IncidenciaService {
 
+    /** Estados válidos según el prototipo */
+    private static final List<String> ESTADOS_VALIDOS =
+            List.of("Pendiente", "Asignada", "En atención", "Resuelta", "Cerrada");
+
     private final IncidenciaRepository incidenciaRepository;
     private final UsuarioRepository usuarioRepository;
     private final CategoriaRepository categoriaRepository;
     private final PrioridadRepository prioridadRepository;
     private final UbicacionRepository ubicacionRepository;
+    private final EquipoRepository equipoRepository;
+    private final HistorialEstadoRepository historialEstadoRepository;
+    private final ArchivoAdjuntoRepository archivoAdjuntoRepository;
 
     public IncidenciaService(IncidenciaRepository incidenciaRepository,
                              UsuarioRepository usuarioRepository,
                              CategoriaRepository categoriaRepository,
                              PrioridadRepository prioridadRepository,
-                             UbicacionRepository ubicacionRepository) {
+                             UbicacionRepository ubicacionRepository,
+                             EquipoRepository equipoRepository,
+                             HistorialEstadoRepository historialEstadoRepository,
+                             ArchivoAdjuntoRepository archivoAdjuntoRepository) {
         this.incidenciaRepository = incidenciaRepository;
         this.usuarioRepository = usuarioRepository;
         this.categoriaRepository = categoriaRepository;
         this.prioridadRepository = prioridadRepository;
         this.ubicacionRepository = ubicacionRepository;
+        this.equipoRepository = equipoRepository;
+        this.historialEstadoRepository = historialEstadoRepository;
+        this.archivoAdjuntoRepository = archivoAdjuntoRepository;
     }
 
     // ==================== LISTAR ====================
@@ -43,6 +54,32 @@ public class IncidenciaService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Obtener detalle enriquecido de una incidencia (con historial + adjuntos).
+     */
+    public IncidenciaDetalleResponse obtenerDetallePorId(Integer id) {
+        Incidencia inc = incidenciaRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Incidencia no encontrada con id: " + id));
+
+        List<HistorialEstadoResponse> historial = historialEstadoRepository
+                .findByIncidenciaIdOrderByFechaCambioAsc(id)
+                .stream()
+                .map(this::toHistorialResponse)
+                .collect(Collectors.toList());
+
+        List<ArchivoAdjuntoResponse> adjuntos = archivoAdjuntoRepository
+                .findByIncidenciaIdOrderByFechaSubidaDesc(id)
+                .stream()
+                .map(this::toAdjuntoResponse)
+                .collect(Collectors.toList());
+
+        return toDetalleResponse(inc, historial, adjuntos);
+    }
+
+    /**
+     * Obtener respuesta simple (para listas).
+     */
     public IncidenciaResponse obtenerPorId(Integer id) {
         Incidencia incidencia = incidenciaRepository.findById(id)
                 .orElseThrow(() ->
@@ -66,6 +103,7 @@ public class IncidenciaService {
 
     // ==================== CREAR ====================
 
+    @Transactional
     public IncidenciaResponse crearIncidencia(IncidenciaRequest request) {
         Usuario estudiante = usuarioRepository.findById(request.getEstudianteId())
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado con id: " + request.getEstudianteId()));
@@ -90,12 +128,24 @@ public class IncidenciaService {
         incidencia.setUbicacion(ubicacion);
         incidencia.setFechaCreacion(LocalDateTime.now());
 
+        // Equipo (opcional)
+        if (request.getEquipoId() != null) {
+            Equipo equipo = equipoRepository.findById(request.getEquipoId())
+                    .orElseThrow(() -> new RuntimeException("Equipo no encontrado con id: " + request.getEquipoId()));
+            incidencia.setEquipo(equipo);
+        }
+
         incidenciaRepository.save(incidencia);
+
+        // Registrar en historial: ticket creado
+        registrarHistorial(incidencia, null, "Pendiente", estudiante, "Ticket registrado");
+
         return toResponse(incidencia);
     }
 
     // ==================== ASIGNAR TÉCNICO ====================
 
+    @Transactional
     public IncidenciaResponse asignarTecnico(Integer incidenciaId, AsignarTecnicoRequest request) {
         Incidencia incidencia = incidenciaRepository.findById(incidenciaId)
                 .orElseThrow(() -> new RuntimeException("Incidencia no encontrada con id: " + incidenciaId));
@@ -108,29 +158,40 @@ public class IncidenciaService {
             throw new RuntimeException("El usuario seleccionado no tiene rol de TECNICO");
         }
 
+        String estadoAnterior = incidencia.getEstado();
         incidencia.setTecnico(tecnico);
-        incidencia.setEstado("En Proceso");
+        incidencia.setEstado("Asignada");
         incidencia.setFechaInicioAtencion(LocalDateTime.now());
 
         incidenciaRepository.save(incidencia);
+
+        // Registrar en historial
+        registrarHistorial(incidencia, estadoAnterior, "Asignada", tecnico,
+                "Técnico asignado: " + tecnico.getNombre() + " " + tecnico.getApellido());
+
         return toResponse(incidencia);
     }
 
     // ==================== CAMBIAR ESTADO ====================
 
+    @Transactional
     public IncidenciaResponse cambiarEstado(Integer incidenciaId, CambiarEstadoRequest request) {
         Incidencia incidencia = incidenciaRepository.findById(incidenciaId)
                 .orElseThrow(() -> new RuntimeException("Incidencia no encontrada con id: " + incidenciaId));
 
+        Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + request.getUsuarioId()));
+
         String nuevoEstado = request.getEstado();
 
         // Validar estados permitidos
-        if (!List.of("Pendiente", "En Proceso", "Resuelto", "Cancelado").contains(nuevoEstado)) {
-            throw new RuntimeException("Estado no válido: " + nuevoEstado);
+        if (!ESTADOS_VALIDOS.contains(nuevoEstado)) {
+            throw new RuntimeException("Estado no válido: " + nuevoEstado
+                    + ". Estados permitidos: " + String.join(", ", ESTADOS_VALIDOS));
         }
 
         // Si se resuelve, la solución técnica es obligatoria
-        if ("Resuelto".equals(nuevoEstado)) {
+        if ("Resuelta".equals(nuevoEstado)) {
             if (request.getSolucionTecnica() == null || request.getSolucionTecnica().isBlank()) {
                 throw new RuntimeException("La solución técnica es obligatoria al resolver una incidencia");
             }
@@ -138,9 +199,37 @@ public class IncidenciaService {
             incidencia.setFechaCierre(LocalDateTime.now());
         }
 
+        // Si se cierra, también se registra fecha de cierre
+        if ("Cerrada".equals(nuevoEstado) && incidencia.getFechaCierre() == null) {
+            incidencia.setFechaCierre(LocalDateTime.now());
+        }
+
+        String estadoAnterior = incidencia.getEstado();
         incidencia.setEstado(nuevoEstado);
         incidenciaRepository.save(incidencia);
+
+        // Registrar en historial
+        registrarHistorial(incidencia, estadoAnterior, nuevoEstado, usuario, request.getComentario());
+
         return toResponse(incidencia);
+    }
+
+    // ==================== HISTORIAL ====================
+
+    /**
+     * Obtiene el historial de cambios de estado de una incidencia.
+     */
+    public List<HistorialEstadoResponse> obtenerHistorial(Integer incidenciaId) {
+        // Verificar que la incidencia existe
+        if (!incidenciaRepository.existsById(incidenciaId)) {
+            throw new RuntimeException("Incidencia no encontrada con id: " + incidenciaId);
+        }
+
+        return historialEstadoRepository
+                .findByIncidenciaIdOrderByFechaCambioAsc(incidenciaId)
+                .stream()
+                .map(this::toHistorialResponse)
+                .collect(Collectors.toList());
     }
 
     // ==================== UTILIDADES ====================
@@ -155,15 +244,31 @@ public class IncidenciaService {
     }
 
     /**
-     * Cuenta las incidencias activas (Pendiente o En Proceso) de un técnico.
+     * Cuenta las incidencias activas (Pendiente, Asignada o En atención) de un técnico.
      */
     public long contarIncidenciasActivas(Integer tecnicoId) {
         return incidenciaRepository.countByTecnicoIdAndEstadoIn(
-                tecnicoId, List.of("Pendiente", "En Proceso"));
+                tecnicoId, List.of("Pendiente", "Asignada", "En atención"));
     }
 
     /**
-     * Convierte una entidad Incidencia a su DTO de respuesta.
+     * Registra un cambio de estado en el historial.
+     */
+    private void registrarHistorial(Incidencia incidencia, String estadoAnterior,
+                                     String estadoNuevo, Usuario usuario, String comentario) {
+        HistorialEstado historial = new HistorialEstado();
+        historial.setIncidencia(incidencia);
+        historial.setEstadoAnterior(estadoAnterior != null ? estadoAnterior : "Nuevo");
+        historial.setEstadoNuevo(estadoNuevo);
+        historial.setUsuario(usuario);
+        historial.setComentario(comentario);
+        historialEstadoRepository.save(historial);
+    }
+
+    // ==================== MAPPERS ====================
+
+    /**
+     * Convierte una entidad Incidencia a su DTO de respuesta (para listas).
      */
     private IncidenciaResponse toResponse(Incidencia inc) {
         return new IncidenciaResponse(
@@ -192,11 +297,89 @@ public class IncidenciaService {
                 // Ubicación
                 inc.getUbicacion().getId(),
                 inc.getUbicacion().getPabellon() + " - " + inc.getUbicacion().getAulaLaboratorio(),
+                // Equipo
+                inc.getEquipo() != null ? inc.getEquipo().getId() : null,
+                inc.getEquipo() != null ? inc.getEquipo().getCodigo() : null,
                 // Otros
                 inc.getSolucionTecnica(),
                 inc.getFechaCreacion(),
                 inc.getFechaInicioAtencion(),
                 inc.getFechaCierre()
+        );
+    }
+
+    /**
+     * Convierte una entidad Incidencia a su DTO de detalle (para vista individual).
+     */
+    private IncidenciaDetalleResponse toDetalleResponse(Incidencia inc,
+                                                         List<HistorialEstadoResponse> historial,
+                                                         List<ArchivoAdjuntoResponse> adjuntos) {
+        return new IncidenciaDetalleResponse(
+                inc.getId(),
+                inc.getCodigoTicket(),
+                inc.getTitulo(),
+                inc.getDescripcion(),
+                inc.getEstado(),
+                // Estudiante
+                inc.getEstudiante().getId(),
+                inc.getEstudiante().getNombre() + " " + inc.getEstudiante().getApellido(),
+                // Técnico
+                inc.getTecnico() != null ? inc.getTecnico().getId() : null,
+                inc.getTecnico() != null
+                        ? inc.getTecnico().getNombre() + " " + inc.getTecnico().getApellido()
+                        : null,
+                // Categoría
+                inc.getCategoria().getId(),
+                inc.getCategoria().getNombre(),
+                inc.getCategoria().getEspecialidad() != null
+                        ? inc.getCategoria().getEspecialidad().getNombre()
+                        : null,
+                // Prioridad
+                inc.getPrioridad().getId(),
+                inc.getPrioridad().getNivel(),
+                // Ubicación
+                inc.getUbicacion().getId(),
+                inc.getUbicacion().getPabellon() + " - " + inc.getUbicacion().getAulaLaboratorio(),
+                // Equipo
+                inc.getEquipo() != null ? inc.getEquipo().getId() : null,
+                inc.getEquipo() != null ? inc.getEquipo().getCodigo() : null,
+                inc.getEquipo() != null ? inc.getEquipo().getTipo() : null,
+                // Otros
+                inc.getSolucionTecnica(),
+                inc.getFechaCreacion(),
+                inc.getFechaInicioAtencion(),
+                inc.getFechaCierre(),
+                // Relaciones
+                historial,
+                adjuntos
+        );
+    }
+
+    private HistorialEstadoResponse toHistorialResponse(HistorialEstado h) {
+        return new HistorialEstadoResponse(
+                h.getId(),
+                h.getEstadoAnterior(),
+                h.getEstadoNuevo(),
+                h.getUsuario().getId(),
+                h.getUsuario().getNombre() + " " + h.getUsuario().getApellido(),
+                h.getComentario(),
+                h.getFechaCambio()
+        );
+    }
+
+    private ArchivoAdjuntoResponse toAdjuntoResponse(ArchivoAdjunto a) {
+        return new ArchivoAdjuntoResponse(
+                a.getId(),
+                a.getIncidencia().getId(),
+                a.getUrlArchivo(),
+                a.getNombreOriginal(),
+                a.getTipoArchivo(),
+                a.getTamanioByte(),
+                a.getSubidoPor() != null ? a.getSubidoPor().getId() : null,
+                a.getSubidoPor() != null
+                        ? a.getSubidoPor().getNombre() + " " + a.getSubidoPor().getApellido()
+                        : null,
+                a.getFechaSubida()
         );
     }
 }

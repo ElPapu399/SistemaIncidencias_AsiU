@@ -27,4 +27,10 @@ public class UsuarioRequest {
     private Integer rolId;
 
     private Integer especialidadId;
+
+    private String telefono;
+
+    private String carrera;
+
+    private String estado;
 }

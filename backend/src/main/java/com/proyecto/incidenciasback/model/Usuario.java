@@ -32,6 +32,17 @@ public class Usuario {
     @JoinColumn(name = "rol_id", nullable = false)
     private Rol rol;
 
+    @Column(length = 20)
+    private String telefono;
+
+    // Solo para estudiantes: carrera universitaria
+    @Column(length = 100)
+    private String carrera;
+
+    // Solo para técnicos: 'Activo', 'Inactivo'
+    @Column(length = 20)
+    private String estado;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "especialidad_id")
     private Especialidad especialidad;

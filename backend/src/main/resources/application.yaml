@@ -17,8 +17,17 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 server:
   port: ${SERVER_PORT:8080}
+
+# Directorio donde se almacenan los archivos adjuntos (evidencia fotográfica)
+app:
+  upload-dir: ./uploads
 
 # Configuración de CORS para el frontend React
 # Ajustar si el puerto del frontend cambia

@@ -56,7 +56,10 @@ public class UsuarioController {
     // ==================== USUARIOS para el CRUD ====================
 
     @GetMapping("/usuarios")
-    public ResponseEntity<List<UsuarioResponse>> listarUsuarios() {
+    public ResponseEntity<List<UsuarioResponse>> listarUsuarios(@RequestParam(required = false) String rol) {
+        if (rol != null && !rol.isBlank()) {
+            return ResponseEntity.ok(usuarioService.listarPorRol(rol));
+        }
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
@@ -87,6 +90,16 @@ public class UsuarioController {
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/usuarios/{id}")
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Integer id) {
+        try {
+            usuarioService.eliminarUsuario(id);
+            return ResponseEntity.ok(Map.of("mensaje", "Usuario eliminado correctamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         }
     }
 
