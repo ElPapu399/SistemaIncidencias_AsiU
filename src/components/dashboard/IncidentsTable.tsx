@@ -117,9 +117,9 @@ export default function IncidentsTable({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="verflow-x-auto overflow-y-auto max-h-[600px]">
         <table className="w-full text-left">
-          <thead>
+          <thead className="sticky top-0 bg-slate-100/70 z-10">
             <tr className="border-b border-slate-200 bg-slate-100/70 text-slate-600 text-xs font-semibold uppercase tracking-wider">
               <th className="px-5 py-3.5">Ticket</th>
               <th className="px-5 py-3.5">Título & Ubicación</th>
@@ -197,7 +197,7 @@ export default function IncidentsTable({
                         title="Ver detalle de la incidencia"
                       >
                         <Eye className="w-3.5 h-3.5" />
-                        <span>Ver</span>
+                        {/* <span>Ver</span> */}
                       </button>
 
                       {/* Asignar técnico (solo ADMIN) */}
@@ -209,7 +209,7 @@ export default function IncidentsTable({
                           title="Asignar técnico"
                         >
                           <UserCheck className="w-3.5 h-3.5" />
-                          <span>Asignar</span>
+                          {/* <span>Asignar</span> */}
                         </button>
                       )}
 
@@ -222,7 +222,7 @@ export default function IncidentsTable({
                           title="Actualizar estado / Solución"
                         >
                           <RefreshCw className="w-3.5 h-3.5" />
-                          <span>Estado</span>
+                          {/* <span>Estado</span> */}
                         </button>
                       )}
                     </div>

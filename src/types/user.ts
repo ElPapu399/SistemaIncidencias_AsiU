@@ -4,8 +4,11 @@ export interface User {
     apellido: string;
     correo: string;
     rol: string;
+    carrera: string | null;
     especialidad: string | null;
     fechaCreacion: string;
+    estado: string;
+    telefono: string;
 }
 
 export interface Role {

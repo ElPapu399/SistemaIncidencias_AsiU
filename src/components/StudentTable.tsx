@@ -1,0 +1,116 @@
+import { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import SearchBar from "./dashboard/SearchBar";
+import type { User } from '../types/user';
+
+interface StudentTableProps {
+    usuarios: User[];
+    onEdit: (user: User) => void;
+}
+
+const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('es-PE', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    });
+};
+
+export default function UserTablet({ usuarios, onEdit }: StudentTableProps) {
+
+    const [search, setSearch] = useState('');
+
+    const clearFilters = () => {
+        setSearch('');
+    };
+
+    const filtered = usuarios.filter(u =>
+        u.rol === 'ESTUDIANTE' &&
+        (
+            u.nombre.toLowerCase().includes(search.toLowerCase()) ||
+            u.apellido.toLowerCase().includes(search.toLowerCase()) ||
+            u.correo.toLowerCase().includes(search.toLowerCase())
+        )
+    );
+
+    const totalEstudiantes = usuarios.filter(u => u.rol === 'ESTUDIANTE').length;
+
+    return (
+        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+            <div className="px-5 py-4 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center gap-3">
+                <div className="flex-1 min-w-[200px]">
+                    <SearchBar
+                        value={search}
+                        onSearch={setSearch}
+                        placeholder="Buscar por nombre, apellido o correo..."
+                    />
+                </div>
+
+                {search && (
+                    <button
+                        type="button"
+                        onClick={clearFilters}
+                        className="px-3 py-2 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-colors cursor-pointer"
+                    >
+                        Limpiar
+                    </button>
+                )}
+            </div>
+
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                <div className="overflow-x-auto overflow-y-auto max-h-[600px]">
+                    <table className="w-full text-left">
+                        <thead className="sticky top-0 bg-slate-50 z-10">
+                            <tr className="border-b border-slate-200 bg-slate-50">
+                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Usuario</th>
+                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Correo</th>
+                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Carrera</th>
+                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Registro</th>
+                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                            {filtered.map(user => (
+                                <tr key={user.id} className="hover:bg-slate-50 transition-colors">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                                                {user.nombre.charAt(0)}{user.apellido.charAt(0)}
+                                            </div>
+                                            <p className="text-sm font-semibold text-slate-900">
+                                                {user.nombre} {user.apellido}
+                                            </p>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <p className="text-sm text-slate-600">{user.correo}</p>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <p className="text-sm text-slate-600">{user.carrera || '—'}</p>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <p className="text-sm text-slate-500">{formatDate(user.fechaCreacion)}</p>
+                                    </td>
+                                    <td className="px-6 py-4 text-center">
+                                        <button
+                                            type="button"
+                                            onClick={() => onEdit(user)}
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors cursor-pointer"
+                                        >
+                                            <FontAwesomeIcon icon={faPenToSquare} />
+                                            Editar
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
+                <span>Mostrando {filtered.length} de {totalEstudiantes} estudiantes</span>
+            </div>
+        </div>
+    )
+}

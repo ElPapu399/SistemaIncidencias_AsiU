@@ -11,7 +11,7 @@ export default function CategoryBreakdown({ items, total }: CategoryBreakdownPro
         <p className="text-xs text-slate-500 mt-0.5">Distribución de incidencias activas</p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 overflow-x-auto overflow-y-auto max-h-[370px]">
         {items.map((item) => {
           const percentage = Math.round((item.count / total) * 100);
           return (

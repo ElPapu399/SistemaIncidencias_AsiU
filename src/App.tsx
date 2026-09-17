@@ -5,7 +5,8 @@ import DashboardLayout from './layouts/DashboardLayout';
 
 import PlaceholderPage from './pages/PlaceholderPage';
 import IncidenciasPage from './pages/IncidenciasPage';
-import UsuariosPage from './pages/UsuariosPage';
+import UsuariosPage from './pages/EstudiantesPage';
+import TecnicosPage from './pages/TecnicosPage';
 
 function App() {
   return (
@@ -26,8 +27,26 @@ function App() {
           path="usuarios"
           element={
             <UsuariosPage
-              title="Usuarios"
+              title="Estudiantes"
               description="Gestión de usuarios del sistema."
+            />
+          }
+        />
+        <Route
+          path="tecnicos"
+          element={
+            <TecnicosPage
+              title="Tecnicos"
+              description="Gestión de tecnicos de soporte del sistema."
+            />
+          }
+        />
+        <Route
+          path="laboratorios"
+          element={
+            <PlaceholderPage
+              title="Laboratorios"
+              description="Gestión de los laboratorios de la universidad."
             />
           }
         />

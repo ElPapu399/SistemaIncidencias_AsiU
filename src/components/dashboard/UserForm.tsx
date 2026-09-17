@@ -112,6 +112,14 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser }: 
 
     if (!isOpen) return null;
 
+    const roleLabels: Record<string, string> = {
+        ADMIN: 'administrador',
+        TECNICO: 'técnico',
+        ESTUDIANTE: 'estudiante',
+    };
+
+    const entityLabel = editingUser ? (roleLabels[editingUser.rol] ?? 'usuario') : 'usuario';
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             {/* Overlay */}
@@ -122,7 +130,7 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser }: 
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
                     <h3 className="text-lg font-bold text-white">
-                        {isEditing ? 'Editar usuario' : 'Nuevo usuario'}
+                        {isEditing ? `Editar ${entityLabel}` : 'Nuevo usuario'}
                     </h3>
                     <button
                         onClick={onClose}

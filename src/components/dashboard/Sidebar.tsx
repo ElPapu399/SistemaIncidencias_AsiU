@@ -8,12 +8,15 @@
     faChartBar,
     faGear,
     faGraduationCap,
+    faScrewdriverWrench
   } from '@fortawesome/free-solid-svg-icons';
 
   const navItems = [
     { to: '/dashboard', label: 'Inicio', icon: faChartLine, end: true, roles: ['ADMIN', 'TECNICO', 'ESTUDIANTE'] },
     { to: '/dashboard/incidencias', label: 'Incidencias', icon: faClipboardList, roles: ['ADMIN', 'TECNICO'] },
-    { to: '/dashboard/usuarios', label: 'Usuarios', icon: faUser, roles: ['ADMIN', 'TECNICO'] },
+    { to: '/dashboard/usuarios', label: 'Estudiantes', icon: faUser, roles: ['ADMIN', 'TECNICO'] },
+    { to: '/dashboard/tecnicos', label: 'Tecnicos', icon: faScrewdriverWrench, roles: ['ADMIN'] },
+    { to: '/dashboard/laboratorios', label: 'Laboratorios', icon: faUser, roles: ['ADMIN', 'TECNICO'] },
     { to: '/dashboard/nueva', label: 'Nueva incidencia', icon: faPlus, roles: ['ESTUDIANTE'] },
     { to: '/dashboard/reportes', label: 'Reportes', icon: faChartBar, roles: ['ADMIN'] },
     { to: '/dashboard/configuracion', label: 'Configuración', icon: faGear, roles: ['ADMIN', 'TECNICO', 'ESTUDIANTE'] },
