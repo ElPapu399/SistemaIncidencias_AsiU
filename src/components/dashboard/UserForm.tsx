@@ -19,6 +19,9 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser }: 
     const [password, setPassword] = useState('');
     const [rolId, setRolId] = useState<number>(0);
     const [especialidadId, setEspecialidadId] = useState<number | null>(null);
+    const [carrera, setCarrera] = useState('');
+    const [telefono, setTelefono] = useState('');
+    const [estado, setEstado] = useState('Activo');
 
     const [roles, setRoles] = useState<Role[]>([]);
     const [especialidades, setEspecialidades] = useState<Especialidad[]>([]);
@@ -48,6 +51,9 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser }: 
                 setRolId(foundRol ? foundRol.id : 0);
                 const foundEsp = espData.find((e: Especialidad) => e.nombre === editingUser.especialidad);
                 setEspecialidadId(foundEsp ? foundEsp.id : null);
+                setCarrera(editingUser.carrera || '');
+                setTelefono(editingUser.telefono || '');
+                setEstado(editingUser.estado || 'Activo');
             } else {
                 // Limpiar formulario para crear
                 setNombre('');
@@ -56,6 +62,9 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser }: 
                 setPassword('');
                 setRolId(0);
                 setEspecialidadId(null);
+                setCarrera('');
+                setTelefono('');
+                setEstado('Activo');
             }
             setError('');
         }).catch(() => setError('No se pudieron cargar los catálogos'));
@@ -64,6 +73,7 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser }: 
     // Determinar si el rol seleccionado es TECNICO
     const selectedRole = roles.find(r => r.id === rolId);
     const isTecnico = selectedRole?.nombre === 'TECNICO';
+    const isEstudiante = selectedRole?.nombre === 'ESTUDIANTE';
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -87,8 +97,20 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser }: 
                 : `${API_BASE}/usuarios`;
 
             const body = isEditing
-                ? { nombre, apellido, correo, rolId, especialidadId: isTecnico ? especialidadId : null }
-                : { nombre, apellido, correo, password, rolId, especialidadId: isTecnico ? especialidadId : null };
+                ? {
+                    nombre, apellido, correo, rolId,
+                    especialidadId: isTecnico ? especialidadId : null,
+                    carrera: isEstudiante ? carrera || null : null,
+                    telefono: isTecnico ? telefono || null : null,
+                    estado: isTecnico ? estado : null,
+                }
+                : {
+                    nombre, apellido, correo, password, rolId,
+                    especialidadId: isTecnico ? especialidadId : null,
+                    carrera: isEstudiante ? carrera || null : null,
+                    telefono: isTecnico ? telefono || null : null,
+                    estado: isTecnico ? estado : 'Activo',
+                };
 
             const response = await fetch(url, {
                 method: isEditing ? 'PUT' : 'POST',
@@ -238,6 +260,53 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser }: 
                             </div>
                         )}
                     </div>
+
+                    {/* Carrera - solo para ESTUDIANTE */}
+                    {isEstudiante && (
+                        <div>
+                            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                                Carrera
+                            </label>
+                            <input
+                                type="text"
+                                value={carrera}
+                                onChange={e => setCarrera(e.target.value)}
+                                className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-yellow-500/50 transition-colors"
+                                placeholder="Ej: Ingeniería de Sistemas"
+                            />
+                        </div>
+                    )}
+
+                    {/* Estado y Teléfono - solo para TECNICO */}
+                    {isTecnico && (
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                                    Estado
+                                </label>
+                                <select
+                                    value={estado}
+                                    onChange={e => setEstado(e.target.value)}
+                                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+                                >
+                                    <option value="Activo">Activo</option>
+                                    <option value="Inactivo">Inactivo</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                                    Teléfono
+                                </label>
+                                <input
+                                    type="text"
+                                    value={telefono}
+                                    onChange={e => setTelefono(e.target.value)}
+                                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-yellow-500/50 transition-colors"
+                                    placeholder="Ej: 999 888 777"
+                                />
+                            </div>
+                        </div>
+                    )}
 
                     {/* Error */}
                     {error && (

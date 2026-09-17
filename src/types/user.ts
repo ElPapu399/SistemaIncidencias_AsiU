@@ -29,6 +29,9 @@ export interface CreateUserRequest {
     password: string;
     rolId: number;
     especialidadId: number | null;
+    carrera: string | null;
+    telefono: string | null;
+    estado: string | null;
 }
 
 export interface UpdateUserRequest {
@@ -37,4 +40,7 @@ export interface UpdateUserRequest {
     correo: string;
     rolId: number;
     especialidadId: number | null;
+    carrera: string | null;
+    telefono: string | null;
+    estado: string | null;
 }

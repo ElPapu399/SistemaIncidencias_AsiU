@@ -12,21 +12,32 @@ interface TechnTableProps {
 export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
 
     const [search, setSearch] = useState('');
+    const [filterEstado, setFilterEstado] = useState('');
+    const [filterEspecialidad, setFilterEspecialidad] = useState('');
 
     const clearFilters = () => {
         setSearch('');
+        setFilterEstado('');
+        setFilterEspecialidad('');
     };
 
-    const filtered = usuarios.filter(u =>
-        u.rol === 'TECNICO' &&
+    const tecnicos = usuarios.filter(u => u.rol === 'TECNICO');
+
+    // Extraer especialidades únicas para el filtro
+    const especialidades = [...new Set(tecnicos.map(u => u.especialidad).filter(Boolean))] as string[];
+
+    const filtered = tecnicos.filter(u =>
         (
             u.nombre.toLowerCase().includes(search.toLowerCase()) ||
             u.apellido.toLowerCase().includes(search.toLowerCase()) ||
             u.correo.toLowerCase().includes(search.toLowerCase())
-        )
+        ) &&
+        (!filterEstado || u.estado === filterEstado) &&
+        (!filterEspecialidad || u.especialidad === filterEspecialidad)
     );
 
-    const totalTecnicos = usuarios.filter(u => u.rol === 'TECNICO').length;
+    const totalTecnicos = tecnicos.length;
+    const hasActiveFilters = search || filterEstado || filterEspecialidad;
 
     const estadoBadge: Record<string, { bg: string; dot: string }> = {
         Activo: { bg: 'bg-emerald-50 text-emerald-700 border-emerald-300', dot: 'bg-emerald-500' },
@@ -44,7 +55,28 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                     />
                 </div>
 
-                {search && (
+                <select
+                    value={filterEstado}
+                    onChange={e => setFilterEstado(e.target.value)}
+                    className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
+                >
+                    <option value="">Todos los estados</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo</option>
+                </select>
+
+                <select
+                    value={filterEspecialidad}
+                    onChange={e => setFilterEspecialidad(e.target.value)}
+                    className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
+                >
+                    <option value="">Todas las especialidades</option>
+                    {especialidades.map(e => (
+                        <option key={e} value={e}>{e}</option>
+                    ))}
+                </select>
+
+                {hasActiveFilters && (
                     <button
                         type="button"
                         onClick={clearFilters}

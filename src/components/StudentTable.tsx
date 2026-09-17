@@ -20,21 +20,29 @@ const formatDate = (dateStr: string) => {
 export default function UserTablet({ usuarios, onEdit }: StudentTableProps) {
 
     const [search, setSearch] = useState('');
+    const [filterCarrera, setFilterCarrera] = useState('');
 
     const clearFilters = () => {
         setSearch('');
+        setFilterCarrera('');
     };
 
-    const filtered = usuarios.filter(u =>
-        u.rol === 'ESTUDIANTE' &&
+    const estudiantes = usuarios.filter(u => u.rol === 'ESTUDIANTE');
+
+    // Extraer carreras únicas para el filtro
+    const carreras = [...new Set(estudiantes.map(u => u.carrera).filter(Boolean))] as string[];
+
+    const filtered = estudiantes.filter(u =>
         (
             u.nombre.toLowerCase().includes(search.toLowerCase()) ||
             u.apellido.toLowerCase().includes(search.toLowerCase()) ||
             u.correo.toLowerCase().includes(search.toLowerCase())
-        )
+        ) &&
+        (!filterCarrera || u.carrera === filterCarrera)
     );
 
-    const totalEstudiantes = usuarios.filter(u => u.rol === 'ESTUDIANTE').length;
+    const totalEstudiantes = estudiantes.length;
+    const hasActiveFilters = search || filterCarrera;
 
     return (
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
@@ -47,7 +55,18 @@ export default function UserTablet({ usuarios, onEdit }: StudentTableProps) {
                     />
                 </div>
 
-                {search && (
+                <select
+                    value={filterCarrera}
+                    onChange={e => setFilterCarrera(e.target.value)}
+                    className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
+                >
+                    <option value="">Todas las carreras</option>
+                    {carreras.map(c => (
+                        <option key={c} value={c}>{c}</option>
+                    ))}
+                </select>
+
+                {hasActiveFilters && (
                     <button
                         type="button"
                         onClick={clearFilters}
