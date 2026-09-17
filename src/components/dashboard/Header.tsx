@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faMagnifyingGlass, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
 
 interface HeaderProps {
   title: string;
@@ -20,17 +20,6 @@ export default function Header({ title, subtitle }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="relative hidden sm:block">
-          <FontAwesomeIcon
-            icon={faMagnifyingGlass}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"
-          />
-          <input
-            type="search"
-            placeholder="Buscar incidencias..."
-            className="w-64 bg-white border border-slate-700 rounded-xl py-2 pl-9 pr-4 text-sm text-slate-500 placeholder:text-slate-500 focus:outline-none focus:border-yellow-700/50 transition-colors"
-          />
-        </div>
 
         <button
           type="button"
