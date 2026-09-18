@@ -11,6 +11,7 @@ import com.proyecto.incidenciasback.repository.RolRepository;
 import com.proyecto.incidenciasback.repository.UsuarioRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional(readOnly = true)
     public List<UsuarioResponse> listarTodos() {
         return usuarioRepository.findAll()
                 .stream()
@@ -40,19 +42,29 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<UsuarioResponse> listarPorRol(String rolNombre) {
-        return usuarioRepository.findByRolNombre(rolNombre.toUpperCase())
-                .stream()
+        String upperRol = rolNombre.toUpperCase();
+        List<Usuario> usuarios;
+        if ("TECNICO".equals(upperRol)) {
+            usuarios = usuarioRepository.findByRolNombreIn(List.of("TECNICO", "TECNICO_GENERAL", "TECNICO_ESPECIALISTA"));
+        } else {
+            usuarios = usuarioRepository.findByRolNombre(upperRol);
+        }
+
+        return usuarios.stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public UsuarioResponse obtenerPorId(Integer id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
         return toResponse(usuario);
     }
 
+    @Transactional
     public UsuarioResponse crearUsuario(UsuarioRequest request) {
         // Validar que el correo no exista
         if (usuarioRepository.findByCorreo(request.getCorreo()).isPresent()) {
@@ -83,6 +95,7 @@ public class UsuarioService {
         return toResponse(usuario);
     }
 
+    @Transactional
     public UsuarioResponse actualizarUsuario(Integer id, UsuarioUpdateRequest request) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
@@ -120,6 +133,7 @@ public class UsuarioService {
         return toResponse(usuario);
     }
 
+    @Transactional
     public void eliminarUsuario(Integer id) {
         if (!usuarioRepository.existsById(id)) {
             throw new RuntimeException("Usuario no encontrado con id: " + id);

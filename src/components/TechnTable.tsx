@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import SearchBar from "./dashboard/SearchBar";
@@ -9,8 +9,12 @@ interface TechnTableProps {
     onEdit: (user: User) => void;
 }
 
-export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
+const ESTADO_BADGES: Record<string, { bg: string; dot: string }> = {
+    Activo: { bg: 'bg-emerald-50 text-emerald-700 border-emerald-300', dot: 'bg-emerald-500' },
+    Inactivo: { bg: 'bg-slate-100 text-slate-500 border-slate-300', dot: 'bg-slate-400' },
+};
 
+export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
     const [search, setSearch] = useState('');
     const [filterEstado, setFilterEstado] = useState('');
     const [filterEspecialidad, setFilterEspecialidad] = useState('');
@@ -21,28 +25,34 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
         setFilterEspecialidad('');
     };
 
-    const tecnicos = usuarios.filter(u => u.rol === 'TECNICO');
-
-    // Extraer especialidades únicas para el filtro
-    const especialidades = [...new Set(tecnicos.map(u => u.especialidad).filter(Boolean))] as string[];
-
-    const filtered = tecnicos.filter(u =>
-        (
-            u.nombre.toLowerCase().includes(search.toLowerCase()) ||
-            u.apellido.toLowerCase().includes(search.toLowerCase()) ||
-            u.correo.toLowerCase().includes(search.toLowerCase())
-        ) &&
-        (!filterEstado || u.estado === filterEstado) &&
-        (!filterEspecialidad || u.especialidad === filterEspecialidad)
+    const tecnicos = useMemo(
+        () => usuarios.filter(u => !u.rol || u.rol === 'TECNICO' || u.rol === 'TECNICO_GENERAL' || u.rol === 'TECNICO_ESPECIALISTA'),
+        [usuarios]
     );
 
-    const totalTecnicos = tecnicos.length;
-    const hasActiveFilters = search || filterEstado || filterEspecialidad;
+    // Extraer especialidades únicas para el filtro
+    const especialidades = useMemo(
+        () => [...new Set(tecnicos.map(u => u.especialidad).filter(Boolean))] as string[],
+        [tecnicos]
+    );
 
-    const estadoBadge: Record<string, { bg: string; dot: string }> = {
-        Activo: { bg: 'bg-emerald-50 text-emerald-700 border-emerald-300', dot: 'bg-emerald-500' },
-        Inactivo: { bg: 'bg-slate-100 text-slate-500 border-slate-300', dot: 'bg-slate-400' },
-    };
+    // Filtrado memoizado para rendimiento
+    const filtered = useMemo(() => {
+        const query = search.toLowerCase().trim();
+        return tecnicos.filter(u => {
+            const matchSearch = !query ||
+                u.nombre.toLowerCase().includes(query) ||
+                u.apellido.toLowerCase().includes(query) ||
+                u.correo.toLowerCase().includes(query);
+            const matchEstado = !filterEstado || u.estado === filterEstado;
+            const matchEspecialidad = !filterEspecialidad || u.especialidad === filterEspecialidad;
+
+            return matchSearch && matchEstado && matchEspecialidad;
+        });
+    }, [tecnicos, search, filterEstado, filterEspecialidad]);
+
+    const totalTecnicos = tecnicos.length;
+    const hasActiveFilters = search !== '' || filterEstado !== '' || filterEspecialidad !== '';
 
     return (
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
@@ -87,74 +97,89 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                 )}
             </div>
 
-            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                <div className="overflow-x-auto overflow-y-auto max-h-[600px]">
-                    <table className="w-full text-left">
-                        <thead className="sticky top-0 bg-slate-50 z-10">
-                            <tr className="border-b border-slate-200 bg-slate-50">
-                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Usuario</th>
-                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Correo</th>
-                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Especialidad</th>
-                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Estado</th>
-                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Teléfono</th>
-                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">Acciones</th>
+            <div className="overflow-x-auto overflow-y-auto max-h-[600px]">
+                <table className="w-full text-left">
+                    <thead className="sticky top-0 bg-slate-50 z-10">
+                        <tr className="border-b border-slate-200 bg-slate-50">
+                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Usuario</th>
+                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Correo</th>
+                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Especialidad</th>
+                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Estado</th>
+                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Teléfono</th>
+                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                        {filtered.length === 0 ? (
+                            <tr>
+                                <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-500">
+                                    No se encontraron técnicos con los filtros seleccionados.
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {filtered.map(user => (
-                                <tr key={user.id} className="hover:bg-slate-50 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
-                                                {user.nombre.charAt(0)}{user.apellido.charAt(0)}
+                        ) : (
+                            filtered.map(user => {
+                                const badge = ESTADO_BADGES[user.estado] || { bg: 'bg-slate-100 text-slate-500 border-slate-300', dot: 'bg-slate-400' };
+                                return (
+                                    <tr key={user.id} className="hover:bg-slate-50 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                                                    {user.nombre.charAt(0)}{user.apellido.charAt(0)}
+                                                </div>
+                                                <p className="text-sm font-semibold text-slate-900">
+                                                    {user.nombre} {user.apellido}
+                                                </p>
                                             </div>
-                                            <p className="text-sm font-semibold text-slate-900">
-                                                {user.nombre} {user.apellido}
-                                            </p>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <p className="text-sm text-slate-600">{user.correo}</p>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <p className="text-sm text-slate-600">{user.especialidad || '—'}</p>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span
-                                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border ${
-                                                estadoBadge[user.estado]?.bg || 'bg-slate-100 text-slate-500 border-slate-300'
-                                            }`}
-                                        >
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <p className="text-sm text-slate-600">{user.correo}</p>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {user.rol === 'TECNICO_GENERAL' ? (
+                                                <div>
+                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                                        Soporte General
+                                                    </span>
+                                                    <p className="text-[11px] text-slate-400 mt-0.5">Mesa de ayuda / Asignador</p>
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <p className="text-sm font-semibold text-slate-800">{user.especialidad || 'General'}</p>
+                                                    <span className="text-[11px] text-amber-700 font-medium">Soporte Especializado</span>
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4">
                                             <span
-                                                className={`w-1.5 h-1.5 rounded-full ${
-                                                    estadoBadge[user.estado]?.dot || 'bg-slate-400'
-                                                }`}
-                                            />
-                                            {user.estado}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <p className="text-sm text-slate-500">{user.telefono}</p>
-                                    </td>
-                                    <td className="px-6 py-4 text-center">
-                                        <button
-                                            type="button"
-                                            onClick={() => onEdit(user)}
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors cursor-pointer"
-                                        >
-                                            <FontAwesomeIcon icon={faPenToSquare} />
-                                            Editar
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                                                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border ${badge.bg}`}
+                                            >
+                                                <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
+                                                {user.estado}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <p className="text-sm text-slate-500">{user.telefono || '—'}</p>
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <button
+                                                type="button"
+                                                onClick={() => onEdit(user)}
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors cursor-pointer"
+                                            >
+                                                <FontAwesomeIcon icon={faPenToSquare} />
+                                                Editar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })
+                        )}
+                    </tbody>
+                </table>
             </div>
             <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
                 <span>Mostrando {filtered.length} de {totalTecnicos} técnicos</span>
             </div>
         </div>
-    )
+    );
 }

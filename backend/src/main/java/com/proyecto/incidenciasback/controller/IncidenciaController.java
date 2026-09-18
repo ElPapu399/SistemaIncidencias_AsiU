@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/incidencias")
@@ -30,12 +29,8 @@ public class IncidenciaController {
      * Usar este endpoint para el modal de detalle.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> obtenerIncidencia(@PathVariable Integer id) {
-        try {
-            return ResponseEntity.ok(incidenciaService.obtenerDetallePorId(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<IncidenciaDetalleResponse> obtenerIncidencia(@PathVariable Integer id) {
+        return ResponseEntity.ok(incidenciaService.obtenerDetallePorId(id));
     }
 
     @GetMapping("/estudiante/{estudianteId}")
@@ -49,47 +44,27 @@ public class IncidenciaController {
     }
 
     @PostMapping
-    public ResponseEntity<?> crearIncidencia(@Valid @RequestBody IncidenciaRequest request) {
-        try {
-            IncidenciaResponse response = incidenciaService.crearIncidencia(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<IncidenciaResponse> crearIncidencia(@Valid @RequestBody IncidenciaRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(incidenciaService.crearIncidencia(request));
     }
 
     @PutMapping("/{id}/asignar")
-    public ResponseEntity<?> asignarTecnico(@PathVariable Integer id,
-                                            @Valid @RequestBody AsignarTecnicoRequest request) {
-        try {
-            IncidenciaResponse response = incidenciaService.asignarTecnico(id, request);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<IncidenciaResponse> asignarTecnico(@PathVariable Integer id,
+                                                             @Valid @RequestBody AsignarTecnicoRequest request) {
+        return ResponseEntity.ok(incidenciaService.asignarTecnico(id, request));
     }
 
     @PutMapping("/{id}/estado")
-    public ResponseEntity<?> cambiarEstado(@PathVariable Integer id,
-                                           @Valid @RequestBody CambiarEstadoRequest request) {
-        try {
-            IncidenciaResponse response = incidenciaService.cambiarEstado(id, request);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<IncidenciaResponse> cambiarEstado(@PathVariable Integer id,
+                                                            @Valid @RequestBody CambiarEstadoRequest request) {
+        return ResponseEntity.ok(incidenciaService.cambiarEstado(id, request));
     }
 
     /**
      * Historial de cambios de estado (timeline) de una incidencia.
      */
     @GetMapping("/{id}/historial")
-    public ResponseEntity<?> obtenerHistorial(@PathVariable Integer id) {
-        try {
-            List<HistorialEstadoResponse> historial = incidenciaService.obtenerHistorial(id);
-            return ResponseEntity.ok(historial);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<List<HistorialEstadoResponse>> obtenerHistorial(@PathVariable Integer id) {
+        return ResponseEntity.ok(incidenciaService.obtenerHistorial(id));
     }
 }

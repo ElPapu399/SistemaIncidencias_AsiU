@@ -10,13 +10,14 @@ import ChangeStatusModal from '../components/dashboard/ChangeStatusModal';
 
 import { obtenerIncidencias } from '../services/incidenciasService';
 import type { Incident } from '../types/incident';
+import { getCurrentUser } from '../utils/auth';
 
 interface IncidenciasPageProps {
   title: string;
   description: string;
 }
 
-export default function IncidenciasPage({ title }: IncidenciasPageProps) {
+export default function IncidenciasPage({ title, description }: IncidenciasPageProps) {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,8 +28,7 @@ export default function IncidenciasPage({ title }: IncidenciasPageProps) {
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
 
-  const usuarioGuardado = sessionStorage.getItem('usuario');
-  const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+  const usuario = getCurrentUser();
   const currentUserRole = usuario?.rol;
 
   const cargarIncidencias = useCallback(async () => {
@@ -49,28 +49,28 @@ export default function IncidenciasPage({ title }: IncidenciasPageProps) {
     cargarIncidencias();
   }, [cargarIncidencias]);
 
-  const handleOpenCreate = () => {
+  const handleOpenCreate = useCallback(() => {
     setIsFormOpen(true);
-  };
+  }, []);
 
-  const handleView = (incident: Incident) => {
+  const handleView = useCallback((incident: Incident) => {
     setSelectedIncident(incident);
     setIsStatusOpen(true);
-  };
+  }, []);
 
-  const handleAssign = (incident: Incident) => {
+  const handleAssign = useCallback((incident: Incident) => {
     setSelectedIncident(incident);
     setIsAssignOpen(true);
-  };
+  }, []);
 
-  const handleChangeStatus = (incident: Incident) => {
+  const handleChangeStatus = useCallback((incident: Incident) => {
     setSelectedIncident(incident);
     setIsStatusOpen(true);
-  };
+  }, []);
 
   return (
     <>
-      <Header title={title} />
+      <Header title={title} subtitle={description} />
 
       <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-200">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

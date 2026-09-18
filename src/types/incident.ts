@@ -1,5 +1,13 @@
 export type IncidentPriority = 'Alta' | 'Media' | 'Baja';
-export type IncidentStatus = 'Pendiente' | 'En Proceso' | 'Resuelto' | 'Cancelado';
+export type IncidentStatus =
+  | 'Pendiente'
+  | 'Asignada'
+  | 'En atención'
+  | 'En Proceso'
+  | 'Resuelta'
+  | 'Resuelto'
+  | 'Cerrada'
+  | 'Cancelado';
 
 export interface DashboardStats {
   total: number;

@@ -8,6 +8,7 @@ import {
   obtenerUbicaciones,
   obtenerPrioridades,
 } from '../../services/incidenciasService';
+import { getCurrentUser } from '../../utils/auth';
 
 interface IncidentFormProps {
   isOpen: boolean;
@@ -30,8 +31,7 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
   const [error, setError] = useState('');
 
   // Usuario actual
-  const usuarioGuardado = sessionStorage.getItem('usuario');
-  const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+  const usuario = getCurrentUser();
   const estudianteId = usuario?.id;
 
   useEffect(() => {

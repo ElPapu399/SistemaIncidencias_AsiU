@@ -1,7 +1,6 @@
 package com.proyecto.incidenciasback.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,11 +11,10 @@ public class CambiarEstadoRequest {
     @NotBlank(message = "El estado es obligatorio")
     private String estado;
 
-    // Obligatorio cuando estado = "Resuelto"
+    // Obligatorio cuando estado = "Resuelta" o "Resuelto"
     private String solucionTecnica;
 
-    // ID del usuario que realiza el cambio (para el historial)
-    @NotNull(message = "El usuario es obligatorio")
+    // ID del usuario que realiza el cambio (opcional si la petición incluye token JWT)
     private Integer usuarioId;
 
     // Comentario opcional para el historial

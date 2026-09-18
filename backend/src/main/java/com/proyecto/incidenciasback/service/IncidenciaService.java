@@ -3,6 +3,8 @@ package com.proyecto.incidenciasback.service;
 import com.proyecto.incidenciasback.dto.*;
 import com.proyecto.incidenciasback.model.*;
 import com.proyecto.incidenciasback.repository.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +49,7 @@ public class IncidenciaService {
 
     // ==================== LISTAR ====================
 
+    @Transactional(readOnly = true)
     public List<IncidenciaResponse> listarTodas() {
         return incidenciaRepository.findAll()
                 .stream()
@@ -57,6 +60,7 @@ public class IncidenciaService {
     /**
      * Obtener detalle enriquecido de una incidencia (con historial + adjuntos).
      */
+    @Transactional(readOnly = true)
     public IncidenciaDetalleResponse obtenerDetallePorId(Integer id) {
         Incidencia inc = incidenciaRepository.findById(id)
                 .orElseThrow(() ->
@@ -80,6 +84,7 @@ public class IncidenciaService {
     /**
      * Obtener respuesta simple (para listas).
      */
+    @Transactional(readOnly = true)
     public IncidenciaResponse obtenerPorId(Integer id) {
         Incidencia incidencia = incidenciaRepository.findById(id)
                 .orElseThrow(() ->
@@ -87,6 +92,7 @@ public class IncidenciaService {
         return toResponse(incidencia);
     }
 
+    @Transactional(readOnly = true)
     public List<IncidenciaResponse> listarPorEstudiante(Integer estudianteId) {
         return incidenciaRepository.findByEstudianteId(estudianteId)
                 .stream()
@@ -94,6 +100,7 @@ public class IncidenciaService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<IncidenciaResponse> listarPorTecnico(Integer tecnicoId) {
         return incidenciaRepository.findByTecnicoId(tecnicoId)
                 .stream()
@@ -153,9 +160,10 @@ public class IncidenciaService {
         Usuario tecnico = usuarioRepository.findById(request.getTecnicoId())
                 .orElseThrow(() -> new RuntimeException("Técnico no encontrado con id: " + request.getTecnicoId()));
 
-        // Validar que el usuario es técnico
-        if (!"TECNICO".equals(tecnico.getRol().getNombre())) {
-            throw new RuntimeException("El usuario seleccionado no tiene rol de TECNICO");
+        // Validar que el usuario es técnico especialista
+        String rolNombre = tecnico.getRol() != null ? tecnico.getRol().getNombre() : "";
+        if (!"TECNICO_ESPECIALISTA".equals(rolNombre) && !"TECNICO".equals(rolNombre)) {
+            throw new RuntimeException("El usuario seleccionado debe ser un técnico especialista");
         }
 
         String estadoAnterior = incidencia.getEstado();
@@ -179,10 +187,27 @@ public class IncidenciaService {
         Incidencia incidencia = incidenciaRepository.findById(incidenciaId)
                 .orElseThrow(() -> new RuntimeException("Incidencia no encontrada con id: " + incidenciaId));
 
-        Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + request.getUsuarioId()));
+        Usuario usuario;
+        if (request.getUsuarioId() != null) {
+            usuario = usuarioRepository.findById(request.getUsuarioId())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + request.getUsuarioId()));
+        } else {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.getName() != null && !auth.getName().equals("anonymousUser")) {
+                usuario = usuarioRepository.findByCorreo(auth.getName())
+                        .orElseThrow(() -> new RuntimeException("Usuario autenticado no encontrado: " + auth.getName()));
+            } else {
+                throw new RuntimeException("El usuario es obligatorio para registrar el cambio de estado");
+            }
+        }
 
-        String nuevoEstado = request.getEstado();
+        String rawEstado = request.getEstado() != null ? request.getEstado().trim() : "";
+        String nuevoEstado = switch (rawEstado) {
+            case "En Proceso" -> "En atención";
+            case "Resuelto" -> "Resuelta";
+            case "Cancelado" -> "Cerrada";
+            default -> rawEstado;
+        };
 
         // Validar estados permitidos
         if (!ESTADOS_VALIDOS.contains(nuevoEstado)) {
@@ -219,6 +244,7 @@ public class IncidenciaService {
     /**
      * Obtiene el historial de cambios de estado de una incidencia.
      */
+    @Transactional(readOnly = true)
     public List<HistorialEstadoResponse> obtenerHistorial(Integer incidenciaId) {
         // Verificar que la incidencia existe
         if (!incidenciaRepository.existsById(incidenciaId)) {
@@ -235,17 +261,27 @@ public class IncidenciaService {
     // ==================== UTILIDADES ====================
 
     /**
-     * Genera un código de ticket auto-incremental: INC-2026-0001, INC-2026-0002...
+     * Genera un código de ticket auto-incremental único: INC-2026-0001, INC-2026-0002...
      */
     private String generarCodigoTicket() {
         long total = incidenciaRepository.count();
         String anio = String.valueOf(Year.now().getValue());
-        return String.format("INC-%s-%04d", anio, total + 1);
+        long correlativo = total + 1;
+        String codigo = String.format("INC-%s-%04d", anio, correlativo);
+
+        // Prevenir colisión si se borraron tickets o en pruebas
+        while (incidenciaRepository.existsByCodigoTicket(codigo)) {
+            correlativo++;
+            codigo = String.format("INC-%s-%04d", anio, correlativo);
+        }
+
+        return codigo;
     }
 
     /**
      * Cuenta las incidencias activas (Pendiente, Asignada o En atención) de un técnico.
      */
+    @Transactional(readOnly = true)
     public long contarIncidenciasActivas(Integer tecnicoId) {
         return incidenciaRepository.countByTecnicoIdAndEstadoIn(
                 tecnicoId, List.of("Pendiente", "Asignada", "En atención"));

@@ -6,15 +6,14 @@ import Header from '../components/dashboard/Header';
 import TechnTable from '../components/TechnTable';
 import UserFormModal from '../components/dashboard/UserForm';
 import type { User } from '../types/user';
-
-const API_BASE = 'http://localhost:8080/api';
+import { fetchWithAuth } from '../utils/fetchWithAuth';
 
 interface TecnicosPageProps {
     title: string;
     description: string;
 }
 
-export default function TecnicosPage({ title }: TecnicosPageProps) {
+export default function TecnicosPage({ title, description }: TecnicosPageProps) {
     const [tecnicos, setTecnicos] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -22,16 +21,17 @@ export default function TecnicosPage({ title }: TecnicosPageProps) {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
 
-    const cargarUsuarios = useCallback(async () => {
+    const cargarTecnicos = useCallback(async () => {
         setLoading(true);
         setError('');
         try {
-            const response = await fetch(`${API_BASE}/usuarios`);
+            // Filtrar directamente desde el backend por rol TECNICO
+            const response = await fetchWithAuth('/usuarios?rol=TECNICO');
             if (response.ok) {
                 const data = await response.json();
                 setTecnicos(data);
             } else {
-                setError('Error al cargar usuarios');
+                setError('Error al cargar técnicos');
             }
         } catch {
             setError('No se pudo conectar al servidor');
@@ -41,8 +41,8 @@ export default function TecnicosPage({ title }: TecnicosPageProps) {
     }, []);
 
     useEffect(() => {
-        cargarUsuarios();
-    }, [cargarUsuarios]);
+        cargarTecnicos();
+    }, [cargarTecnicos]);
 
     const handleCreate = () => {
         setEditingUser(null);
@@ -55,14 +55,14 @@ export default function TecnicosPage({ title }: TecnicosPageProps) {
     };
 
     const handleSave = () => {
-        cargarUsuarios();
+        cargarTecnicos();
     };
 
-    const totalTecnicos = tecnicos.filter(u => u.rol === 'TECNICO').length;
+    const totalTecnicos = tecnicos.length;
 
     return (
         <>
-            <Header title={title} />
+            <Header title={title} subtitle={description} />
             <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-200">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="text-left">
@@ -113,6 +113,7 @@ export default function TecnicosPage({ title }: TecnicosPageProps) {
                 onClose={() => setModalOpen(false)}
                 onSave={handleSave}
                 editingUser={editingUser}
+                mode="tecnico"
             />
         </>
     );

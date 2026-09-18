@@ -33,22 +33,32 @@ export default function IncidentsTable({
     return Array.from(set).sort();
   }, [incidents]);
 
-  const filtered = incidents.filter((i) => {
-    const matchesStatus = filterStatus === 'all' || i.status === filterStatus;
-    const matchesPriority = filterPriority === 'all' || i.priority === filterPriority;
-    const matchesCategory = filterCategory === 'all' || i.category === filterCategory;
+  const filtered = useMemo(() => {
+    const term = search.toLowerCase().trim();
+    return incidents.filter((i) => {
+      const matchesStatus =
+        filterStatus === 'all' ||
+        i.status === filterStatus ||
+        (filterStatus === 'En atención' && i.status === 'En Proceso') ||
+        (filterStatus === 'En Proceso' && i.status === 'En atención') ||
+        (filterStatus === 'Resuelta' && i.status === 'Resuelto') ||
+        (filterStatus === 'Resuelto' && i.status === 'Resuelta') ||
+        (filterStatus === 'Cerrada' && i.status === 'Cancelado') ||
+        (filterStatus === 'Cancelado' && i.status === 'Cerrada');
+      const matchesPriority = filterPriority === 'all' || i.priority === filterPriority;
+      const matchesCategory = filterCategory === 'all' || i.category === filterCategory;
 
-    const term = search.toLowerCase();
-    const matchesSearch =
-      !term ||
-      i.title.toLowerCase().includes(term) ||
-      i.id.toLowerCase().includes(term) ||
-      (i.reporter ?? '').toLowerCase().includes(term) ||
-      (i.assignee ?? '').toLowerCase().includes(term) ||
-      (i.location ?? '').toLowerCase().includes(term);
+      const matchesSearch =
+        !term ||
+        i.title.toLowerCase().includes(term) ||
+        i.id.toLowerCase().includes(term) ||
+        (i.reporter ?? '').toLowerCase().includes(term) ||
+        (i.assignee ?? '').toLowerCase().includes(term) ||
+        (i.location ?? '').toLowerCase().includes(term);
 
-    return matchesStatus && matchesPriority && matchesCategory && matchesSearch;
-  });
+      return matchesStatus && matchesPriority && matchesCategory && matchesSearch;
+    });
+  }, [incidents, search, filterStatus, filterPriority, filterCategory]);
 
   const clearFilters = () => {
     setSearch('');
@@ -76,9 +86,10 @@ export default function IncidentsTable({
         >
           <option value="all">Todos los Estados</option>
           <option value="Pendiente">Pendiente</option>
-          <option value="En Proceso">En Proceso</option>
-          <option value="Resuelto">Resuelto</option>
-          <option value="Cancelado">Cancelado</option>
+          <option value="Asignada">Asignada</option>
+          <option value="En atención">En atención</option>
+          <option value="Resuelta">Resuelta</option>
+          <option value="Cerrada">Cerrada</option>
         </select>
 
         <select
@@ -117,7 +128,7 @@ export default function IncidentsTable({
       </div>
 
       {/* Table */}
-      <div className="verflow-x-auto overflow-y-auto max-h-[600px]">
+      <div className="overflow-x-auto overflow-y-auto max-h-[600px]">
         <table className="w-full text-left">
           <thead className="sticky top-0 bg-slate-100/70 z-10">
             <tr className="border-b border-slate-200 bg-slate-100/70 text-slate-600 text-xs font-semibold uppercase tracking-wider">
@@ -200,21 +211,21 @@ export default function IncidentsTable({
                         {/* <span>Ver</span> */}
                       </button>
 
-                      {/* Asignar técnico (solo ADMIN) */}
-                      {role === 'ADMIN' && onAssign && (
+                      {/* Asignar técnico (ADMIN o TECNICO_GENERAL) */}
+                      {(role === 'ADMIN' || role === 'TECNICO_GENERAL') && onAssign && (
                         <button
                           type="button"
                           onClick={() => onAssign(incident)}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 transition-colors cursor-pointer"
-                          title="Asignar técnico"
+                          title="Asignar técnico especialista"
                         >
                           <UserCheck className="w-3.5 h-3.5" />
                           {/* <span>Asignar</span> */}
                         </button>
                       )}
 
-                      {/* Cambiar estado directo (para TECNICO o ADMIN) */}
-                      {onChangeStatus && (role === 'TECNICO' || role === 'ADMIN') && (
+                      {/* Cambiar estado directo (ADMIN, TECNICO_GENERAL, TECNICO_ESPECIALISTA o TECNICO) */}
+                      {onChangeStatus && (role === 'ADMIN' || role === 'TECNICO_GENERAL' || role === 'TECNICO_ESPECIALISTA' || role === 'TECNICO') && (
                         <button
                           type="button"
                           onClick={() => onChangeStatus(incident)}

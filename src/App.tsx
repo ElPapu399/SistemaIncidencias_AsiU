@@ -5,7 +5,7 @@ import DashboardLayout from './layouts/DashboardLayout';
 
 import PlaceholderPage from './pages/PlaceholderPage';
 import IncidenciasPage from './pages/IncidenciasPage';
-import UsuariosPage from './pages/EstudiantesPage';
+import EstudiantesPage from './pages/EstudiantesPage';
 import TecnicosPage from './pages/TecnicosPage';
 
 function App() {
@@ -26,7 +26,7 @@ function App() {
         <Route
           path="usuarios"
           element={
-            <UsuariosPage
+            <EstudiantesPage
               title="Estudiantes"
               description="Gestión de usuarios del sistema."
             />

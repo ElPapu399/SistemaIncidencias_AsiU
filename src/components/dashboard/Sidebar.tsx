@@ -8,33 +8,37 @@
     faChartBar,
     faGear,
     faGraduationCap,
-    faScrewdriverWrench
+    faScrewdriverWrench,
+    faDesktop
   } from '@fortawesome/free-solid-svg-icons';
+  import { getCurrentUser, logout } from '../../utils/auth';
+
+  const ALL_TECNICOS = ['TECNICO', 'TECNICO_GENERAL', 'TECNICO_ESPECIALISTA'];
 
   const navItems = [
-    { to: '/dashboard', label: 'Inicio', icon: faChartLine, end: true, roles: ['ADMIN', 'TECNICO', 'ESTUDIANTE'] },
-    { to: '/dashboard/incidencias', label: 'Incidencias', icon: faClipboardList, roles: ['ADMIN', 'TECNICO'] },
-    { to: '/dashboard/usuarios', label: 'Estudiantes', icon: faUser, roles: ['ADMIN', 'TECNICO'] },
-    { to: '/dashboard/tecnicos', label: 'Tecnicos', icon: faScrewdriverWrench, roles: ['ADMIN'] },
-    { to: '/dashboard/laboratorios', label: 'Laboratorios', icon: faUser, roles: ['ADMIN', 'TECNICO'] },
+    { to: '/dashboard', label: 'Inicio', icon: faChartLine, end: true, roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS] },
+    { to: '/dashboard/incidencias', label: 'Incidencias', icon: faClipboardList, roles: ['ADMIN', ...ALL_TECNICOS] },
+    { to: '/dashboard/usuarios', label: 'Estudiantes', icon: faUser, roles: ['ADMIN', 'TECNICO_GENERAL', 'TECNICO'] },
+    { to: '/dashboard/tecnicos', label: 'Técnicos', icon: faScrewdriverWrench, roles: ['ADMIN', 'TECNICO_GENERAL'] },
+    { to: '/dashboard/laboratorios', label: 'Laboratorios', icon: faDesktop, roles: ['ADMIN', ...ALL_TECNICOS] },
     { to: '/dashboard/nueva', label: 'Nueva incidencia', icon: faPlus, roles: ['ESTUDIANTE'] },
-    { to: '/dashboard/reportes', label: 'Reportes', icon: faChartBar, roles: ['ADMIN'] },
-    { to: '/dashboard/configuracion', label: 'Configuración', icon: faGear, roles: ['ADMIN', 'TECNICO', 'ESTUDIANTE'] },
+    { to: '/dashboard/reportes', label: 'Reportes', icon: faChartBar, roles: ['ADMIN', 'TECNICO_GENERAL'] },
+    { to: '/dashboard/configuracion', label: 'Configuración', icon: faGear, roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS] },
   ];
 
   export default function Sidebar() {
 
     const navigate = useNavigate();
 
-    const usuarioGuardado = sessionStorage.getItem('usuario');
-    const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+    const usuario = getCurrentUser();
     const currentUserRole = usuario?.rol;
 
     const handleLogout = () => {
-      navigate("/login");
-    }
+      logout();
+      navigate('/');
+    };
 
-    const visibleNavItems = navItems.filter(item => item.roles.includes(currentUserRole));
+    const visibleNavItems = navItems.filter(item => currentUserRole ? item.roles.includes(currentUserRole) : false);
 
     return (
       <div className="w-64 bg-blue-900/50 border-r border-slate-800 flex flex-col relative overflow-hidden">

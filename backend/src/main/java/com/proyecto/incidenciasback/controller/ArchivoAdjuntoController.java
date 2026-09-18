@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -29,16 +28,12 @@ public class ArchivoAdjuntoController {
      * Form-data: file (MultipartFile), usuarioId (Integer)
      */
     @PostMapping("/incidencias/{incidenciaId}/adjuntos")
-    public ResponseEntity<?> subirArchivo(
+    public ResponseEntity<ArchivoAdjuntoResponse> subirArchivo(
             @PathVariable Integer incidenciaId,
             @RequestParam("file") MultipartFile file,
             @RequestParam("usuarioId") Integer usuarioId) {
-        try {
-            ArchivoAdjuntoResponse response = archivoAdjuntoService.subirArchivo(incidenciaId, usuarioId, file);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
-        }
+        ArchivoAdjuntoResponse response = archivoAdjuntoService.subirArchivo(incidenciaId, usuarioId, file);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**

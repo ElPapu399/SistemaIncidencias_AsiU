@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import SearchBar from "./dashboard/SearchBar";
+import { formatDate } from './dashboard/IncidentBadges';
 import type { User } from '../types/user';
 
 interface StudentTableProps {
@@ -9,16 +10,7 @@ interface StudentTableProps {
     onEdit: (user: User) => void;
 }
 
-const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('es-PE', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    });
-};
-
-export default function UserTablet({ usuarios, onEdit }: StudentTableProps) {
-
+export default function StudentTable({ usuarios, onEdit }: StudentTableProps) {
     const [search, setSearch] = useState('');
     const [filterCarrera, setFilterCarrera] = useState('');
 
@@ -27,22 +19,32 @@ export default function UserTablet({ usuarios, onEdit }: StudentTableProps) {
         setFilterCarrera('');
     };
 
-    const estudiantes = usuarios.filter(u => u.rol === 'ESTUDIANTE');
-
-    // Extraer carreras únicas para el filtro
-    const carreras = [...new Set(estudiantes.map(u => u.carrera).filter(Boolean))] as string[];
-
-    const filtered = estudiantes.filter(u =>
-        (
-            u.nombre.toLowerCase().includes(search.toLowerCase()) ||
-            u.apellido.toLowerCase().includes(search.toLowerCase()) ||
-            u.correo.toLowerCase().includes(search.toLowerCase())
-        ) &&
-        (!filterCarrera || u.carrera === filterCarrera)
+    const estudiantes = useMemo(
+        () => usuarios.filter(u => !u.rol || u.rol === 'ESTUDIANTE'),
+        [usuarios]
     );
 
+    // Extraer carreras únicas para el selector de filtro
+    const carreras = useMemo(
+        () => [...new Set(estudiantes.map(u => u.carrera).filter(Boolean))] as string[],
+        [estudiantes]
+    );
+
+    // Lista filtrada memoizada para evitar recalcular en renders no relacionados
+    const filtered = useMemo(() => {
+        const query = search.toLowerCase().trim();
+        return estudiantes.filter(u => {
+            const matchSearch = !query ||
+                u.nombre.toLowerCase().includes(query) ||
+                u.apellido.toLowerCase().includes(query) ||
+                u.correo.toLowerCase().includes(query);
+            const matchCarrera = !filterCarrera || u.carrera === filterCarrera;
+            return matchSearch && matchCarrera;
+        });
+    }, [estudiantes, search, filterCarrera]);
+
     const totalEstudiantes = estudiantes.length;
-    const hasActiveFilters = search || filterCarrera;
+    const hasActiveFilters = search !== '' || filterCarrera !== '';
 
     return (
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
@@ -77,20 +79,26 @@ export default function UserTablet({ usuarios, onEdit }: StudentTableProps) {
                 )}
             </div>
 
-            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                <div className="overflow-x-auto overflow-y-auto max-h-[600px]">
-                    <table className="w-full text-left">
-                        <thead className="sticky top-0 bg-slate-50 z-10">
-                            <tr className="border-b border-slate-200 bg-slate-50">
-                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Usuario</th>
-                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Correo</th>
-                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Carrera</th>
-                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Registro</th>
-                                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">Acciones</th>
+            <div className="overflow-x-auto overflow-y-auto max-h-[600px]">
+                <table className="w-full text-left">
+                    <thead className="sticky top-0 bg-slate-50 z-10">
+                        <tr className="border-b border-slate-200 bg-slate-50">
+                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Usuario</th>
+                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Correo</th>
+                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Carrera</th>
+                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Registro</th>
+                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                        {filtered.length === 0 ? (
+                            <tr>
+                                <td colSpan={5} className="px-6 py-12 text-center text-sm text-slate-500">
+                                    No se encontraron estudiantes con los filtros seleccionados.
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {filtered.map(user => (
+                        ) : (
+                            filtered.map(user => (
                                 <tr key={user.id} className="hover:bg-slate-50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
@@ -122,14 +130,14 @@ export default function UserTablet({ usuarios, onEdit }: StudentTableProps) {
                                         </button>
                                     </td>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            ))
+                        )}
+                    </tbody>
+                </table>
             </div>
             <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
                 <span>Mostrando {filtered.length} de {totalEstudiantes} estudiantes</span>
             </div>
         </div>
-    )
+    );
 }

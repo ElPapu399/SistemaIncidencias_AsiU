@@ -1,9 +1,11 @@
+export type UserRole = 'ADMIN' | 'ESTUDIANTE' | 'TECNICO' | 'TECNICO_GENERAL' | 'TECNICO_ESPECIALISTA';
+
 export interface User {
     id: number;
     nombre: string;
     apellido: string;
     correo: string;
-    rol: string;
+    rol: UserRole | string;
     carrera: string | null;
     especialidad: string | null;
     fechaCreacion: string;
@@ -34,13 +36,4 @@ export interface CreateUserRequest {
     estado: string | null;
 }
 
-export interface UpdateUserRequest {
-    nombre: string;
-    apellido: string;
-    correo: string;
-    rolId: number;
-    especialidadId: number | null;
-    carrera: string | null;
-    telefono: string | null;
-    estado: string | null;
-}
+export type UpdateUserRequest = Omit<CreateUserRequest, 'password'>;

@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InputBox from '../components/InputBox';
 import Button from '../components/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock, faGraduationCap, faSpinner } from '@fortawesome/free-solid-svg-icons';
-
+import { API_BASE } from '../config/api';
+import { saveSession, isLoggedIn, onSessionChange } from '../utils/auth';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,17 +15,28 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  //añadido async (asincronia :v) para que la pag espere respuesta del servidor
+  // Si ya tiene sesión activa o inicia en otra pestaña, redirigir al dashboard
+  useEffect(() => {
+    if (isLoggedIn()) {
+      navigate('/dashboard', { replace: true });
+    }
+
+    const unsubscribe = onSessionChange((user) => {
+      if (user && user.token) {
+        navigate('/dashboard', { replace: true });
+      }
+    });
+
+    return unsubscribe;
+  }, [navigate]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    //PETICION HTTP
-
     try {
-      const response = await fetch('http://localhost:8080/api/auth/login', {
+      const response = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ correo, password }),
@@ -32,12 +44,21 @@ const Login = () => {
 
       if (response.ok) {
         const usuario = await response.json();
-        // Guardar datos del usuario en sessionStorage para uso en otras páginas
-        sessionStorage.setItem('usuario', JSON.stringify(usuario));
+        // Guardar datos del usuario (con token JWT) en localStorage
+        saveSession(usuario);
         navigate('/dashboard');
       } else {
-        const msg = await response.text();
-        setError(msg || 'Correo o contraseña incorrectos');
+        const rawText = await response.text();
+        let errorMsg = 'Correo o contraseña incorrectos';
+        try {
+          const parsed = JSON.parse(rawText);
+          errorMsg = parsed.error || parsed.message || rawText;
+        } catch {
+          if (rawText && rawText.trim()) {
+            errorMsg = rawText;
+          }
+        }
+        setError(errorMsg);
       }
     } catch {
       setError('No se pudo conectar al servidor. ¿Está corriendo el backend?');

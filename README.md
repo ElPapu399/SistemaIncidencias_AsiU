@@ -89,11 +89,16 @@ Se abrirá en: **http://localhost:5173**
 
 Ingresa en tu navegador a **[http://localhost:5173](http://localhost:5173)** con cualquiera de estos usuarios creados automáticamente (revisen DataLoader.java):
 
-| Rol | Correo | Contraseña |
-|---|---|---|
-| **Admin** | `admin@universidad.edu.pe` | `admin123` |
-| **Técnico** | `tecnico@universidad.edu.pe` | `tecnico123` |
-| **Estudiante** | `alumno@universidad.edu.pe` | `alumno123` |
+| Rol | Nombre | Correo | Contraseña | Detalle |
+|---|---|---|---|---|
+| **Admin** | Ana Rodríguez | `admin@universidad.edu.pe` | `admin123` | Gestión total y métricas |
+| **Soporte General** | Rosa Flores | `r.flores@utp.edu.pe` | `tecnico123` | Mesa de ayuda / Triaje y asignación |
+| **Soporte General** | Jorge Herrera | `j.herrera@utp.edu.pe` | `tecnico123` | Mesa de ayuda / Triaje y asignación |
+| **Soporte Especialista** | Carlos Mendoza | `c.mendoza@utp.edu.pe` | `tecnico123` | Especialidad: Hardware (resolutor) |
+| **Soporte Especialista** | Pedro Sánchez | `p.sanchez@utp.edu.pe` | `tecnico123` | Especialidad: Redes (resolutor) |
+| **Soporte Especialista** | Lucía Ramos | `l.ramos@utp.edu.pe` | `tecnico123` | Especialidad: Software (resolutor) |
+| **Soporte Especialista** | Marcos Vega | `m.vega@utp.edu.pe` | `tecnico123` | Especialidad: Audiovisual (resolutor) |
+| **Estudiante** | María García | `m.garcia@utp.edu.pe` | `alumno123` | Reporte de incidencias |
 
 
 ## Ver y administrar la Base de Datos (phpMyAdmin)
@@ -126,74 +131,73 @@ docker compose down
 
 ```
 SistemaIncidencias_AsiU/
-├── src/                             ← Frontend React (TypeScript + Tailwind)
+├── src/                             ← Frontend React 19 (TypeScript + Tailwind)
 │   ├── assets/                      ← Imágenes y recursos estáticos
 │   ├── components/                  ← Componentes reutilizables
 │   │   ├── dashboard/               ← Componentes del panel principal
-│   │   │   ├── CategoryBreakdown.tsx
-│   │   │   ├── Header.tsx
-│   │   │   ├── IncidentBadges.tsx
-│   │   │   ├── IncidentsTable.tsx
-│   │   │   ├── RecentIncidentsTable.tsx
-│   │   │   ├── SearchBar.tsx
-│   │   │   ├── Sidebar.tsx
-│   │   │   ├── StatCard.tsx
-│   │   │   └── UserForm.tsx
+│   │   │   ├── AssignTechnicianModal.tsx ← Modal para asignar especialista
+│   │   │   ├── CategoryBreakdown.tsx ← Gráfico/Distribución por categorías
+│   │   │   ├── ChangeStatusModal.tsx ← Modal para cambiar estado de ticket
+│   │   │   ├── Header.tsx           ← Barra superior con badge de rol
+│   │   │   ├── IncidentBadges.tsx   ← Badges de estado y prioridad
+│   │   │   ├── IncidentForm.tsx     ← Formulario de creación de incidencias
+│   │   │   ├── IncidentsTable.tsx   ← Tabla principal de incidencias
+│   │   │   ├── RecentIncidentsTable.tsx ← Resumen reciente en Dashboard
+│   │   │   ├── SearchBar.tsx        ← Barra de búsqueda
+│   │   │   ├── Sidebar.tsx          ← Navegación lateral según rol
+│   │   │   ├── StatCard.tsx         ← Tarjetas de KPIs del dashboard
+│   │   │   └── UserForm.tsx         ← Modal contextualizado de usuarios/técnicos
 │   │   ├── Button.tsx
-│   │   └── InputBox.tsx
-│   ├── data/
-│   │   └── mockIncidents.ts         ← Datos de prueba para incidencias
+│   │   ├── InputBox.tsx
+│   │   ├── StudentTable.tsx         ← Tabla de estudiantes
+│   │   └── TechnTable.tsx           ← Tabla de técnicos (General y Especialista)
 │   ├── layouts/
 │   │   └── DashboardLayout.tsx      ← Layout general del panel
 │   ├── pages/                       ← Vistas principales
-│   │   ├── Dashboard.tsx
-│   │   ├── IncidenciasPage.tsx
-│   │   ├── Login.tsx
-│   │   ├── PlaceholderPage.tsx
-│   │   └── UsuariosPage.tsx
+│   │   ├── Dashboard.tsx            ← Panel general con KPIs
+│   │   ├── EstudiantesPage.tsx      ← Gestión de alumnos
+│   │   ├── IncidenciasPage.tsx      ← Gestión y filtrado de incidencias
+│   │   ├── Login.tsx                ← Pantalla de autenticación
+│   │   ├── PlaceholderPage.tsx      ← Páginas en desarrollo (Reportes/Ajustes)
+│   │   └── TecnicosPage.tsx         ← Gestión de técnicos por tipo
+│   ├── services/
+│   │   └── incidenciasService.ts    ← Consumo de endpoints de tickets
 │   ├── types/                       ← Interfaces TypeScript
 │   │   ├── incident.ts
 │   │   └── user.ts
+│   ├── utils/
+│   │   ├── auth.ts                  ← Almacenamiento y decodificación de JWT
+│   │   └── fetchWithAuth.ts         ← Fetch wrapper con cabecera Bearer y manejo 401
 │   ├── App.tsx
 │   ├── App.css
 │   ├── index.css
 │   └── main.tsx
-├── backend/                         ← Backend Spring Boot (Java 21)
+├── backend/                         ← Backend Spring Boot 3 (Java 21)
 │   └── src/main/java/.../
-│       ├── config/                  ← Seguridad (CORS, BCrypt) y DataLoader
+│       ├── config/                  ← Seguridad, CORS, BCrypt y Seeder inicial
 │       │   ├── DataLoader.java
+│       │   ├── JwtConfig.java
 │       │   └── SecurityConfig.java
 │       ├── controller/              ← Controladores REST
+│       │   ├── ArchivoAdjuntoController.java
 │       │   ├── AuthController.java
+│       │   ├── CatalogoController.java
+│       │   ├── EquipoController.java
+│       │   ├── IncidenciaController.java
 │       │   └── UsuarioController.java
-│       ├── dto/                     ← Objetos de transferencia de datos
-│       │   ├── LoginRequest.java
-│       │   ├── LoginResponse.java
-│       │   ├── UsuarioRequest.java
-│       │   ├── UsuarioResponse.java
-│       │   └── UsuarioUpdateRequest.java
-│       ├── model/                   ← Entidades JPA
-│       │   ├── Especialidad.java
-│       │   ├── Rol.java
-│       │   └── Usuario.java
-│       ├── repository/              ← Repositorios Spring Data JPA
-│       │   ├── EspecialidadRepository.java
-│       │   ├── RolRepository.java
-│       │   └── UsuarioRepository.java
-│       └── service/                 ← Lógica de negocio
-│           ├── AuthService.java
-│           └── UsuarioService.java
+│       ├── dto/                     ← DTOs de petición y respuesta
+│       ├── model/                   ← Entidades JPA (Usuario, Incidencia, Rol, etc.)
+│       ├── repository/              ← Repositorios JPA con EntityGraph
+│       ├── security/                ← Filtro y utilitarios JWT
+│       └── service/                 ← Lógica de negocio (Auth, Incidencia, Usuario)
 │   └── src/main/resources/
-│       └── application.yaml         ← Configuración del servidor y BD
+│       └── application.yaml         ← Configuración del servidor y base de datos
 │   ├── pom.xml                      ← Dependencias Maven
 │   └── mvnw / mvnw.cmd              ← Maven Wrapper
 ├── database/
-│   └── init.sql                     ← Script DDL inicial
+│   └── init.sql                     ← Script DDL inicial con roles y catálogos
 ├── public/
-│   ├── favicon.svg
-│   └── icons.svg
-├── docker-compose.yml               ← Contenedores MySQL y phpMyAdmin
+├── docker-compose.yml               ← Contenedores MySQL 8 y phpMyAdmin
 ├── package.json
-├── index.html
 └── README.md
 ```

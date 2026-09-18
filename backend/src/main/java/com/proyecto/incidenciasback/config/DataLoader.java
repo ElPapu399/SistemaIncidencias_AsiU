@@ -30,15 +30,25 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        // Asegurar que los roles existan
+        obtenerOCrearRol("ADMIN");
+        obtenerOCrearRol("ESTUDIANTE");
+        obtenerOCrearRol("TECNICO");
+        obtenerOCrearRol("TECNICO_GENERAL");
+        obtenerOCrearRol("TECNICO_ESPECIALISTA");
+
         // Admin
         crearUsuarioSiNoExiste("Ana", "Rodríguez", "admin@universidad.edu.pe", "admin123", "ADMIN", null, "987-000-000", null, "Activo");
 
-        // Técnicos con especialidades (coincidentes con prototipo)
-        crearUsuarioSiNoExiste("Carlos", "Mendoza", "c.mendoza@utp.edu.pe", "tecnico123", "TECNICO", "Hardware", "987-111-222", null, "Activo");
-        crearUsuarioSiNoExiste("Pedro", "Sánchez", "p.sanchez@utp.edu.pe", "tecnico123", "TECNICO", "Redes", "987-333-789", null, "Activo");
-        crearUsuarioSiNoExiste("Lucía", "Ramos", "l.ramos@utp.edu.pe", "tecnico123", "TECNICO", "Software", "987-444-100", null, "Activo");
-        crearUsuarioSiNoExiste("Marcos", "Vega", "m.vega@utp.edu.pe", "tecnico123", "TECNICO", "Audiovisual", "987-555-200", null, "Activo");
-        crearUsuarioSiNoExiste("Rosa", "Flores", "r.flores@utp.edu.pe", "tecnico123", "TECNICO", null, "987-666-321", null, "Activo");
+        // Técnicos de Soporte General (Mesa de ayuda / Asignadores)
+        crearUsuarioSiNoExiste("Rosa", "Flores", "r.flores@utp.edu.pe", "tecnico123", "TECNICO_GENERAL", null, "987-666-321", null, "Activo");
+        crearUsuarioSiNoExiste("Jorge", "Herrera", "j.herrera@utp.edu.pe", "tecnico123", "TECNICO_GENERAL", null, "987-777-888", null, "Activo");
+
+        // Técnicos de Soporte Especializado (Resolutores de campo)
+        crearUsuarioSiNoExiste("Carlos", "Mendoza", "c.mendoza@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA", "Hardware", "987-111-222", null, "Activo");
+        crearUsuarioSiNoExiste("Pedro", "Sánchez", "p.sanchez@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA", "Redes", "987-333-789", null, "Activo");
+        crearUsuarioSiNoExiste("Lucía", "Ramos", "l.ramos@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA", "Software", "987-444-100", null, "Activo");
+        crearUsuarioSiNoExiste("Marcos", "Vega", "m.vega@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA", "Audiovisual", "987-555-200", null, "Activo");
 
         // Estudiantes (coincidentes con prototipo)
         crearUsuarioSiNoExiste("María", "García", "m.garcia@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-654-321", "Ingeniería de Sistemas", "Activo");
@@ -53,16 +63,34 @@ public class DataLoader implements CommandLineRunner {
         crearUsuarioSiNoExiste("Rodrigo", "Castillo", "r.castillo@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-990-112", "Ingeniería de Sistemas", "Activo");
     }
 
+    private Rol obtenerOCrearRol(String nombreRol) {
+        return rolRepository.findByNombre(nombreRol).orElseGet(() -> {
+            Rol nuevo = new Rol();
+            nuevo.setNombre(nombreRol);
+            return rolRepository.save(nuevo);
+        });
+    }
+
     private void crearUsuarioSiNoExiste(String nombre, String apellido, String correo,
                                         String password, String nombreRol, String nombreEspecialidad,
                                         String telefono, String carrera, String estado) {
-        if (usuarioRepository.findByCorreo(correo).isPresent()) {
-            return; // Ya existe, no hacer nada
+        var existenteOpt = usuarioRepository.findByCorreo(correo);
+        if (existenteOpt.isPresent()) {
+            Usuario existente = existenteOpt.get();
+            // Actualizar rol si cambió respecto a la inicialización previa
+            if (existente.getRol() != null && !nombreRol.equals(existente.getRol().getNombre())) {
+                Rol rol = obtenerOCrearRol(nombreRol);
+                existente.setRol(rol);
+                if (nombreEspecialidad != null) {
+                    especialidadRepository.findByNombre(nombreEspecialidad).ifPresent(existente::setEspecialidad);
+                }
+                usuarioRepository.save(existente);
+                System.out.println("🔄 Rol actualizado para: " + correo + " -> " + nombreRol);
+            }
+            return; // Ya existe
         }
 
-        Rol rol = rolRepository.findByNombre(nombreRol)
-                .orElseThrow(() -> new RuntimeException(
-                        "Rol '" + nombreRol + "' no encontrado. Verifica que init.sql fue ejecutado."));
+        Rol rol = obtenerOCrearRol(nombreRol);
 
         Usuario usuario = new Usuario();
         usuario.setNombre(nombre);

@@ -6,11 +6,11 @@ import type {
   Tecnico,
   CreateIncidentData,
 } from '../types/incident';
-
-const API_BASE = 'http://localhost:8080/api';
+import { fetchWithAuth } from '../utils/fetchWithAuth';
+import { getCurrentUser } from '../utils/auth';
 
 export async function obtenerIncidencias(): Promise<Incident[]> {
-  const response = await fetch(`${API_BASE}/incidencias`);
+  const response = await fetchWithAuth('/incidencias');
 
   if (!response.ok) {
     throw new Error('Error al obtener las incidencias');
@@ -41,9 +41,8 @@ export async function obtenerIncidencias(): Promise<Incident[]> {
 }
 
 export async function crearIncidencia(data: CreateIncidentData): Promise<Incident> {
-  const response = await fetch(`${API_BASE}/incidencias`, {
+  const response = await fetchWithAuth('/incidencias', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
 
@@ -56,9 +55,8 @@ export async function crearIncidencia(data: CreateIncidentData): Promise<Inciden
 }
 
 export async function asignarTecnico(incidenciaId: number, tecnicoId: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/incidencias/${incidenciaId}/asignar`, {
+  const response = await fetchWithAuth(`/incidencias/${incidenciaId}/asignar`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ tecnicoId }),
   });
 
@@ -71,12 +69,17 @@ export async function asignarTecnico(incidenciaId: number, tecnicoId: number): P
 export async function cambiarEstado(
   incidenciaId: number,
   estado: string,
-  solucionTecnica?: string
+  solucionTecnica?: string,
+  usuarioId?: number
 ): Promise<void> {
-  const response = await fetch(`${API_BASE}/incidencias/${incidenciaId}/estado`, {
+  const currentUserId = usuarioId ?? getCurrentUser()?.id;
+  const response = await fetchWithAuth(`/incidencias/${incidenciaId}/estado`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ estado, solucionTecnica }),
+    body: JSON.stringify({
+      estado,
+      solucionTecnica,
+      usuarioId: currentUserId,
+    }),
   });
 
   if (!response.ok) {
@@ -86,28 +89,28 @@ export async function cambiarEstado(
 }
 
 export async function obtenerCategorias(): Promise<Categoria[]> {
-  const response = await fetch(`${API_BASE}/categorias`);
+  const response = await fetchWithAuth('/categorias');
   if (!response.ok) throw new Error('Error al cargar categorías');
   return response.json();
 }
 
 export async function obtenerUbicaciones(): Promise<Ubicacion[]> {
-  const response = await fetch(`${API_BASE}/ubicaciones`);
+  const response = await fetchWithAuth('/ubicaciones');
   if (!response.ok) throw new Error('Error al cargar ubicaciones');
   return response.json();
 }
 
 export async function obtenerPrioridades(): Promise<Prioridad[]> {
-  const response = await fetch(`${API_BASE}/prioridades`);
+  const response = await fetchWithAuth('/prioridades');
   if (!response.ok) throw new Error('Error al cargar prioridades');
   return response.json();
 }
 
 export async function obtenerTecnicosPorEspecialidad(especialidadId?: number): Promise<Tecnico[]> {
-  const url = especialidadId
-    ? `${API_BASE}/usuarios/tecnicos?especialidadId=${especialidadId}`
-    : `${API_BASE}/usuarios/tecnicos`;
-  const response = await fetch(url);
+  const endpoint = especialidadId
+    ? `/usuarios/tecnicos?especialidadId=${especialidadId}`
+    : '/usuarios/tecnicos';
+  const response = await fetchWithAuth(endpoint);
   if (!response.ok) throw new Error('Error al cargar técnicos');
   return response.json();
 }

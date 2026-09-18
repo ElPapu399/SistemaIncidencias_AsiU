@@ -36,8 +36,9 @@ export default function ChangeStatusModal({
     e.preventDefault();
     if (!incident || !incident.numericId) return;
 
-    if (nuevoEstado === 'Resuelto' && !solucionTecnica.trim()) {
-      setError('La solución técnica es obligatoria para marcar como Resuelto.');
+    const isResolving = nuevoEstado === 'Resuelta' || nuevoEstado === 'Resuelto';
+    if (isResolving && !solucionTecnica.trim()) {
+      setError('La solución técnica es obligatoria para marcar como Resuelta.');
       return;
     }
 
@@ -48,7 +49,7 @@ export default function ChangeStatusModal({
       await cambiarEstado(
         incident.numericId,
         nuevoEstado,
-        nuevoEstado === 'Resuelto' ? solucionTecnica.trim() : undefined
+        isResolving ? solucionTecnica.trim() : undefined
       );
       onUpdated();
       onClose();
@@ -61,7 +62,11 @@ export default function ChangeStatusModal({
 
   if (!isOpen || !incident) return null;
 
-  const canEdit = currentUserRole === 'ADMIN' || currentUserRole === 'TECNICO';
+  const canEdit =
+    currentUserRole === 'ADMIN' ||
+    currentUserRole === 'TECNICO' ||
+    currentUserRole === 'TECNICO_GENERAL' ||
+    currentUserRole === 'TECNICO_ESPECIALISTA';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -153,13 +158,14 @@ export default function ChangeStatusModal({
                   className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
                 >
                   <option value="Pendiente">Pendiente</option>
-                  <option value="En Proceso">En Proceso</option>
-                  <option value="Resuelto">Resuelto</option>
-                  <option value="Cancelado">Cancelado</option>
+                  <option value="Asignada">Asignada</option>
+                  <option value="En atención">En atención (En Proceso)</option>
+                  <option value="Resuelta">Resuelta</option>
+                  <option value="Cerrada">Cerrada</option>
                 </select>
               </div>
 
-              {nuevoEstado === 'Resuelto' && (
+              {(nuevoEstado === 'Resuelta' || nuevoEstado === 'Resuelto') && (
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1.5">
                     Solución técnica aplicada *

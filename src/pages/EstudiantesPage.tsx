@@ -3,18 +3,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faSpinner, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import Header from '../components/dashboard/Header';
-import UserTable from '../components/StudentTable';
+import StudentTable from '../components/StudentTable';
 import UserFormModal from '../components/dashboard/UserForm';
 import type { User } from '../types/user';
-
-const API_BASE = 'http://localhost:8080/api';
+import { fetchWithAuth } from '../utils/fetchWithAuth';
 
 interface EstudiantesPageProps {
     title: string;
     description: string;
 }
 
-export default function UsuariosPage({ title }: EstudiantesPageProps) {
+export default function EstudiantesPage({ title, description }: EstudiantesPageProps) {
     const [estudiantes, setEstudiantes] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -22,16 +21,17 @@ export default function UsuariosPage({ title }: EstudiantesPageProps) {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
 
-    const cargarUsuarios = useCallback(async () => {
+    const cargarEstudiantes = useCallback(async () => {
         setLoading(true);
         setError('');
         try {
-            const response = await fetch(`${API_BASE}/usuarios`);
+            // Filtrar directamente desde el backend por rol ESTUDIANTE
+            const response = await fetchWithAuth('/usuarios?rol=ESTUDIANTE');
             if (response.ok) {
                 const data = await response.json();
                 setEstudiantes(data);
             } else {
-                setError('Error al cargar usuarios');
+                setError('Error al cargar estudiantes');
             }
         } catch {
             setError('No se pudo conectar al servidor');
@@ -41,8 +41,8 @@ export default function UsuariosPage({ title }: EstudiantesPageProps) {
     }, []);
 
     useEffect(() => {
-        cargarUsuarios();
-    }, [cargarUsuarios]);
+        cargarEstudiantes();
+    }, [cargarEstudiantes]);
 
     const handleCreate = () => {
         setEditingUser(null);
@@ -55,14 +55,14 @@ export default function UsuariosPage({ title }: EstudiantesPageProps) {
     };
 
     const handleSave = () => {
-        cargarUsuarios();
+        cargarEstudiantes();
     };
 
-    const totalEstudiantes = estudiantes.filter(u => u.rol === 'ESTUDIANTE').length;
+    const totalEstudiantes = estudiantes.length;
 
     return (
         <>
-            <Header title={title} />
+            <Header title={title} subtitle={description} />
             <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-200">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="text-left">
@@ -96,14 +96,14 @@ export default function UsuariosPage({ title }: EstudiantesPageProps) {
                         <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-300 flex items-center justify-center mb-4">
                             <FontAwesomeIcon icon={faUsers} className="text-2xl text-slate-500" />
                         </div>
-                        <h4 className="text-lg font-semibold text-black">Sin usuarios</h4>
+                        <h4 className="text-lg font-semibold text-black">Sin estudiantes</h4>
                         <p className="text-sm text-slate-500 mt-1">
-                            Aún no hay usuarios registrados. Crea el primero.
+                            Aún no hay estudiantes registrados. Crea el primero.
                         </p>
                     </div>
                 ) : (
                     <div className="xl:col-span-2">
-                        <UserTable usuarios={estudiantes} onEdit={handleEdit} />
+                        <StudentTable usuarios={estudiantes} onEdit={handleEdit} />
                     </div>
                 )}
             </main>
@@ -113,6 +113,7 @@ export default function UsuariosPage({ title }: EstudiantesPageProps) {
                 onClose={() => setModalOpen(false)}
                 onSave={handleSave}
                 editingUser={editingUser}
+                mode="estudiante"
             />
         </>
     );

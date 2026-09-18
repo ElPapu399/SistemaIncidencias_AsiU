@@ -5,6 +5,7 @@ import com.proyecto.incidenciasback.dto.LoginResponse;
 import com.proyecto.incidenciasback.model.Rol;
 import com.proyecto.incidenciasback.model.Usuario;
 import com.proyecto.incidenciasback.repository.UsuarioRepository;
+import com.proyecto.incidenciasback.security.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,13 +29,16 @@ class AuthServiceTest {
     @Mock
     private UsuarioRepository usuarioRepository;
 
+    @Mock
+    private JwtUtil jwtUtil;
+
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService(usuarioRepository, passwordEncoder);
+        authService = new AuthService(usuarioRepository, passwordEncoder, jwtUtil);
     }
 
     private Usuario crearUsuario(String correo, String rawPassword) {
@@ -58,6 +62,7 @@ class AuthServiceTest {
         Usuario usuario = crearUsuario("admin@universidad.edu.pe", "admin123");
         when(usuarioRepository.findByCorreo("admin@universidad.edu.pe"))
                 .thenReturn(Optional.of(usuario));
+        when(jwtUtil.generateToken(usuario)).thenReturn("mock-jwt-token");
 
         LoginRequest request = new LoginRequest();
         request.setCorreo("admin@universidad.edu.pe");
@@ -67,6 +72,7 @@ class AuthServiceTest {
 
         assertThat(response.getCorreo()).isEqualTo("admin@universidad.edu.pe");
         assertThat(response.getRol()).isEqualTo("ADMIN");
+        assertThat(response.getToken()).isEqualTo("mock-jwt-token");
     }
 
     @Test

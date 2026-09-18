@@ -24,8 +24,8 @@ export default function CategoryBreakdown({ items, total }: CategoryBreakdownPro
               </div>
               <div className="h-2 bg-slate-300 rounded-full overflow-hidden">
                 <div
-                  className={`h-full rounded-full ${item.color} transition-all duration-500`}
-                  style={{ width: `${percentage}%` }}
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${percentage}%`, backgroundColor: item.color }}
                 />
               </div>
             </div>

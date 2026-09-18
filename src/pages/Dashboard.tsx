@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
   faClipboardList,
   faClock,
@@ -44,45 +44,46 @@ export default function Dashboard() {
       });
   }, []);
 
-  const total = incidencias.length;
+  // Compute all dashboard stats in a single pass
+  const { total, pendientes, enProceso, resueltas, altas, categoryBreakdown, categoryTotal } =
+    useMemo(() => {
+      let pending = 0;
+      let inProgress = 0;
+      let resolved = 0;
+      let highPriority = 0;
+      const categoryCounts: Record<string, number> = {};
 
-  const pendientes = incidencias.filter(
-    (incidencia) => incidencia.status === 'Pendiente'
-  ).length;
+      for (const inc of incidencias) {
+        if (inc.status === 'Pendiente') pending++;
+        else if (inc.status === 'En Proceso' || inc.status === 'En atención' || inc.status === 'Asignada') inProgress++;
+        else if (inc.status === 'Resuelto' || inc.status === 'Resuelta') resolved++;
 
-  const enProceso = incidencias.filter(
-    (incidencia) => incidencia.status === 'En Proceso'
-  ).length;
+        if (inc.priority === 'Alta') highPriority++;
 
-  const resueltas = incidencias.filter(
-    (incidencia) => incidencia.status === 'Resuelto'
-  ).length;
+        const cat = inc.category || 'Otros';
+        categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+      }
 
-  const altas = incidencias.filter(
-    (incidencia) => incidencia.priority === 'Alta'
-  ).length;
+      const breakdown = Object.entries(categoryCounts).map(
+        ([category, count], idx) => ({
+          label: category,
+          count,
+          color: categoryColorPalette[idx % categoryColorPalette.length],
+        })
+      );
 
-  const categoryCounts = incidencias.reduce<Record<string, number>>(
-    (acc, incidencia) => {
-      const cat = incidencia.category || 'Otros';
-      acc[cat] = (acc[cat] || 0) + 1;
-      return acc;
-    },
-    {}
-  );
+      const catTotal = breakdown.reduce((sum, item) => sum + item.count, 0);
 
-  const categoryBreakdown = Object.entries(categoryCounts).map(
-    ([category, count], idx) => ({
-      label: category,
-      count,
-      color: categoryColorPalette[idx % categoryColorPalette.length],
-    })
-  );
-
-  const categoryTotal = categoryBreakdown.reduce(
-    (sum, item) => sum + item.count,
-    0
-  );
+      return {
+        total: incidencias.length,
+        pendientes: pending,
+        enProceso: inProgress,
+        resueltas: resolved,
+        altas: highPriority,
+        categoryBreakdown: breakdown,
+        categoryTotal: catTotal,
+      };
+    }, [incidencias]);
 
   if (loading) {
     return (

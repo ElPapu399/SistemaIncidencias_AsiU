@@ -155,7 +155,9 @@ CREATE TABLE IF NOT EXISTS historial_estados (
 INSERT IGNORE INTO roles (nombre) VALUES
     ('ADMIN'),
     ('ESTUDIANTE'),
-    ('TECNICO');
+    ('TECNICO'),
+    ('TECNICO_GENERAL'),
+    ('TECNICO_ESPECIALISTA');
 
 INSERT IGNORE INTO especialidades (nombre, descripcion) VALUES
     ('Hardware',  'Problemas físicos: equipos, periféricos, impresoras'),
