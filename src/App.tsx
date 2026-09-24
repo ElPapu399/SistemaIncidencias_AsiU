@@ -7,6 +7,7 @@ import PlaceholderPage from './pages/PlaceholderPage';
 import IncidenciasPage from './pages/IncidenciasPage';
 import EstudiantesPage from './pages/EstudiantesPage';
 import TecnicosPage from './pages/TecnicosPage';
+import NuevaIncidenciaPage from './pages/NuevaIncidenciaPage';
 
 function App() {
   return (
@@ -52,12 +53,7 @@ function App() {
         />
         <Route
           path="nueva"
-          element={
-            <PlaceholderPage
-              title="Nueva incidencia"
-              description="Formulario para registrar una nueva incidencia universitaria."
-            />
-          }
+          element={<NuevaIncidenciaPage />}
         />
         <Route
           path="reportes"

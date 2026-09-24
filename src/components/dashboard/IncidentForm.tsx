@@ -39,6 +39,7 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
   // Usuario actual
   const usuario = getCurrentUser();
   const estudianteId = usuario?.id;
+  const isEstudiante = usuario?.rol === 'ESTUDIANTE';
 
   useEffect(() => {
     if (!isOpen) return;
@@ -73,6 +74,12 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
     const cat = categorias.find((c) => c.id === selectedCatId);
     if (cat?.prioridadDefecto?.id) {
       setPrioridadId(cat.prioridadDefecto.id);
+    } else {
+      // Si la categoría no tiene prioridad por defecto, asignar Media o la primera disponible
+      const fallbackPrio = prioridades.find((p) => p.nivel === 'Media') || prioridades[0];
+      if (fallbackPrio) {
+        setPrioridadId(fallbackPrio.id);
+      }
     }
   };
 
@@ -109,7 +116,14 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
     e.preventDefault();
     setError('');
 
-    if (!titulo.trim() || !descripcion.trim() || !categoriaId || !prioridadId || !ubicacionId) {
+    let effectivePrioridadId = prioridadId;
+    if (isEstudiante && (!effectivePrioridadId || effectivePrioridadId === 0)) {
+      const cat = categorias.find((c) => c.id === categoriaId);
+      effectivePrioridadId = cat?.prioridadDefecto?.id || prioridades.find((p) => p.nivel === 'Media')?.id || prioridades[0]?.id || 1;
+      setPrioridadId(effectivePrioridadId);
+    }
+
+    if (!titulo.trim() || !descripcion.trim() || !categoriaId || (!isEstudiante && !effectivePrioridadId) || !ubicacionId) {
       setError('Todos los campos son obligatorios.');
       return;
     }
@@ -126,7 +140,7 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
         titulo: titulo.trim(),
         descripcion: descripcion.trim(),
         categoriaId,
-        prioridadId,
+        prioridadId: effectivePrioridadId,
         ubicacionId,
         estudianteId,
       });
@@ -218,25 +232,58 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
               </select>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                Prioridad *
-              </label>
-              <select
-                value={prioridadId}
-                onChange={(e) => setPrioridadId(Number(e.target.value))}
-                className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
-              >
-                <option value={0} disabled>
-                  Seleccionar prioridad
-                </option>
-                {prioridades.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nivel} ({p.tiempoMaximoHoras}h máx)
+            {isEstudiante ? (
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center justify-between">
+                  <span>Prioridad</span>
+                  <span className="text-[10px] text-amber-400 font-semibold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                    Asignada por sistema
+                  </span>
+                </label>
+                <div className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 flex items-center justify-between text-sm">
+                  <span className="text-xs text-slate-400">
+                    {categoriaId ? 'Nivel asignado:' : 'Elige una categoría'}
+                  </span>
+                  {(() => {
+                    const prioridadObj = prioridades.find((p) => p.id === prioridadId);
+                    if (!prioridadObj) {
+                      return <span className="text-xs text-slate-500 italic">Automática</span>;
+                    }
+                    const badgeColor =
+                      prioridadObj.nivel === 'Alta'
+                        ? 'bg-red-500/20 text-red-400 border-red-500/30'
+                        : prioridadObj.nivel === 'Media'
+                        ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                        : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+                    return (
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${badgeColor}`}>
+                        {prioridadObj.nivel} ({prioridadObj.tiempoMaximoHoras}h máx)
+                      </span>
+                    );
+                  })()}
+                </div>
+              </div>
+            ) : (
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Prioridad *
+                </label>
+                <select
+                  value={prioridadId}
+                  onChange={(e) => setPrioridadId(Number(e.target.value))}
+                  className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+                >
+                  <option value={0} disabled>
+                    Seleccionar prioridad
                   </option>
-                ))}
-              </select>
-            </div>
+                  {prioridades.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.nivel} ({p.tiempoMaximoHoras}h máx)
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           <div>

@@ -15,23 +15,27 @@
 
   const ALL_TECNICOS = ['TECNICO', 'TECNICO_GENERAL', 'TECNICO_ESPECIALISTA'];
 
-  const navItems = [
-    { to: '/dashboard', label: 'Inicio', icon: faChartLine, end: true, roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS] },
-    { to: '/dashboard/incidencias', label: 'Incidencias', icon: faClipboardList, roles: ['ADMIN', ...ALL_TECNICOS] },
-    { to: '/dashboard/usuarios', label: 'Estudiantes', icon: faUser, roles: ['ADMIN', 'TECNICO_GENERAL', 'TECNICO'] },
-    { to: '/dashboard/tecnicos', label: 'Técnicos', icon: faScrewdriverWrench, roles: ['ADMIN', 'TECNICO_GENERAL'] },
-    { to: '/dashboard/laboratorios', label: 'Laboratorios', icon: faDesktop, roles: ['ADMIN', ...ALL_TECNICOS] },
-    { to: '/dashboard/nueva', label: 'Nueva incidencia', icon: faPlus, roles: ['ESTUDIANTE'] },
-    { to: '/dashboard/reportes', label: 'Reportes', icon: faChartBar, roles: ['ADMIN', 'TECNICO_GENERAL'] },
-    { to: '/dashboard/configuracion', label: 'Configuración', icon: faGear, roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS] },
-  ];
-
   export default function Sidebar() {
-
     const navigate = useNavigate();
 
     const usuario = getCurrentUser();
     const currentUserRole = usuario?.rol;
+
+    const navItems = [
+      { to: '/dashboard', label: 'Inicio', icon: faChartLine, end: true, roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS] },
+      {
+        to: '/dashboard/incidencias',
+        label: currentUserRole === 'ESTUDIANTE' ? 'Mis incidencias' : 'Incidencias',
+        icon: faClipboardList,
+        roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS],
+      },
+      { to: '/dashboard/usuarios', label: 'Estudiantes', icon: faUser, roles: ['ADMIN', 'TECNICO_GENERAL', 'TECNICO'] },
+      { to: '/dashboard/tecnicos', label: 'Técnicos', icon: faScrewdriverWrench, roles: ['ADMIN', 'TECNICO_GENERAL'] },
+      { to: '/dashboard/laboratorios', label: 'Laboratorios', icon: faDesktop, roles: ['ADMIN', ...ALL_TECNICOS] },
+      { to: '/dashboard/nueva', label: 'Nueva incidencia', icon: faPlus, roles: ['ESTUDIANTE'] },
+      { to: '/dashboard/reportes', label: 'Reportes', icon: faChartBar, roles: ['ADMIN', 'TECNICO_GENERAL'] },
+      { to: '/dashboard/configuracion', label: 'Configuración', icon: faGear, roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS] },
+    ];
 
     const handleLogout = () => {
       logout();

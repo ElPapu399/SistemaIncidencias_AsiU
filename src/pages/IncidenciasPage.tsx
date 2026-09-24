@@ -8,7 +8,7 @@ import IncidentFormModal from '../components/dashboard/IncidentForm';
 import AssignTechnicianModal from '../components/dashboard/AssignTechnicianModal';
 import ChangeStatusModal from '../components/dashboard/ChangeStatusModal';
 
-import { obtenerIncidencias } from '../services/incidenciasService';
+import { obtenerIncidencias, obtenerIncidenciasPorEstudiante } from '../services/incidenciasService';
 import type { Incident } from '../types/incident';
 import { getCurrentUser } from '../utils/auth';
 
@@ -30,12 +30,15 @@ export default function IncidenciasPage({ title, description }: IncidenciasPageP
 
   const usuario = getCurrentUser();
   const currentUserRole = usuario?.rol;
+  const isEstudiante = currentUserRole === 'ESTUDIANTE';
 
   const cargarIncidencias = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const datos = await obtenerIncidencias();
+      const datos = isEstudiante && usuario?.id
+        ? await obtenerIncidenciasPorEstudiante(usuario.id)
+        : await obtenerIncidencias();
       setIncidents(datos);
     } catch (err) {
       console.error('Error al cargar incidencias:', err);
@@ -43,7 +46,7 @@ export default function IncidenciasPage({ title, description }: IncidenciasPageP
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isEstudiante, usuario?.id]);
 
   useEffect(() => {
     cargarIncidencias();
@@ -68,20 +71,26 @@ export default function IncidenciasPage({ title, description }: IncidenciasPageP
     setIsStatusOpen(true);
   }, []);
 
+  const pageTitle = isEstudiante ? 'Mis Incidencias' : (title || 'Incidencias');
+  const pageSubtitle = isEstudiante
+    ? 'Consulta, filtra y da seguimiento al estado de tus incidencias reportadas en el campus.'
+    : description;
+  const sectionHeading = isEstudiante ? 'Mis Incidencias Reportadas' : 'Gestión de Incidencias';
+
   return (
     <>
-      <Header title={title} subtitle={description} />
+      <Header title={pageTitle} subtitle={pageSubtitle} />
 
       <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-200">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="text-left">
             <h3 className="text-2xl font-bold text-black">
-              Gestión de Incidencias
+              {sectionHeading}
             </h3>
             <p className="text-sm text-slate-600 mt-1">
               {loading
                 ? 'Cargando incidencias...'
-                : `${incidents.length} incidencia${incidents.length !== 1 ? 's' : ''} registrada${incidents.length !== 1 ? 's' : ''}`}
+                : `${incidents.length} incidencia${incidents.length !== 1 ? 's' : ''} ${isEstudiante ? 'reportada' : 'registrada'}${incidents.length !== 1 ? 's' : ''}`}
             </p>
           </div>
 

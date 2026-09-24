@@ -55,6 +55,40 @@ export async function obtenerIncidencias(): Promise<Incident[]> {
   }));
 }
 
+/**
+ * Obtiene las incidencias reportadas por un estudiante en específico.
+ */
+export async function obtenerIncidenciasPorEstudiante(estudianteId: number): Promise<Incident[]> {
+  const response = await fetchWithAuth(`/incidencias/estudiante/${estudianteId}`);
+
+  if (!response.ok) {
+    throw new Error('Error al obtener las incidencias del estudiante');
+  }
+
+  const data = await response.json();
+
+  return data.map((inc: any): Incident => ({
+    id: inc.codigoTicket || `INC-${inc.id}`,
+    numericId: inc.id,
+    title: inc.titulo,
+    description: inc.descripcion,
+    category: inc.categoriaNombre || 'Sin categoría',
+    especialidad: inc.especialidadNombre || undefined,
+    priority: inc.prioridadNivel || 'Media',
+    status: inc.estado || 'Pendiente',
+    reporter: inc.estudianteNombre || 'Sin estudiante',
+    reporterId: inc.estudianteId,
+    assignee: inc.tecnicoNombre || 'Sin asignar',
+    assigneeId: inc.tecnicoId,
+    location: inc.ubicacionTexto || 'Sin ubicación',
+    locationId: inc.ubicacionId,
+    solucionTecnica: inc.solucionTecnica,
+    createdAt: inc.fechaCreacion,
+    startedAt: inc.fechaInicioAtencion,
+    closedAt: inc.fechaCierre,
+  }));
+}
+
 export async function crearIncidencia(data: CreateIncidentData): Promise<Incident> {
   const response = await fetchWithAuth('/incidencias', {
     method: 'POST',
