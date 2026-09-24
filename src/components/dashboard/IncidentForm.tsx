@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faXmark, faSpinner, faCamera, faTrash } from '@fortawesome/free-solid-svg-icons';
 import type { Categoria, Ubicacion, Prioridad } from '../../types/incident';
 import {
   crearIncidencia,
   obtenerCategorias,
   obtenerUbicaciones,
   obtenerPrioridades,
+  subirAdjunto,
 } from '../../services/incidenciasService';
 import { getCurrentUser } from '../../utils/auth';
 
@@ -22,6 +23,11 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
   const [categoriaId, setCategoriaId] = useState<number>(0);
   const [prioridadId, setPrioridadId] = useState<number>(0);
   const [ubicacionId, setUbicacionId] = useState<number>(0);
+
+  // Imagen / Evidencia
+  const [archivo, setArchivo] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [ubicaciones, setUbicaciones] = useState<Ubicacion[]>([]);
@@ -43,6 +49,8 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
     setCategoriaId(0);
     setPrioridadId(0);
     setUbicacionId(0);
+    setArchivo(null);
+    setPreviewUrl(null);
 
     Promise.all([
       obtenerCategorias(),
@@ -68,6 +76,35 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      setError('La imagen no debe superar los 10 MB.');
+      return;
+    }
+
+    setArchivo(file);
+    if (file.type.startsWith('image/')) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    } else {
+      setPreviewUrl(null);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setArchivo(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -85,7 +122,7 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
     setLoading(true);
 
     try {
-      await crearIncidencia({
+      const nuevaIncidencia: any = await crearIncidencia({
         titulo: titulo.trim(),
         descripcion: descripcion.trim(),
         categoriaId,
@@ -93,6 +130,15 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
         ubicacionId,
         estudianteId,
       });
+
+      // Subir archivo adjunto si el usuario seleccionó una imagen
+      if (archivo && nuevaIncidencia?.id) {
+        try {
+          await subirAdjunto(nuevaIncidencia.id, archivo, estudianteId);
+        } catch (uploadErr) {
+          console.warn('Incidencia creada pero falló la subida de evidencia:', uploadErr);
+        }
+      }
 
       onSave();
       onClose();
@@ -211,6 +257,64 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Adjuntar imagen de evidencia */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <FontAwesomeIcon icon={faCamera} className="text-amber-400" />
+                Evidencia fotográfica (Opcional)
+              </span>
+              <span className="text-[11px] font-normal text-slate-500">JPG, PNG, WEBP (Máx. 10MB)</span>
+            </label>
+
+            {!previewUrl ? (
+              <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-700 hover:border-amber-500/60 rounded-xl cursor-pointer bg-slate-800/40 hover:bg-slate-800/80 transition-all duration-200 group">
+                <div className="flex flex-col items-center justify-center text-center px-4">
+                  <div className="w-8 h-8 rounded-full bg-slate-700/50 group-hover:bg-amber-500/20 flex items-center justify-center text-slate-400 group-hover:text-amber-400 transition-colors mb-1">
+                    <FontAwesomeIcon icon={faCamera} className="text-xs" />
+                  </div>
+                  <p className="text-xs text-slate-300 font-medium">
+                    <span className="text-amber-400 font-semibold underline decoration-amber-400/40 underline-offset-2">Haz clic para subir una foto</span> o arrastra aquí
+                  </p>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
+            ) : (
+              <div className="relative flex items-center gap-3 p-3 bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+                <div className="w-14 h-14 rounded-lg overflow-hidden bg-slate-900 border border-slate-700 shrink-0 flex items-center justify-center">
+                  <img
+                    src={previewUrl}
+                    alt="Vista previa"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-white truncate">{archivo?.name}</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    {archivo ? (archivo.size / 1024 < 1024 ? `${(archivo.size / 1024).toFixed(1)} KB` : `${(archivo.size / (1024 * 1024)).toFixed(2)} MB`) : ''}
+                  </p>
+                  <span className="inline-block px-1.5 py-0.5 mt-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-semibold rounded">
+                    Foto lista para adjuntar
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRemoveFile}
+                  title="Eliminar imagen"
+                  className="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 flex items-center justify-center transition-colors"
+                >
+                  <FontAwesomeIcon icon={faTrash} className="text-xs" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Error Message */}

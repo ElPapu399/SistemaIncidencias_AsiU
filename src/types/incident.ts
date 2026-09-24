@@ -37,6 +37,19 @@ export interface Incident {
   startedAt?: string | null;
   closedAt?: string | null;
   updatedAt?: string;
+  adjuntos?: ArchivoAdjunto[];
+}
+
+export interface ArchivoAdjunto {
+  id: number;
+  incidenciaId: number;
+  urlArchivo: string;
+  nombreOriginal: string;
+  tipoArchivo: string;
+  tamanioByte: number;
+  subidoPorId?: number | null;
+  subidoPorNombre?: string | null;
+  fechaSubida: string;
 }
 
 export interface Categoria {

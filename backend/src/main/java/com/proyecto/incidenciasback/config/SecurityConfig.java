@@ -46,6 +46,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Endpoints públicos (no requieren token)
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/adjuntos/**").permitAll()
                 // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()
             )
@@ -65,7 +66,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        List<String> origins = Arrays.asList(corsAllowedOrigins.split(","));
+        List<String> origins = Arrays.stream(corsAllowedOrigins.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .flatMap(s -> {
+                    String clean = s.replaceAll("/+$", "");
+                    return java.util.stream.Stream.of(clean, clean + "/");
+                })
+                .distinct()
+                .toList();
         config.setAllowedOrigins(origins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));

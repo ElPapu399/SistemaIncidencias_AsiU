@@ -5,9 +5,24 @@ import type {
   Prioridad,
   Tecnico,
   CreateIncidentData,
+  ArchivoAdjunto,
 } from '../types/incident';
 import { fetchWithAuth } from '../utils/fetchWithAuth';
 import { getCurrentUser } from '../utils/auth';
+import { API_BASE } from '../config/api';
+
+/**
+ * Convierte una URL relativa de archivo adjunto en una URL absoluta funcional.
+ */
+export function getAttachmentUrl(urlArchivo?: string): string {
+  if (!urlArchivo) return '';
+  if (urlArchivo.startsWith('http://') || urlArchivo.startsWith('https://')) {
+    return urlArchivo;
+  }
+  const baseUrl = API_BASE.replace(/\/api\/?$/, '');
+  const cleanPath = urlArchivo.startsWith('/') ? urlArchivo : `/${urlArchivo}`;
+  return `${baseUrl}${cleanPath}`;
+}
 
 export async function obtenerIncidencias(): Promise<Incident[]> {
   const response = await fetchWithAuth('/incidencias');
@@ -112,5 +127,54 @@ export async function obtenerTecnicosPorEspecialidad(especialidadId?: number): P
     : '/usuarios/tecnicos';
   const response = await fetchWithAuth(endpoint);
   if (!response.ok) throw new Error('Error al cargar técnicos');
+  return response.json();
+}
+
+/**
+ * Obtiene el detalle enriquecido de una incidencia (con adjuntos e historial).
+ */
+export async function obtenerDetalleIncidencia(id: number): Promise<any> {
+  const response = await fetchWithAuth(`/incidencias/${id}`);
+  if (!response.ok) {
+    throw new Error('Error al obtener el detalle de la incidencia');
+  }
+  return response.json();
+}
+
+/**
+ * Lista los archivos adjuntos de una incidencia específica.
+ */
+export async function obtenerAdjuntos(incidenciaId: number): Promise<ArchivoAdjunto[]> {
+  const response = await fetchWithAuth(`/incidencias/${incidenciaId}/adjuntos`);
+  if (!response.ok) {
+    throw new Error('Error al obtener los archivos adjuntos');
+  }
+  return response.json();
+}
+
+/**
+ * Sube un archivo adjunto (imagen/documento de evidencia) a una incidencia.
+ */
+export async function subirAdjunto(
+  incidenciaId: number,
+  file: File,
+  usuarioId?: number
+): Promise<ArchivoAdjunto> {
+  const formData = new FormData();
+  formData.append('file', file);
+  if (usuarioId) {
+    formData.append('usuarioId', usuarioId.toString());
+  }
+
+  const response = await fetchWithAuth(`/incidencias/${incidenciaId}/adjuntos`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.error || 'Error al subir el archivo adjunto');
+  }
+
   return response.json();
 }

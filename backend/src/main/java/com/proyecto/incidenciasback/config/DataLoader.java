@@ -17,10 +17,13 @@ public class DataLoader implements CommandLineRunner {
     private final PrioridadRepository prioridadRepository;
     private final UbicacionRepository ubicacionRepository;
     private final CategoriaRepository categoriaRepository;
-    private final EquipoRepository equipoRepository;
     private final IncidenciaRepository incidenciaRepository;
     private final HistorialEstadoRepository historialEstadoRepository;
+    private final ArchivoAdjuntoRepository archivoAdjuntoRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+
+    @org.springframework.beans.factory.annotation.Value("${app.upload-dir:./uploads}")
+    private String uploadPath;
 
     public DataLoader(UsuarioRepository usuarioRepository,
                       RolRepository rolRepository,
@@ -31,6 +34,7 @@ public class DataLoader implements CommandLineRunner {
                       EquipoRepository equipoRepository,
                       IncidenciaRepository incidenciaRepository,
                       HistorialEstadoRepository historialEstadoRepository,
+                      ArchivoAdjuntoRepository archivoAdjuntoRepository,
                       BCryptPasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
@@ -41,6 +45,7 @@ public class DataLoader implements CommandLineRunner {
         this.equipoRepository = equipoRepository;
         this.incidenciaRepository = incidenciaRepository;
         this.historialEstadoRepository = historialEstadoRepository;
+        this.archivoAdjuntoRepository = archivoAdjuntoRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -398,6 +403,112 @@ public class DataLoader implements CommandLineRunner {
                 now.minusDays(6), now.minusDays(5), now.minusDays(4));
 
         System.out.println("✅ Incidencias de ejemplo cargadas");
+
+        // === 9. Archivos Adjuntos de Ejemplo (Evidencia fotográfica) ===
+        cargarAdjuntosDePrueba(estudiante);
+    }
+
+    private void cargarAdjuntosDePrueba(Usuario estudiante) {
+        if (archivoAdjuntoRepository.count() > 0) return;
+
+        try {
+            java.nio.file.Path baseUploadDir = java.nio.file.Paths.get(uploadPath).toAbsolutePath().normalize();
+
+            // Adjunto 1: Para INC-001 (Monitor no enciende)
+            incidenciaRepository.findAll().stream()
+                    .filter(i -> "INC-001".equals(i.getCodigoTicket()))
+                    .findFirst()
+                    .ifPresent(inc -> {
+                        String filename = "evidencia_monitor_inc001.svg";
+                        String svgContent = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 600 400\" width=\"600\" height=\"400\">"
+                                + "<rect width=\"600\" height=\"400\" fill=\"#0f172a\" rx=\"12\"/>"
+                                + "<rect x=\"50\" y=\"40\" width=\"500\" height=\"260\" rx=\"8\" fill=\"#1e293b\" stroke=\"#ef4444\" stroke-width=\"3\"/>"
+                                + "<rect x=\"70\" y=\"60\" width=\"460\" height=\"220\" rx=\"4\" fill=\"#090d16\"/>"
+                                + "<path d=\"M260 300 L240 350 L360 350 L340 300 Z\" fill=\"#334155\"/>"
+                                + "<rect x=\"220\" y=\"350\" width=\"160\" height=\"12\" rx=\"4\" fill=\"#475569\"/>"
+                                + "<circle cx=\"300\" cy=\"145\" r=\"32\" fill=\"#ef4444\" opacity=\"0.2\"/>"
+                                + "<text x=\"300\" y=\"155\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#ef4444\" text-anchor=\"middle\">✕</text>"
+                                + "<text x=\"300\" y=\"210\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#f87171\" text-anchor=\"middle\">SIN SEÑAL DE VÍDEO</text>"
+                                + "<text x=\"300\" y=\"235\" font-family=\"sans-serif\" font-size=\"13\" fill=\"#94a3b8\" text-anchor=\"middle\">Monitor Lab A - Puesto #05 (No enciende)</text>"
+                                + "<rect x=\"400\" y=\"50\" width=\"140\" height=\"24\" rx=\"12\" fill=\"#dc2626\"/>"
+                                + "<text x=\"470\" y=\"66\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">EVIDENCIA TICKET</text>"
+                                + "</svg>";
+                        guardarAdjuntoSemilla(inc, estudiante, baseUploadDir, filename, "Falla_Monitor_Puesto05.svg", svgContent);
+                    });
+
+            // Adjunto 2: Para INC-006 (Teclado)
+            incidenciaRepository.findAll().stream()
+                    .filter(i -> "INC-006".equals(i.getCodigoTicket()))
+                    .findFirst()
+                    .ifPresent(inc -> {
+                        String filename = "evidencia_teclado_inc006.svg";
+                        String svgContent = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 600 400\" width=\"600\" height=\"400\">"
+                                + "<rect width=\"600\" height=\"400\" fill=\"#0f172a\" rx=\"12\"/>"
+                                + "<rect x=\"60\" y=\"80\" width=\"480\" height=\"220\" rx=\"16\" fill=\"#1e293b\" stroke=\"#f59e0b\" stroke-width=\"3\"/>"
+                                + "<rect x=\"80\" y=\"100\" width=\"440\" height=\"40\" rx=\"6\" fill=\"#334155\"/>"
+                                + "<rect x=\"85\" y=\"105\" width=\"40\" height=\"30\" rx=\"4\" fill=\"#ef4444\"/>"
+                                + "<text x=\"105\" y=\"125\" font-family=\"monospace\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">F1</text>"
+                                + "<rect x=\"130\" y=\"105\" width=\"40\" height=\"30\" rx=\"4\" fill=\"#ef4444\"/>"
+                                + "<text x=\"150\" y=\"125\" font-family=\"monospace\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">F2</text>"
+                                + "<rect x=\"175\" y=\"105\" width=\"40\" height=\"30\" rx=\"4\" fill=\"#ef4444\"/>"
+                                + "<text x=\"195\" y=\"125\" font-family=\"monospace\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">F3</text>"
+                                + "<rect x=\"220\" y=\"105\" width=\"40\" height=\"30\" rx=\"4\" fill=\"#ef4444\"/>"
+                                + "<text x=\"240\" y=\"125\" font-family=\"monospace\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">F4</text>"
+                                + "<rect x=\"265\" y=\"105\" width=\"40\" height=\"30\" rx=\"4\" fill=\"#ef4444\"/>"
+                                + "<text x=\"285\" y=\"125\" font-family=\"monospace\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">F5</text>"
+                                + "<text x=\"300\" y=\"200\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#fbbf24\" text-anchor=\"middle\">TECLAS BLOQUEADAS</text>"
+                                + "<text x=\"300\" y=\"230\" font-family=\"sans-serif\" font-size=\"13\" fill=\"#94a3b8\" text-anchor=\"middle\">Teclado Lab A - Puesto #18 (Fila funciones rota)</text>"
+                                + "<rect x=\"400\" y=\"90\" width=\"130\" height=\"24\" rx=\"12\" fill=\"#d97706\"/>"
+                                + "<text x=\"465\" y=\"106\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">EVIDENCIA TÉCNICA</text>"
+                                + "</svg>";
+                        guardarAdjuntoSemilla(inc, estudiante, baseUploadDir, filename, "Teclas_Danadas_Puesto18.svg", svgContent);
+                    });
+
+            // Adjunto 3: Para INC-008 (Cable de red)
+            incidenciaRepository.findAll().stream()
+                    .filter(i -> "INC-008".equals(i.getCodigoTicket()))
+                    .findFirst()
+                    .ifPresent(inc -> {
+                        String filename = "evidencia_cable_inc008.svg";
+                        String svgContent = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 600 400\" width=\"600\" height=\"400\">"
+                                + "<rect width=\"600\" height=\"400\" fill=\"#0f172a\" rx=\"12\"/>"
+                                + "<circle cx=\"300\" cy=\"150\" r=\"60\" fill=\"#3b82f6\" opacity=\"0.15\" stroke=\"#3b82f6\" stroke-width=\"2\"/>"
+                                + "<path d=\"M270 180 L330 120\" stroke=\"#ef4444\" stroke-width=\"6\" stroke-linecap=\"round\"/>"
+                                + "<circle cx=\"300\" cy=\"150\" r=\"30\" fill=\"none\" stroke=\"#ef4444\" stroke-width=\"4\"/>"
+                                + "<text x=\"300\" y=\"245\" font-family=\"sans-serif\" font-size=\"20\" font-weight=\"bold\" fill=\"#60a5fa\" text-anchor=\"middle\">CONECTOR RJ-45 ROTO</text>"
+                                + "<text x=\"300\" y=\"275\" font-family=\"sans-serif\" font-size=\"13\" fill=\"#94a3b8\" text-anchor=\"middle\">Cable UTP Cat 6 - Lab B Puesto #20</text>"
+                                + "<rect x=\"410\" y=\"30\" width=\"150\" height=\"26\" rx=\"13\" fill=\"#2563eb\"/>"
+                                + "<text x=\"485\" y=\"47\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">FOTO EVIDENCIA</text>"
+                                + "</svg>";
+                        guardarAdjuntoSemilla(inc, estudiante, baseUploadDir, filename, "Cable_RJ45_Roto.svg", svgContent);
+                    });
+
+            System.out.println("✅ Archivos adjuntos de ejemplo cargados");
+        } catch (Exception e) {
+            System.err.println("⚠️ No se pudieron crear los adjuntos de ejemplo: " + e.getMessage());
+        }
+    }
+
+    private void guardarAdjuntoSemilla(Incidencia inc, Usuario estudiante, java.nio.file.Path baseDir,
+                                       String filename, String nombreOriginal, String content) {
+        try {
+            java.nio.file.Path incDir = baseDir.resolve("incidencias").resolve(String.valueOf(inc.getId()));
+            java.nio.file.Files.createDirectories(incDir);
+            java.nio.file.Path targetFile = incDir.resolve(filename);
+            java.nio.file.Files.writeString(targetFile, content, java.nio.charset.StandardCharsets.UTF_8);
+
+            ArchivoAdjunto adjunto = new ArchivoAdjunto();
+            adjunto.setIncidencia(inc);
+            adjunto.setUrlArchivo("/api/adjuntos/" + inc.getId() + "/" + filename);
+            adjunto.setNombreOriginal(nombreOriginal);
+            adjunto.setTipoArchivo("image/svg+xml");
+            adjunto.setTamanioByte((long) content.getBytes(java.nio.charset.StandardCharsets.UTF_8).length);
+            adjunto.setSubidoPor(estudiante);
+            adjunto.setFechaSubida(LocalDateTime.now().minusDays(1));
+            archivoAdjuntoRepository.save(adjunto);
+        } catch (Exception e) {
+            System.err.println("Error al guardar archivo semilla: " + e.getMessage());
+        }
     }
 
     private void crearIncidencia(String codigoTicket, String titulo, String descripcion,

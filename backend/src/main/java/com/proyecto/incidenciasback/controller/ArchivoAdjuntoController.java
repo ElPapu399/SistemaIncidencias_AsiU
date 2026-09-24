@@ -31,7 +31,7 @@ public class ArchivoAdjuntoController {
     public ResponseEntity<ArchivoAdjuntoResponse> subirArchivo(
             @PathVariable Integer incidenciaId,
             @RequestParam("file") MultipartFile file,
-            @RequestParam("usuarioId") Integer usuarioId) {
+            @RequestParam(value = "usuarioId", required = false) Integer usuarioId) {
         ArchivoAdjuntoResponse response = archivoAdjuntoService.subirArchivo(incidenciaId, usuarioId, file);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -55,16 +55,20 @@ public class ArchivoAdjuntoController {
             @PathVariable String filename) {
         try {
             Resource resource = archivoAdjuntoService.cargarArchivo(incidenciaId, filename);
+            String lowerName = filename.toLowerCase();
             String contentType = "application/octet-stream";
 
-            // Intentar detectar el content type
-            if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
+            if (lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg")) {
                 contentType = "image/jpeg";
-            } else if (filename.endsWith(".png")) {
+            } else if (lowerName.endsWith(".png")) {
                 contentType = "image/png";
-            } else if (filename.endsWith(".gif")) {
+            } else if (lowerName.endsWith(".gif")) {
                 contentType = "image/gif";
-            } else if (filename.endsWith(".pdf")) {
+            } else if (lowerName.endsWith(".webp")) {
+                contentType = "image/webp";
+            } else if (lowerName.endsWith(".svg")) {
+                contentType = "image/svg+xml";
+            } else if (lowerName.endsWith(".pdf")) {
                 contentType = "application/pdf";
             }
 

@@ -60,8 +60,13 @@ public class ArchivoAdjuntoService {
         Incidencia incidencia = incidenciaRepository.findById(incidenciaId)
                 .orElseThrow(() -> new RuntimeException("Incidencia no encontrada con id: " + incidenciaId));
 
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + usuarioId));
+        Usuario usuario = null;
+        if (usuarioId != null) {
+            usuario = usuarioRepository.findById(usuarioId).orElse(null);
+        }
+        if (usuario == null) {
+            usuario = incidencia.getEstudiante();
+        }
 
         try {
             // Crear subdirectorio por incidencia
