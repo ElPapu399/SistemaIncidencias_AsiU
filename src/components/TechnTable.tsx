@@ -97,7 +97,7 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                 )}
             </div>
 
-            <div className="overflow-x-auto overflow-y-auto max-h-[600px]">
+            <div className="overflow-x-auto overflow-y-auto max-h-[520px]">
                 <table className="w-full text-left">
                     <thead className="sticky top-0 bg-slate-50 z-10">
                         <tr className="border-b border-slate-200 bg-slate-50">

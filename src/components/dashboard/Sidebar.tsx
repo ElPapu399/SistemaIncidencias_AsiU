@@ -60,7 +60,7 @@
           </div>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-4 space-y-0.5">
           {visibleNavItems.map(({ to, label, icon, end }) => (
             <NavLink
               key={to}
@@ -80,13 +80,13 @@
           ))}
         </nav>
 
-        <div className="p-4 border-t border-slate-800">
+        <div className="p-5 border-t border-slate-800">
           <div className="bg-slate-900/60 rounded-xl p-4 text-left">
             <div className="mb-4">
               <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Periodo</p>
               <p className="text-sm text-slate-200 mt-1 font-medium">2026 - Semestre II</p>
             </div>
-            <div className="p-3 border-t border-sidebar-border flex-shrink-0">
+            <div className="p-2 border-t border-sidebar-border flex-shrink-0">
               <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white hover:bg-red-500/10 hover:text-red-400 transition-colors">
                 Cerrar Sesión
               </button>

@@ -1,12 +1,24 @@
 import { Link } from 'react-router-dom';
 import type { Incident } from '../../types/incident';
 import { StatusBadge, PriorityBadge, CategoryLabel, formatDate } from './IncidentBadges';
+import { getCurrentUser } from '../../utils/auth';
 
 interface RecentIncidentsTableProps {
   incidents: Incident[];
 }
 
 export default function RecentIncidentsTable({ incidents }: RecentIncidentsTableProps) {
+
+  const usuario = getCurrentUser();
+  const currentUserRole = usuario?.rol;
+
+  const visibleIncidents =
+    currentUserRole === 'ADMIN'
+      ? incidents
+      : currentUserRole === 'ESTUDIANTE'
+      ? incidents.filter((i) => i.reporterId === usuario?.id)
+      : incidents.filter((i) => i.assigneeId === usuario?.id);
+
   return (
     <div className="bg-white backdrop-blur-xl border border-slate-700/50 rounded-2xl overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-700/50 flex items-center justify-between">
@@ -36,7 +48,7 @@ export default function RecentIncidentsTable({ incidents }: RecentIncidentsTable
             </tr>
           </thead>
           <tbody>
-            {incidents.slice(0, 4).map((incident) => (
+            {visibleIncidents.slice(0, 4).map((incident) => (
               <tr
                 key={incident.id}
                 className="border-b border-slate-800/50 hover:bg-slate-400/30 transition-colors"

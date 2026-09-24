@@ -14,6 +14,7 @@ import CategoryBreakdown from '../components/dashboard/CategoryBreakdown';
 
 import { obtenerIncidencias } from '../services/incidenciasService';
 import type { Incident } from '../types/incident';
+import { getCurrentUser } from '../utils/auth';
 
 const categoryColorPalette = [
   '#8b5cf6', // Violet
@@ -29,6 +30,10 @@ export default function Dashboard() {
   const [incidencias, setIncidencias] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const usuario = getCurrentUser();
+  const currentUserRole = usuario?.rol;
+  const isEstudiante = currentUserRole === 'ESTUDIANTE';
 
   useEffect(() => {
     obtenerIncidencias()
@@ -180,14 +185,16 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <div className="xl:col-span-2">
+          <div className={isEstudiante ? "xl:col-span-3" : "xl:col-span-1"}>
             <RecentIncidentsTable incidents={incidencias} />
           </div>
 
-          <CategoryBreakdown
-            items={categoryBreakdown}
-            total={categoryTotal}
-          />
+          {!isEstudiante && (
+            <CategoryBreakdown
+              items={categoryBreakdown}
+              total={categoryTotal}
+            />
+          )};
         </div>
       </main>
     </>

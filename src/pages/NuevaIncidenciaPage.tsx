@@ -179,14 +179,14 @@ export default function NuevaIncidenciaPage() {
       />
 
       <main className="flex-1 overflow-y-auto p-6 bg-slate-200">
-        <div className="max-w-3xl mr-auto mr-12">
+        <div className="max-w-3xl w-full mr-auto">
           {success ? (
-            <div className="bg-slate-900 border border-slate-700 rounded-2xl p-8 text-center shadow-xl space-y-4">
+            <div className="bg-white border border-slate-700 rounded-2xl p-8 text-center shadow-xl space-y-4">
               <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center text-3xl">
                 <FontAwesomeIcon icon={faCircleCheck} />
               </div>
               <h3 className="text-xl font-bold text-black">¡Incidencia registrada con éxito!</h3>
-              <p className="text-sm text-slate-300 max-w-md mx-auto">
+              <p className="text-md text-slate-600">
                 Tu solicitud ha sido enviada al equipo de soporte técnico. Puedes dar seguimiento al estado de atención en tu panel.
               </p>
               <div className="pt-4 flex items-center justify-center gap-3">
