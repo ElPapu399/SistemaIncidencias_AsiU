@@ -29,9 +29,12 @@ server:
 app:
   upload-dir: ./uploads
   jwt:
-    secret: ${JWT_SECRET:AsIU-SistemaIncidencias-JWT-SecretKey-2026-MinLength32!}
-    expiration-ms: ${JWT_EXPIRATION:1800000}  # 30 minutos
+    secret: "AsIU-SistemaIncidencias-JWT-SecretKey-2026-MinLength32!"
+    expiration-ms: 1800000  # 30 minutos
 
-# CORS: acepta tanto localhost como el dominio de producción
-cors:
-  allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
+# Configuración de CORS para el frontend React
+# Ajustar si el puerto del frontend cambia
+spring.web.cors:
+  allowed-origins: "http://localhost:5173"
+  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowed-headers: "*"

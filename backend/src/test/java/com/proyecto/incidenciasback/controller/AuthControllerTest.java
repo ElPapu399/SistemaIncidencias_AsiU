@@ -5,6 +5,9 @@ import com.proyecto.incidenciasback.config.JwtConfig;
 import com.proyecto.incidenciasback.config.SecurityConfig;
 import com.proyecto.incidenciasback.dto.LoginRequest;
 import com.proyecto.incidenciasback.dto.LoginResponse;
+import com.proyecto.incidenciasback.dto.RecuperarPasswordRequest;
+import com.proyecto.incidenciasback.dto.RecuperarPasswordResponse;
+import com.proyecto.incidenciasback.dto.RestablecerPasswordRequest;
 import com.proyecto.incidenciasback.security.JwtAuthFilter;
 import com.proyecto.incidenciasback.security.JwtUtil;
 import com.proyecto.incidenciasback.service.AuthService;
@@ -127,5 +130,40 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Recuperación: correo válido devuelve 200 y mensaje")
+    void recuperarConCorreoValido_deberiaRetornar200() throws Exception {
+        RecuperarPasswordRequest request = new RecuperarPasswordRequest();
+        request.setCorreo("admin@universidad.edu.pe");
+
+        when(authService.solicitarRecuperacion(any(RecuperarPasswordRequest.class)))
+                .thenReturn(new RecuperarPasswordResponse("Si el correo está registrado, te enviaremos un código de verificación.", "123456"));
+
+        mockMvc.perform(post("/api/auth/recuperar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.mensaje").isNotEmpty())
+                .andExpect(jsonPath("$.codigo").value("123456"));
+    }
+
+    @Test
+    @DisplayName("Restablecer: código inválido devuelve 400")
+    void restablecerConCodigoInvalido_deberiaRetornar400() throws Exception {
+        RestablecerPasswordRequest request = new RestablecerPasswordRequest();
+        request.setCorreo("admin@universidad.edu.pe");
+        request.setCodigo("000000");
+        request.setNuevaPassword("nueva123");
+
+        when(authService.restablecerPassword(any(RestablecerPasswordRequest.class)))
+                .thenThrow(new RuntimeException("El código es inválido o ha expirado"));
+
+        mockMvc.perform(post("/api/auth/restablecer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("El código es inválido o ha expirado"));
     }
 }
