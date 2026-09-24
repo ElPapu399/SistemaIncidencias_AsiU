@@ -56,6 +56,10 @@ export default function IncidenciasPage({ title, description }: IncidenciasPageP
     setIsFormOpen(true);
   }, []);
 
+  const handleCloseForm = useCallback(() => {
+    setIsFormOpen(false);
+  }, []);
+
   const handleView = useCallback((incident: Incident) => {
     setSelectedIncident(incident);
     setIsStatusOpen(true);
@@ -66,9 +70,19 @@ export default function IncidenciasPage({ title, description }: IncidenciasPageP
     setIsAssignOpen(true);
   }, []);
 
+  const handleCloseAssign = useCallback(() => {
+    setIsAssignOpen(false);
+    setSelectedIncident(null);
+  }, []);
+
   const handleChangeStatus = useCallback((incident: Incident) => {
     setSelectedIncident(incident);
     setIsStatusOpen(true);
+  }, []);
+
+  const handleCloseStatus = useCallback(() => {
+    setIsStatusOpen(false);
+    setSelectedIncident(null);
   }, []);
 
   const pageTitle = isEstudiante ? 'Mis Incidencias' : (title || 'Incidencias');
@@ -133,7 +147,7 @@ export default function IncidenciasPage({ title, description }: IncidenciasPageP
       {/* Modal Nueva Incidencia */}
       <IncidentFormModal
         isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
+        onClose={handleCloseForm}
         onSave={cargarIncidencias}
       />
 
@@ -141,10 +155,7 @@ export default function IncidenciasPage({ title, description }: IncidenciasPageP
       <AssignTechnicianModal
         isOpen={isAssignOpen}
         incident={selectedIncident}
-        onClose={() => {
-          setIsAssignOpen(false);
-          setSelectedIncident(null);
-        }}
+        onClose={handleCloseAssign}
         onAssigned={cargarIncidencias}
       />
 
@@ -153,10 +164,7 @@ export default function IncidenciasPage({ title, description }: IncidenciasPageP
         isOpen={isStatusOpen}
         incident={selectedIncident}
         currentUserRole={currentUserRole}
-        onClose={() => {
-          setIsStatusOpen(false);
-          setSelectedIncident(null);
-        }}
+        onClose={handleCloseStatus}
         onUpdated={cargarIncidencias}
       />
     </>

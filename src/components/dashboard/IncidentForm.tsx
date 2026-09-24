@@ -92,6 +92,10 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
       return;
     }
 
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
     setArchivo(file);
     if (file.type.startsWith('image/')) {
       const url = URL.createObjectURL(file);
@@ -111,6 +115,14 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
       fileInputRef.current.value = '';
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -211,100 +223,113 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                Categoría *
-              </label>
-              <select
-                value={categoriaId}
-                onChange={(e) => handleCategoriaChange(Number(e.target.value))}
-                className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
-              >
-                <option value={0} disabled>
-                  Seleccionar categoría
-                </option>
-                {categorias.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nombre} {c.especialidad ? `(${c.especialidad.nombre})` : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {isEstudiante ? (
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center justify-between">
-                  <span>Prioridad</span>
-                  <span className="text-[10px] text-amber-400 font-semibold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
-                    Asignada por sistema
-                  </span>
-                </label>
-                <div className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 flex items-center justify-between text-sm">
-                  <span className="text-xs text-slate-400">
-                    {categoriaId ? 'Nivel asignado:' : 'Elige una categoría'}
-                  </span>
-                  {(() => {
-                    const prioridadObj = prioridades.find((p) => p.id === prioridadId);
-                    if (!prioridadObj) {
-                      return <span className="text-xs text-slate-500 italic">Automática</span>;
-                    }
-                    const badgeColor =
-                      prioridadObj.nivel === 'Alta'
-                        ? 'bg-red-500/20 text-red-400 border-red-500/30'
-                        : prioridadObj.nivel === 'Media'
-                        ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-                        : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-                    return (
-                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${badgeColor}`}>
-                        {prioridadObj.nivel} ({prioridadObj.tiempoMaximoHoras}h máx)
-                      </span>
-                    );
-                  })()}
-                </div>
-              </div>
-            ) : (
+          {isEstudiante ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-                  Prioridad *
+                  Categoría *
                 </label>
                 <select
-                  value={prioridadId}
-                  onChange={(e) => setPrioridadId(Number(e.target.value))}
+                  value={categoriaId}
+                  onChange={(e) => handleCategoriaChange(Number(e.target.value))}
                   className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
                 >
                   <option value={0} disabled>
-                    Seleccionar prioridad
+                    Seleccionar categoría
                   </option>
-                  {prioridades.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.nivel} ({p.tiempoMaximoHoras}h máx)
+                  {categorias.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nombre} {c.especialidad ? `(${c.especialidad.nombre})` : ''}
                     </option>
                   ))}
                 </select>
               </div>
-            )}
-          </div>
 
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
-              Ubicación *
-            </label>
-            <select
-              value={ubicacionId}
-              onChange={(e) => setUbicacionId(Number(e.target.value))}
-              className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
-            >
-              <option value={0} disabled>
-                Seleccionar aula / laboratorio
-              </option>
-              {ubicaciones.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.pabellon} - {u.aulaLaboratorio} (Piso {u.piso}, {u.tipo})
-                </option>
-              ))}
-            </select>
-          </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Ubicación *
+                </label>
+                <select
+                  value={ubicacionId}
+                  onChange={(e) => setUbicacionId(Number(e.target.value))}
+                  className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+                >
+                  <option value={0} disabled>
+                    Seleccionar aula / laboratorio
+                  </option>
+                  {ubicaciones.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.pabellon} - {u.aulaLaboratorio} (Piso {u.piso}, {u.tipo})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                    Categoría *
+                  </label>
+                  <select
+                    value={categoriaId}
+                    onChange={(e) => handleCategoriaChange(Number(e.target.value))}
+                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+                  >
+                    <option value={0} disabled>
+                      Seleccionar categoría
+                    </option>
+                    {categorias.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.nombre} {c.especialidad ? `(${c.especialidad.nombre})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                    Prioridad *
+                  </label>
+                  <select
+                    value={prioridadId}
+                    onChange={(e) => setPrioridadId(Number(e.target.value))}
+                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+                  >
+                    <option value={0} disabled>
+                      Seleccionar prioridad
+                    </option>
+                    {prioridades.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.nivel} ({p.tiempoMaximoHoras}h máx)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  Ubicación *
+                </label>
+                <select
+                  value={ubicacionId}
+                  onChange={(e) => setUbicacionId(Number(e.target.value))}
+                  className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+                >
+                  <option value={0} disabled>
+                    Seleccionar aula / laboratorio
+                  </option>
+                  {ubicaciones.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.pabellon} - {u.aulaLaboratorio} (Piso {u.piso}, {u.tipo})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          )}
 
           {/* Adjuntar imagen de evidencia */}
           <div>

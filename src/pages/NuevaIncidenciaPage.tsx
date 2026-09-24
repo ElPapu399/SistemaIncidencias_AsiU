@@ -90,6 +90,10 @@ export default function NuevaIncidenciaPage() {
       return;
     }
 
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
     setArchivo(file);
     if (file.type.startsWith('image/')) {
       const url = URL.createObjectURL(file);
@@ -109,6 +113,14 @@ export default function NuevaIncidenciaPage() {
       fileInputRef.current.value = '';
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,8 +170,6 @@ export default function NuevaIncidenciaPage() {
       setSubmitting(false);
     }
   };
-
-  const prioridadObj = prioridades.find((p) => p.id === prioridadId);
 
   return (
     <>
@@ -262,7 +272,7 @@ export default function NuevaIncidenciaPage() {
                     />
                   </div>
 
-                  {/* Categoría y Prioridad adaptada para estudiante */}
+                  {/* Categoría y Ubicación en 2 columnas */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
@@ -284,56 +294,25 @@ export default function NuevaIncidenciaPage() {
                       </select>
                     </div>
 
-                    {/* Prioridad automática para el estudiante (No seleccionable) */}
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 flex items-center justify-between">
-                        <span>Prioridad del Ticket</span>
-                        <span className="text-[10px] text-amber-400 font-semibold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
-                          Asignada por sistema
-                        </span>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                        Ubicación (Aula o Laboratorio) *
                       </label>
-                      <div className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 flex items-center justify-between text-sm">
-                        <span className="text-xs text-slate-400">
-                          {categoriaId ? 'Nivel sugerido:' : 'Selecciona una categoría'}
-                        </span>
-                        {prioridadObj ? (
-                          <span
-                            className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${
-                              prioridadObj.nivel === 'Alta'
-                                ? 'bg-red-500/20 text-red-400 border-red-500/30'
-                                : prioridadObj.nivel === 'Media'
-                                ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-                                : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
-                            }`}
-                          >
-                            {prioridadObj.nivel} ({prioridadObj.tiempoMaximoHoras}h máx)
-                          </span>
-                        ) : (
-                          <span className="text-xs text-slate-500 italic">Automática</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Ubicación */}
-                  <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
-                      Ubicación (Aula o Laboratorio) *
-                    </label>
-                    <select
-                      value={ubicacionId}
-                      onChange={(e) => setUbicacionId(Number(e.target.value))}
-                      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500/50 transition-colors"
-                    >
-                      <option value={0} disabled>
-                        Seleccionar aula / laboratorio
-                      </option>
-                      {ubicaciones.map((u) => (
-                        <option key={u.id} value={u.id}>
-                          {u.pabellon} — {u.aulaLaboratorio} (Piso {u.piso}, {u.tipo})
+                      <select
+                        value={ubicacionId}
+                        onChange={(e) => setUbicacionId(Number(e.target.value))}
+                        className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500/50 transition-colors"
+                      >
+                        <option value={0} disabled>
+                          Seleccionar aula / laboratorio
                         </option>
-                      ))}
-                    </select>
+                        {ubicaciones.map((u) => (
+                          <option key={u.id} value={u.id}>
+                            {u.pabellon} — {u.aulaLaboratorio} (Piso {u.piso}, {u.tipo})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
                   {/* Evidencia Fotográfica */}
