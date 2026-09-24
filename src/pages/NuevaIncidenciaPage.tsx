@@ -179,13 +179,13 @@ export default function NuevaIncidenciaPage() {
       />
 
       <main className="flex-1 overflow-y-auto p-6 bg-slate-200">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mr-auto mr-12">
           {success ? (
             <div className="bg-slate-900 border border-slate-700 rounded-2xl p-8 text-center shadow-xl space-y-4">
               <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center text-3xl">
                 <FontAwesomeIcon icon={faCircleCheck} />
               </div>
-              <h3 className="text-xl font-bold text-white">¡Incidencia registrada con éxito!</h3>
+              <h3 className="text-xl font-bold text-black">¡Incidencia registrada con éxito!</h3>
               <p className="text-sm text-slate-300 max-w-md mx-auto">
                 Tu solicitud ha sido enviada al equipo de soporte técnico. Puedes dar seguimiento al estado de atención en tu panel.
               </p>
@@ -215,15 +215,15 @@ export default function NuevaIncidenciaPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-slate-900 border border-slate-700 rounded-2xl shadow-xl overflow-hidden">
+            <div className="bg-white border border-slate-700 rounded-2xl shadow-xl overflow-hidden">
               {/* Card Banner */}
-              <div className="px-6 py-4 border-b border-slate-800 bg-slate-950/60 flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-slate-800 bg-white flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <h3 className="text-base font-bold text-black flex items-center gap-2">
                     <FontAwesomeIcon icon={faPaperPlane} className="text-amber-400 text-sm" />
                     Formulario de Solicitud de Incidencia
                   </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-600 mt-0.5">
                     Proporciona los datos del equipo o ambiente para que un técnico sea asignado.
                   </p>
                 </div>
@@ -254,21 +254,7 @@ export default function NuevaIncidenciaPage() {
                       value={titulo}
                       onChange={(e) => setTitulo(e.target.value)}
                       placeholder="Ej: Computadora no da vídeo o proyector sin señal"
-                      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500/50 transition-colors"
-                    />
-                  </div>
-
-                  {/* Descripción */}
-                  <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
-                      Descripción detallada del problema *
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={descripcion}
-                      onChange={(e) => setDescripcion(e.target.value)}
-                      placeholder="Indica qué equipo presenta la falla, qué sucede al encenderlo, o cualquier detalle relevante..."
-                      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500/50 transition-colors"
+                      className="w-full bg-gray-200 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-gray-600 placeholder:text-slate-500 focus:outline-none focus:border-amber-500/50 transition-colors"
                     />
                   </div>
 
@@ -281,7 +267,7 @@ export default function NuevaIncidenciaPage() {
                       <select
                         value={categoriaId}
                         onChange={(e) => handleCategoriaChange(Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500/50 transition-colors"
+                        className="w-full bg-gray-200 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-amber-500/50 transition-colors"
                       >
                         <option value={0} disabled>
                           Seleccionar categoría
@@ -301,7 +287,7 @@ export default function NuevaIncidenciaPage() {
                       <select
                         value={ubicacionId}
                         onChange={(e) => setUbicacionId(Number(e.target.value))}
-                        className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500/50 transition-colors"
+                        className="w-full bg-gray-200 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-amber-500/50 transition-colors"
                       >
                         <option value={0} disabled>
                           Seleccionar aula / laboratorio
@@ -315,24 +301,38 @@ export default function NuevaIncidenciaPage() {
                     </div>
                   </div>
 
+                  {/* Descripción */}
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                      Descripción detallada del problema *
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={descripcion}
+                      onChange={(e) => setDescripcion(e.target.value)}
+                      placeholder="Indica qué equipo presenta la falla, qué sucede al encenderlo, o cualquier detalle relevante..."
+                      className="w-full bg-gray-200 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-gray-500 placeholder:text-slate-500 focus:outline-none focus:border-amber-500/50 transition-colors"
+                    />
+                  </div>
+
                   {/* Evidencia Fotográfica */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5 flex items-center justify-between">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <FontAwesomeIcon icon={faCamera} className="text-amber-400" />
+                        <FontAwesomeIcon icon={faCamera} className="text-amber-500" />
                         Evidencia fotográfica (Opcional)
                       </span>
                       <span className="text-[11px] font-normal text-slate-400">JPG, PNG, WEBP (Máx. 10MB)</span>
                     </label>
 
                     {!previewUrl ? (
-                      <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-700 hover:border-amber-500/60 rounded-xl cursor-pointer bg-slate-800/40 hover:bg-slate-800/80 transition-all duration-200 group">
+                      <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-300 hover:border-amber-500/60 rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-all duration-200 group">
                         <div className="flex flex-col items-center justify-center text-center px-4">
-                          <div className="w-9 h-9 rounded-full bg-slate-700/50 group-hover:bg-amber-500/20 flex items-center justify-center text-slate-400 group-hover:text-amber-400 transition-colors mb-1.5">
+                          <div className="w-9 h-9 rounded-full bg-slate-200 group-hover:bg-amber-500/20 flex items-center justify-center text-slate-500 group-hover:text-amber-500 transition-colors mb-1.5">
                             <FontAwesomeIcon icon={faCamera} className="text-sm" />
                           </div>
-                          <p className="text-xs text-slate-300 font-medium">
-                            <span className="text-amber-400 font-semibold underline decoration-amber-400/40 underline-offset-2">
+                          <p className="text-xs text-slate-700 font-medium">
+                            <span className="text-amber-600 font-semibold underline decoration-amber-500/40 underline-offset-2">
                               Haz clic para subir una foto
                             </span>{' '}
                             o arrastra aquí
@@ -348,8 +348,8 @@ export default function NuevaIncidenciaPage() {
                         />
                       </label>
                     ) : (
-                      <div className="relative flex items-center gap-3 p-3 bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
-                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-900 border border-slate-700 shrink-0 flex items-center justify-center">
+                      <div className="relative flex items-center gap-3 p-3 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden">
+                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-white border border-slate-300 shrink-0 flex items-center justify-center">
                           <img
                             src={previewUrl}
                             alt="Vista previa"
@@ -357,15 +357,15 @@ export default function NuevaIncidenciaPage() {
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-white truncate">{archivo?.name}</p>
-                          <p className="text-[11px] text-slate-400 mt-0.5">
+                          <p className="text-xs font-medium text-slate-900 truncate">{archivo?.name}</p>
+                          <p className="text-[11px] text-slate-500 mt-0.5">
                             {archivo
                               ? archivo.size / 1024 < 1024
                                 ? `${(archivo.size / 1024).toFixed(1)} KB`
                                 : `${(archivo.size / (1024 * 1024)).toFixed(2)} MB`
                               : ''}
                           </p>
-                          <span className="inline-block px-1.5 py-0.5 mt-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-semibold rounded">
+                          <span className="inline-block px-1.5 py-0.5 mt-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-semibold rounded">
                             Foto lista para adjuntar
                           </span>
                         </div>
@@ -373,7 +373,7 @@ export default function NuevaIncidenciaPage() {
                           type="button"
                           onClick={handleRemoveFile}
                           title="Eliminar imagen"
-                          className="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 flex items-center justify-center transition-colors"
+                          className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-colors"
                         >
                           <FontAwesomeIcon icon={faTrash} className="text-xs" />
                         </button>
