@@ -2,6 +2,10 @@ package com.proyecto.incidenciasback.service;
 
 import com.proyecto.incidenciasback.dto.LoginRequest;
 import com.proyecto.incidenciasback.dto.LoginResponse;
+import com.proyecto.incidenciasback.dto.MensajeResponse;
+import com.proyecto.incidenciasback.dto.RecuperarPasswordRequest;
+import com.proyecto.incidenciasback.dto.RecuperarPasswordResponse;
+import com.proyecto.incidenciasback.dto.RestablecerPasswordRequest;
 import com.proyecto.incidenciasback.model.Rol;
 import com.proyecto.incidenciasback.model.Usuario;
 import com.proyecto.incidenciasback.repository.UsuarioRepository;
@@ -104,5 +108,82 @@ class AuthServiceTest {
         assertThatThrownBy(() -> authService.login(request))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Correo o contraseña incorrectos");
+    }
+
+    @Test
+    @DisplayName("Recuperación: correo existente genera código")
+    void solicitarRecuperacion_correoExistente_retornaCodigo() {
+        Usuario usuario = crearUsuario("admin@universidad.edu.pe", "admin123");
+        when(usuarioRepository.findByCorreo("admin@universidad.edu.pe"))
+                .thenReturn(Optional.of(usuario));
+
+        RecuperarPasswordRequest request = new RecuperarPasswordRequest();
+        request.setCorreo("admin@universidad.edu.pe");
+
+        RecuperarPasswordResponse response = authService.solicitarRecuperacion(request);
+
+        assertThat(response.getCodigo()).isNotBlank();
+        assertThat(response.getCodigo()).hasSize(6);
+        assertThat(response.getMensaje()).contains("código");
+    }
+
+    @Test
+    @DisplayName("Recuperación: correo inexistente no revela si existe")
+    void solicitarRecuperacion_correoInexistente_noDevuelveCodigo() {
+        when(usuarioRepository.findByCorreo("no-existe@universidad.edu.pe"))
+                .thenReturn(Optional.empty());
+
+        RecuperarPasswordRequest request = new RecuperarPasswordRequest();
+        request.setCorreo("no-existe@universidad.edu.pe");
+
+        RecuperarPasswordResponse response = authService.solicitarRecuperacion(request);
+
+        assertThat(response.getCodigo()).isNull();
+        assertThat(response.getMensaje()).isEqualTo(
+                "Si el correo está registrado, te enviaremos un código de verificación.");
+    }
+
+    @Test
+    @DisplayName("Restablecer: código válido actualiza la contraseña")
+    void restablecerPassword_codigoValido_actualizaHash() {
+        Usuario usuario = crearUsuario("admin@universidad.edu.pe", "admin123");
+        when(usuarioRepository.findByCorreo("admin@universidad.edu.pe"))
+                .thenReturn(Optional.of(usuario));
+        when(usuarioRepository.save(usuario)).thenReturn(usuario);
+
+        RecuperarPasswordRequest recuperar = new RecuperarPasswordRequest();
+        recuperar.setCorreo("admin@universidad.edu.pe");
+        String codigo = authService.solicitarRecuperacion(recuperar).getCodigo();
+
+        RestablecerPasswordRequest restablecer = new RestablecerPasswordRequest();
+        restablecer.setCorreo("admin@universidad.edu.pe");
+        restablecer.setCodigo(codigo);
+        restablecer.setNuevaPassword("nueva123");
+
+        MensajeResponse response = authService.restablecerPassword(restablecer);
+
+        assertThat(response.getMensaje()).contains("Contraseña actualizada");
+        assertThat(passwordEncoder.matches("nueva123", usuario.getPasswordHash())).isTrue();
+    }
+
+    @Test
+    @DisplayName("Restablecer: código inválido lanza excepción")
+    void restablecerPassword_codigoInvalido_lanzaExcepcion() {
+        Usuario usuario = crearUsuario("admin@universidad.edu.pe", "admin123");
+        when(usuarioRepository.findByCorreo("admin@universidad.edu.pe"))
+                .thenReturn(Optional.of(usuario));
+
+        RecuperarPasswordRequest recuperar = new RecuperarPasswordRequest();
+        recuperar.setCorreo("admin@universidad.edu.pe");
+        authService.solicitarRecuperacion(recuperar);
+
+        RestablecerPasswordRequest restablecer = new RestablecerPasswordRequest();
+        restablecer.setCorreo("admin@universidad.edu.pe");
+        restablecer.setCodigo("000000");
+        restablecer.setNuevaPassword("nueva123");
+
+        assertThatThrownBy(() -> authService.restablecerPassword(restablecer))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("El código es inválido o ha expirado");
     }
 }

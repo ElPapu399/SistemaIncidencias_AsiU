@@ -17,6 +17,7 @@ public class DataLoader implements CommandLineRunner {
     private final PrioridadRepository prioridadRepository;
     private final UbicacionRepository ubicacionRepository;
     private final CategoriaRepository categoriaRepository;
+    private final EquipoRepository equipoRepository;
     private final IncidenciaRepository incidenciaRepository;
     private final HistorialEstadoRepository historialEstadoRepository;
     private final ArchivoAdjuntoRepository archivoAdjuntoRepository;
