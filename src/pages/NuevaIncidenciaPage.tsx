@@ -11,6 +11,7 @@ import {
   faShieldHalved,
 } from '@fortawesome/free-solid-svg-icons';
 import Header from '../components/dashboard/Header';
+import Button from '../components/Button';
 import type { Categoria, Ubicacion, Prioridad } from '../types/incident';
 import {
   crearIncidencia,
@@ -390,7 +391,7 @@ export default function NuevaIncidenciaPage() {
 
                   {/* Botones de acción */}
                   <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-                    <span className="text-[14px] text-slate-500 flex items-center gap-1.5">
+                    <span className="text-[13px] text-slate-500 flex items-center gap-1.5">
                       <FontAwesomeIcon icon={faShieldHalved} className="text-amber-400" />
                       Tu solicitud será procesada por el equipo de soporte de ASIU.
                     </span>
@@ -402,23 +403,13 @@ export default function NuevaIncidenciaPage() {
                       >
                         Cancelar
                       </button>
-                      <button
-                        type="submit"
-                        disabled={submitting}
-                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                      >
-                        {submitting ? (
-                          <>
-                            <FontAwesomeIcon icon={faSpinner} spin />
-                            <span>Enviando...</span>
-                          </>
-                        ) : (
-                          <>
-                            <FontAwesomeIcon icon={faPaperPlane} />
-                            <span>Registrar incidencia</span>
-                          </>
-                        )}
-                      </button>
+                      <Button
+                          text={submitting ? 'Enviando...' : 'Registrar incidencia'}
+                          icon={submitting ? <FontAwesomeIcon icon={faSpinner}/> : <FontAwesomeIcon icon={faPaperPlane}/>}
+                          type="submit"
+                          disabled={submitting}
+                          variant="secondary"
+                      />
                     </div>
                   </div>
                 </form>

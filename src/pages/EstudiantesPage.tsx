@@ -5,6 +5,7 @@ import { faPlus, faSpinner, faUsers } from '@fortawesome/free-solid-svg-icons';
 import Header from '../components/dashboard/Header';
 import StudentTable from '../components/StudentTable';
 import UserFormModal from '../components/dashboard/UserForm';
+import Button from '../components/Button';
 import type { User } from '../types/user';
 import { fetchWithAuth } from '../utils/fetchWithAuth';
 
@@ -71,14 +72,13 @@ export default function EstudiantesPage({ title, description }: EstudiantesPageP
                             {totalEstudiantes} estudiante{totalEstudiantes !== 1 ? 's' : ''} registrado{totalEstudiantes !== 1 ? 's' : ''} en el sistema
                         </p>
                     </div>
-                    <button
+                    <Button
+                        text="Nuevo Estudiante"
+                        icon={<FontAwesomeIcon icon={faPlus} />}
                         type="button"
                         onClick={handleCreate}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 cursor-pointer"
-                    >
-                        <FontAwesomeIcon icon={faPlus} />
-                        Nuevo Estudiante
-                    </button>
+                        variant="secondary"
+                    />
                 </div>
 
                 {error && (

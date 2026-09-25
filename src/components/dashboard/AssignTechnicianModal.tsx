@@ -81,21 +81,21 @@ export default function AssignTechnicianModal({
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal Card */}
-      <div className="relative bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden z-10">
+      <div className="relative bg-white border border-slate-700 rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden z-10">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
           <div>
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+            <h3 className="text-lg font-bold text-black flex items-center gap-2">
               <FontAwesomeIcon icon={faUserCheck} className="text-amber-400" />
               Asignar Técnico
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-600 mt-0.5">
               Ticket: <span className="font-mono text-amber-400">{incident.id}</span> — {incident.title}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+            className="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-400 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
           >
             <FontAwesomeIcon icon={faXmark} />
           </button>
@@ -103,16 +103,18 @@ export default function AssignTechnicianModal({
 
         {/* Body */}
         <div className="p-6 space-y-4">
-          <div className="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/60 text-xs text-slate-300 space-y-1">
+          <div className="bg-slate-100 p-3.5 rounded-xl border border-slate-200 text-xs text-slate-300 space-y-1">
             <p>
-              <strong className="text-white">Categoría:</strong> {incident.category}
+              <strong className="text-slate-500">Categoría:</strong>{' '}
+              <span className="text-slate-800 font-semibold">{incident.category}</span>
             </p>
             <p>
-              <strong className="text-white">Especialidad requerida:</strong>{' '}
-              <span className="text-amber-300 font-semibold">{incident.especialidad || 'General'}</span>
+              <strong className="text-slate-500">Especialidad requerida:</strong>{' '}
+              <span className="text-amber-500 font-semibold">{incident.especialidad || 'General'}</span>
             </p>
             <p>
-              <strong className="text-white">Ubicación:</strong> {incident.location}
+              <strong className="text-slate-500">Ubicación:</strong> {' '}
+              <span className="text-slate-800 font-semibold">{incident.location}</span>
             </p>
           </div>
 
@@ -142,8 +144,8 @@ export default function AssignTechnicianModal({
                       onClick={() => setSelectedTecnicoId(t.id)}
                       className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${
                         isSelected
-                          ? 'bg-amber-500/10 border-amber-500/50 text-white'
-                          : 'bg-slate-800/40 border-slate-700/50 hover:bg-slate-800 text-slate-300'
+                          ? 'bg-amber-600/50 border-amber-500/50 text-white'
+                          : 'bg-slate-700/30 border-slate-700/50 hover:bg-slate-800/40'
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -152,13 +154,27 @@ export default function AssignTechnicianModal({
                           {t.apellido.charAt(0)}
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-white">
+                          <p className={`text-white transition-all ${
+                            isSelected
+                              ? 'text-base font-bold'
+                              : 'text-sm'
+                          }`}
+                          >
                             {t.nombre} {t.apellido}
                           </p>
-                          <p className="text-xs text-slate-400">
+                          <p className={`text-slate-700 transition-all ${
+                            isSelected
+                              ? 'text-[14px] font-bold'
+                              : 'text-xs'
+                          }`}>
                             {t.especialidad || 'Sin especialidad'}
                             {isMatch && (
-                              <span className="ml-2 text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-md font-semibold">
+                              <span className={`ml-2 px-2 py-0.5 text-emerald-200 rounded-md font-semibold ${
+                                isSelected
+                                 ? 'text-[12px] bg-emerald-600/40'
+                                 : 'text-[10px] bg-emerald-500/30'
+                              }`}
+                              >
                                 Recomendado
                               </span>
                             )}
@@ -189,7 +205,7 @@ export default function AssignTechnicianModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-red-600/70 transition-colors"
             >
               Cancelar
             </button>

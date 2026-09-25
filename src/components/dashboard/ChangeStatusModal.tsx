@@ -366,9 +366,9 @@ export default function ChangeStatusModal({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                    className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-red-600/70 transition-colors"
                   >
-                    Cerrar
+                    Cancelar
                   </button>
                   <button
                     type="submit"

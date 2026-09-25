@@ -19,8 +19,8 @@ interface UserFormProps {
     mode?: 'estudiante' | 'tecnico';
 }
 
-const INPUT_STYLE = "w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-yellow-500/50 transition-colors";
-const LABEL_STYLE = "block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5";
+const INPUT_STYLE = "w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-amber-500 transition-colors";
+const LABEL_STYLE = "block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5";
 
 const ROLE_LABELS: Record<string, string> = {
     ADMIN: 'Administrador',
@@ -213,9 +213,9 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
             {/* Modal */}
-            <div className="relative bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
+            <div className="relative bg-white border border-slate-700 rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-slate-800/40">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-slate-50">
                     <div className="flex items-center gap-3">
                         <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
                             mode === 'estudiante'
@@ -227,10 +227,10 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
                             <FontAwesomeIcon icon={getHeaderIcon()} />
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-white leading-tight">
+                            <h3 className="text-lg font-bold text-slate-900 leading-tight">
                                 {getModalTitle()}
                             </h3>
-                            <p className="text-xs text-slate-400">
+                            <p className="text-xs text-slate-500">
                                 {mode === 'estudiante'
                                     ? 'Formulario de registro para alumnos'
                                     : mode === 'tecnico'
@@ -241,7 +241,7 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
                     </div>
                     <button
                         onClick={onClose}
-                        className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer"
+                        className="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-400 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
                     >
                         <FontAwesomeIcon icon={faXmark} />
                     </button>
@@ -362,14 +362,14 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
 
                             {/* Info card de apoyo para entender el tipo de técnico */}
                             {isTecnicoGeneral && (
-                                <div className="text-xs text-amber-300 bg-amber-950/30 border border-amber-800/40 rounded-xl p-3 flex items-start gap-2.5">
-                                    <FontAwesomeIcon icon={faInfoCircle} className="mt-0.5 text-amber-400 shrink-0" />
+                                <div className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2.5">
+                                    <FontAwesomeIcon icon={faInfoCircle} className="mt-0.5 text-amber-500 shrink-0" />
                                     <span><strong>Soporte General:</strong> Mesa de ayuda y triaje inicial. Puede derivar y asignar incidencias a los especialistas.</span>
                                 </div>
                             )}
                             {isTecnicoEspecialista && (
-                                <div className="text-xs text-blue-300 bg-blue-950/30 border border-blue-800/40 rounded-xl p-3 flex items-start gap-2.5">
-                                    <FontAwesomeIcon icon={faInfoCircle} className="mt-0.5 text-blue-400 shrink-0" />
+                                <div className="text-xs text-blue-800 bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start gap-2.5">
+                                    <FontAwesomeIcon icon={faInfoCircle} className="mt-0.5 text-blue-500 shrink-0" />
                                     <span><strong>Soporte Especializado:</strong> Resuelve incidencias técnicas en campo según la especialidad seleccionada.</span>
                                 </div>
                             )}
@@ -498,7 +498,7 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                            className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-red-600/70 transition-colors cursor-pointer"
                         >
                             Cancelar
                         </button>

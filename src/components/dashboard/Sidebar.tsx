@@ -1,6 +1,7 @@
   import { NavLink, useNavigate } from 'react-router-dom';
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
   import {
+    faHome,
     faChartLine,
     faClipboardList,
     faUser,
@@ -25,7 +26,7 @@
     const currentUserRole = usuario?.rol;
 
     const navItems = [
-      { to: '/dashboard', label: 'Inicio', icon: faChartLine, end: true, roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS] },
+      { to: '/dashboard', label: 'Inicio', icon: faHome, end: true, roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS] },
       { to: '/dashboard/nueva', label: 'Registrar incidencia', icon: faPlus, roles: ['ESTUDIANTE'] },
       {
         to: '/dashboard/incidencias',
@@ -33,7 +34,7 @@
           ADMIN: 'Incidencias',
           ESTUDIANTE: 'Mis incidencias',
           TECNICO: 'Mis incidencias',
-          TECNICO_GENERAL: 'Mis incidencias',
+          TECNICO_GENERAL: 'Gestión de incidencias',
           TECNICO_ESPECIALISTA: 'Mis incidencias',
         } as Record<string, string>,
         icon: faClipboardList,
@@ -42,10 +43,20 @@
       { to: '/dashboard/usuarios', label: 'Estudiantes', icon: faUserGroup, roles: ['ADMIN', 'TECNICO'] },
       { to: '/dashboard/tecnicos', label: 'Técnicos', icon: faScrewdriverWrench, roles: ['ADMIN', 'TECNICO_GENERAL'] },
       { to: '/dashboard/laboratorios', label: 'Laboratorios', icon: faDesktop, roles: ['ADMIN', 'TECNICO_ESPECIALISTA'] },
-      { to: '/dashboard/reportes', label: 'Reportes', icon: faChartBar, roles: ['ADMIN', 'TECNICO_GENERAL'] },
-      { to: '/dashboard/configuracion', label: 'Configuración', icon: faGear, roles: ['ADMIN', ...ALL_TECNICOS] },
-      { to: '/dashboard/historial', label: 'Historial', icon: faClockRotateLeft, roles: ['ESTUDIANTE', ...ALL_TECNICOS] },
-      { to: '/dashboard/perfil', label: 'Perfil', icon: faUser, roles: ['ESTUDIANTE'] },
+      { to: '/dashboard/reportes', label: 'Reportes', icon: faChartBar, roles: ['ADMIN'] },
+      {
+        to: '/dashboard/historial',
+        label: {
+          ESTUDIANTE: 'Historial',
+          TECNICO: 'Historial',
+          TECNICO_GENERAL: 'Historial general',
+          TECNICO_ESPECIALISTA: 'Historial',
+        } as Record<string, string>,
+        icon: faClockRotateLeft,
+        roles: ['ESTUDIANTE', ...ALL_TECNICOS],
+      },
+      { to: '/dashboard/configuracion', label: 'Configuración', icon: faGear, roles: ['ADMIN'] },
+      { to: '/dashboard/perfil', label: 'Perfil', icon: faUser, roles: ['ESTUDIANTE', ...ALL_TECNICOS] },
     ];
 
     const handleLogout = () => {

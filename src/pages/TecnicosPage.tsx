@@ -5,6 +5,7 @@ import { faPlus, faSpinner, faUsers } from '@fortawesome/free-solid-svg-icons';
 import Header from '../components/dashboard/Header';
 import TechnTable from '../components/TechnTable';
 import UserFormModal from '../components/dashboard/UserForm';
+import Button from '../components/Button';
 import type { User } from '../types/user';
 import { fetchWithAuth } from '../utils/fetchWithAuth';
 
@@ -70,15 +71,14 @@ export default function TecnicosPage({ title, description }: TecnicosPageProps) 
                         <p className="text-sm text-slate-500 mt-1">
                             {totalTecnicos} técnico{totalTecnicos !== 1 ? 's' : ''} registrado{totalTecnicos !== 1 ? 's' : ''} en el sistema
                         </p>    
-                    </div>
-                    <button
+                    </div>  
+                    <Button
+                        text="Nuevo Técnico"
+                        icon={<FontAwesomeIcon icon={faPlus} />}
                         type="button"
                         onClick={handleCreate}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 cursor-pointer"
-                    >
-                        <FontAwesomeIcon icon={faPlus} />
-                        Nuevo técnico
-                    </button>
+                        variant="secondary"
+                    />
                 </div>
 
                 {error && (
