@@ -2,7 +2,6 @@
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
   import {
     faHome,
-    faChartLine,
     faClipboardList,
     faUser,
     faUserGroup,
