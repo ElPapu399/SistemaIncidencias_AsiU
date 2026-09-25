@@ -4,12 +4,15 @@
     faChartLine,
     faClipboardList,
     faUser,
+    faUserGroup,
     faPlus,
     faChartBar,
     faGear,
     faGraduationCap,
     faScrewdriverWrench,
-    faDesktop
+    faDesktop,
+    faClockRotateLeft,
+    faRightFromBracket
   } from '@fortawesome/free-solid-svg-icons';
   import { getCurrentUser, logout } from '../../utils/auth';
 
@@ -23,18 +26,26 @@
 
     const navItems = [
       { to: '/dashboard', label: 'Inicio', icon: faChartLine, end: true, roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS] },
-      { to: '/dashboard/nueva', label: 'Nueva incidencia', icon: faPlus, roles: ['ESTUDIANTE'] },
+      { to: '/dashboard/nueva', label: 'Registrar incidencia', icon: faPlus, roles: ['ESTUDIANTE'] },
       {
         to: '/dashboard/incidencias',
-        label: currentUserRole === 'ESTUDIANTE' ? 'Mis incidencias' : 'Incidencias',
+        label: {
+          ADMIN: 'Incidencias',
+          ESTUDIANTE: 'Mis incidencias',
+          TECNICO: 'Mis incidencias',
+          TECNICO_GENERAL: 'Mis incidencias',
+          TECNICO_ESPECIALISTA: 'Mis incidencias',
+        } as Record<string, string>,
         icon: faClipboardList,
         roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS],
       },
-      { to: '/dashboard/usuarios', label: 'Estudiantes', icon: faUser, roles: ['ADMIN', 'TECNICO'] },
+      { to: '/dashboard/usuarios', label: 'Estudiantes', icon: faUserGroup, roles: ['ADMIN', 'TECNICO'] },
       { to: '/dashboard/tecnicos', label: 'Técnicos', icon: faScrewdriverWrench, roles: ['ADMIN', 'TECNICO_GENERAL'] },
       { to: '/dashboard/laboratorios', label: 'Laboratorios', icon: faDesktop, roles: ['ADMIN', 'TECNICO_ESPECIALISTA'] },
       { to: '/dashboard/reportes', label: 'Reportes', icon: faChartBar, roles: ['ADMIN', 'TECNICO_GENERAL'] },
-      { to: '/dashboard/configuracion', label: 'Configuración', icon: faGear, roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS] },
+      { to: '/dashboard/configuracion', label: 'Configuración', icon: faGear, roles: ['ADMIN', ...ALL_TECNICOS] },
+      { to: '/dashboard/historial', label: 'Historial', icon: faClockRotateLeft, roles: ['ESTUDIANTE', ...ALL_TECNICOS] },
+      { to: '/dashboard/perfil', label: 'Perfil', icon: faUser, roles: ['ESTUDIANTE'] },
     ];
 
     const handleLogout = () => {
@@ -46,9 +57,9 @@
 
     return (
       <div className="w-64 bg-blue-900/50 border-r border-slate-800 flex flex-col relative overflow-hidden">
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-sidebar-border flex-shrink-0">
+        <div className="flex items-center gap-3 px-5 py-5 border-b border-sidebar-border shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
+            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
               <FontAwesomeIcon icon={faGraduationCap} className="text-slate-950 text-xl" />
             </div>
             <div className="text-left">
@@ -61,23 +72,27 @@
         </div>
 
         <nav className="flex-1 p-4 space-y-0.5">
-          {visibleNavItems.map(({ to, label, icon, end }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={end}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  isActive
-                    ? 'bg-gradient-to-r from-yellow-400/10 to-orange-500/10 text-yellow-400 border border-orange-500/20'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-                }`
-              }
-            >
-              <FontAwesomeIcon icon={icon} className="w-4 h-4" />
-              {label}
-            </NavLink>
-          ))}
+          {visibleNavItems.map(({ to, label, icon, end }) => {
+            const displayLabel =
+              typeof label === 'string' ? label: label[currentUserRole ?? ''] ?? '';
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                end={end}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-linear-to-r from-yellow-400/10 to-orange-500/10 text-yellow-400 border border-orange-500/20'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  }`
+                }
+              >
+                <FontAwesomeIcon icon={icon} className="w-4 h-4" />
+                {displayLabel}
+              </NavLink>
+            );
+          })}
         </nav>
 
         <div className="p-5 border-t border-slate-800">
@@ -86,8 +101,9 @@
               <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Periodo</p>
               <p className="text-sm text-slate-200 mt-1 font-medium">2026 - Semestre II</p>
             </div>
-            <div className="p-2 border-t border-sidebar-border flex-shrink-0">
-              <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white hover:bg-red-500/10 hover:text-red-400 transition-colors">
+            <div className="p-2 border-t border-sidebar-border shrink-0">
+              <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white bg-red-500/40 hover:bg-red-600 hover:font-bold transition-all">
+                <FontAwesomeIcon icon={faRightFromBracket}/>
                 Cerrar Sesión
               </button>
             </div>

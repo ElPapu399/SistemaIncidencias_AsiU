@@ -73,6 +73,24 @@ function App() {
             />
           }
         />
+        <Route
+          path="historial"
+          element={
+            <PlaceholderPage
+              title="Historial"
+              description="Historial de las incidencias según el Rol."
+            />
+          }
+        />
+        <Route
+          path="perfil"
+          element={
+            <PlaceholderPage
+              title="Perfil"
+              description="Ajustes del perfil del usuario."
+            />
+          }
+        />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

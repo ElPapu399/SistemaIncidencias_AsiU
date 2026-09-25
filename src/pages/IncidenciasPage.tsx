@@ -11,6 +11,7 @@ import ChangeStatusModal from '../components/dashboard/ChangeStatusModal';
 import { obtenerIncidencias, obtenerIncidenciasPorEstudiante } from '../services/incidenciasService';
 import type { Incident } from '../types/incident';
 import { getCurrentUser } from '../utils/auth';
+import Button from '../components/Button';
 
 interface IncidenciasPageProps {
   title: string;
@@ -108,14 +109,15 @@ export default function IncidenciasPage({ title, description }: IncidenciasPageP
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={handleOpenCreate}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 cursor-pointer"
-          >
-            <FontAwesomeIcon icon={faPlus} />
-            Nueva incidencia
-          </button>
+          {isEstudiante && (
+            <Button
+              text="Nueva incidencia"
+              icon={<FontAwesomeIcon icon={faPlus}/>}
+              type="button"
+              onClick={handleOpenCreate}
+              variant='secondary'
+            />
+          )}
         </div>
 
         {loading && (

@@ -52,13 +52,18 @@ export default function Dashboard() {
   // Compute all dashboard stats in a single pass
   const { total, pendientes, enProceso, resueltas, altas, categoryBreakdown, categoryTotal } =
     useMemo(() => {
+
+      const base = isEstudiante
+        ? incidencias.filter((i) => i.reporterId === usuario?.id)
+        : incidencias;
+
       let pending = 0;
       let inProgress = 0;
       let resolved = 0;
       let highPriority = 0;
       const categoryCounts: Record<string, number> = {};
 
-      for (const inc of incidencias) {
+      for (const inc of base) {
         if (inc.status === 'Pendiente') pending++;
         else if (inc.status === 'En Proceso' || inc.status === 'En atención' || inc.status === 'Asignada') inProgress++;
         else if (inc.status === 'Resuelto' || inc.status === 'Resuelta') resolved++;
@@ -80,7 +85,7 @@ export default function Dashboard() {
       const catTotal = breakdown.reduce((sum, item) => sum + item.count, 0);
 
       return {
-        total: incidencias.length,
+        total: base.length,
         pendientes: pending,
         enProceso: inProgress,
         resueltas: resolved,
@@ -88,7 +93,7 @@ export default function Dashboard() {
         categoryBreakdown: breakdown,
         categoryTotal: catTotal,
       };
-    }, [incidencias]);
+    }, [incidencias, isEstudiante, usuario?.id]);
 
   if (loading) {
     return (
@@ -142,7 +147,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+        <div className = {isEstudiante ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4"}>
           <StatCard
             title="Total"
             value={total}
@@ -160,7 +165,7 @@ export default function Dashboard() {
           />
 
           <StatCard
-            title="En proceso"
+            title="En atención"
             value={enProceso}
             icon={faSpinner}
             trend="En seguimiento activo"
@@ -175,17 +180,19 @@ export default function Dashboard() {
             accent="bg-emerald-500/15 text-emerald-400"
           />
 
-          <StatCard
-            title="Alta prioridad"
-            value={altas}
-            icon={faTriangleExclamation}
-            trend="Atención prioritaria"
-            accent="bg-rose-500/15 text-rose-400"
-          />
+          {!isEstudiante && (
+            <StatCard
+              title="Alta prioridad"
+              value={altas}
+              icon={faTriangleExclamation}
+              trend="Atención prioritaria"
+              accent="bg-rose-500/15 text-rose-400"
+            />
+          )}
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <div className={isEstudiante ? "xl:col-span-3" : "xl:col-span-1"}>
+          <div className={isEstudiante ? "xl:col-span-3" : "xl:col-span-2"}>
             <RecentIncidentsTable incidents={incidencias} />
           </div>
 
@@ -194,7 +201,7 @@ export default function Dashboard() {
               items={categoryBreakdown}
               total={categoryTotal}
             />
-          )};
+          )}
         </div>
       </main>
     </>

@@ -208,7 +208,7 @@ export default function NuevaIncidenciaPage() {
                 <button
                   type="button"
                   onClick={() => navigate('/dashboard/incidencias')}
-                  className="px-6 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 transition-all shadow-md shadow-orange-500/10 cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-linear-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 transition-all shadow-md shadow-orange-500/10 cursor-pointer"
                 >
                   Ver mis incidencias →
                 </button>
@@ -230,10 +230,10 @@ export default function NuevaIncidenciaPage() {
                 <button
                   type="button"
                   onClick={() => navigate('/dashboard/incidencias')}
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
+                  className="px-2 py-1 rounded-lg bg-blue-600/50 hover:bg-blue-800 text-slate-200 hover:text-white hover:font-bold text-xs font-medium inline-flex items-center gap-1 transition-colors"
                 >
                   <FontAwesomeIcon icon={faArrowLeft} />
-                  <span>Volver</span>
+                  <span className="px-1 py-1">Volver</span>
                 </button>
               </div>
 
@@ -246,7 +246,7 @@ export default function NuevaIncidenciaPage() {
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
                   {/* Título */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
                       Título de la incidencia *
                     </label>
                     <input
@@ -261,7 +261,7 @@ export default function NuevaIncidenciaPage() {
                   {/* Categoría y Ubicación en 2 columnas */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
                         Categoría de la falla *
                       </label>
                       <select
@@ -281,7 +281,7 @@ export default function NuevaIncidenciaPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
                         Ubicación (Aula o Laboratorio) *
                       </label>
                       <select
@@ -303,7 +303,7 @@ export default function NuevaIncidenciaPage() {
 
                   {/* Descripción */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
                       Descripción detallada del problema *
                     </label>
                     <textarea
@@ -317,7 +317,7 @@ export default function NuevaIncidenciaPage() {
 
                   {/* Evidencia Fotográfica */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center justify-between">
+                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
                         <FontAwesomeIcon icon={faCamera} className="text-amber-500" />
                         Evidencia fotográfica (Opcional)
@@ -390,7 +390,7 @@ export default function NuevaIncidenciaPage() {
 
                   {/* Botones de acción */}
                   <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-                    <span className="text-[11px] text-slate-400 flex items-center gap-1.5">
+                    <span className="text-[14px] text-slate-500 flex items-center gap-1.5">
                       <FontAwesomeIcon icon={faShieldHalved} className="text-amber-400" />
                       Tu solicitud será procesada por el equipo de soporte de ASIU.
                     </span>
@@ -398,14 +398,14 @@ export default function NuevaIncidenciaPage() {
                       <button
                         type="button"
                         onClick={() => navigate('/dashboard/incidencias')}
-                        className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                        className="px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:font-bold bg-red-400 hover:bg-red-800 transition-colors"
                       >
                         Cancelar
                       </button>
                       <button
                         type="submit"
                         disabled={submitting}
-                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                       >
                         {submitting ? (
                           <>

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 interface ButtonProps {
   text: string;
   onClick?: () => void;
-  variant?: 'primary';
+  variant?: 'primary' | 'secondary';
   type?: 'button' | 'submit' | 'reset';
   fullWidth?: boolean;
   icon?: ReactNode;
@@ -16,6 +16,8 @@ const Button = ({ text, onClick, variant = 'primary', type = 'button', icon, dis
   const variants = {
     primary:
       'w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none shadow-lg shadow-orange-500/10 text-sm cursor-pointer',
+    secondary:
+      'inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 cursor-pointer'
   };
 
   return (

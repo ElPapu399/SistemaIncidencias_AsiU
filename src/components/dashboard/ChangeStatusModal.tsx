@@ -138,19 +138,19 @@ export default function ChangeStatusModal({
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
         {/* Modal Card */}
-        <div className="relative bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-xl mx-4 overflow-hidden z-10">
+        <div className="relative bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-xl mx-4 overflow-hidden z-10">
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
             <div>
-              <span className="text-xs font-mono text-amber-400 font-semibold">{incident.id}</span>
-              <h3 className="text-lg font-bold text-white leading-tight mt-0.5">{incident.title}</h3>
+              <span className="text-xs font-mono text-amber-600 font-semibold">{incident.id}</span>
+              <h3 className="text-lg font-bold text-slate-900 leading-tight mt-0.5">{incident.title}</h3>
             </div>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+              className="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-400 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
             >
               <FontAwesomeIcon icon={faXmark} />
             </button>
@@ -159,32 +159,32 @@ export default function ChangeStatusModal({
           {/* Content */}
           <div className="p-6 space-y-4 max-h-[78vh] overflow-y-auto">
             {/* Badges & Meta */}
-            <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-slate-800">
+            <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-slate-200">
               <StatusBadge status={incident.status} />
               <PriorityBadge priority={incident.priority} />
-              <span className="text-xs text-slate-400 ml-auto flex items-center gap-1.5">
+              <span className="text-xs text-slate-600 ml-auto flex items-center gap-1.5">
                 <FontAwesomeIcon icon={faClock} />
                 {formatDate(incident.createdAt)}
               </span>
             </div>
 
             {/* Details Grid */}
-            <div className="grid grid-cols-2 gap-3 text-xs bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
+            <div className="grid grid-cols-2 gap-3 text-xs bg-slate-100 p-4 rounded-xl border border-slate-200">
               <div>
                 <span className="text-slate-500 uppercase tracking-wider block font-semibold">Reportado por</span>
-                <span className="text-white font-medium">{incident.reporter}</span>
+                <span className="text-slate-800 font-medium">{incident.reporter}</span>
               </div>
               <div>
                 <span className="text-slate-500 uppercase tracking-wider block font-semibold">Técnico Asignado</span>
-                <span className="text-white font-medium">{incident.assignee}</span>
+                <span className="text-slate-800 font-medium">{incident.assignee}</span>
               </div>
               <div>
                 <span className="text-slate-500 uppercase tracking-wider block font-semibold">Ubicación</span>
-                <span className="text-white font-medium">{incident.location}</span>
+                <span className="text-slate-800 font-medium">{incident.location}</span>
               </div>
               <div>
                 <span className="text-slate-500 uppercase tracking-wider block font-semibold">Categoría</span>
-                <span className="text-white font-medium">
+                <span className="text-slate-800 font-medium">
                   {incident.category} {incident.especialidad ? `(${incident.especialidad})` : ''}
                 </span>
               </div>
@@ -192,24 +192,24 @@ export default function ChangeStatusModal({
 
             {/* Description */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
                 Descripción
               </label>
-              <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl p-3.5 text-sm text-slate-200 leading-relaxed whitespace-pre-wrap">
+              <div className="bg-slate-100 border border-slate-200 rounded-xl p-3.5 text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
                 {incident.description}
               </div>
             </div>
 
             {/* SECCIÓN DE EVIDENCIA FOTOGRÁFICA / ADJUNTOS */}
-            <div className="pt-2 border-t border-slate-800">
+            <div className="pt-2 border-t border-slate-200">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <FontAwesomeIcon icon={faCamera} className="text-amber-400" />
+                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faCamera} className="text-amber-500" />
                     Evidencia Fotográfica
                   </label>
                   {adjuntos.length > 0 && (
-                    <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-bold rounded-full">
+                    <span className="px-2 py-0.5 bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold rounded-full">
                       {adjuntos.length} {adjuntos.length === 1 ? 'foto' : 'fotos'}
                     </span>
                   )}
@@ -221,16 +221,16 @@ export default function ChangeStatusModal({
                     type="button"
                     disabled={uploadingAdjunto}
                     onClick={() => fileInputRef.current?.click()}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 rounded-lg text-xs font-medium transition-colors cursor-pointer disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-300 rounded-lg text-xs font-medium transition-colors cursor-pointer disabled:opacity-50"
                   >
                     {uploadingAdjunto ? (
                       <>
-                        <FontAwesomeIcon icon={faSpinner} spin className="text-amber-400 text-xs" />
+                        <FontAwesomeIcon icon={faSpinner} spin className="text-amber-500 text-xs" />
                         <span>Subiendo...</span>
                       </>
                     ) : (
                       <>
-                        <FontAwesomeIcon icon={faPlus} className="text-amber-400 text-xs" />
+                        <FontAwesomeIcon icon={faPlus} className="text-amber-500 text-xs" />
                         <span>Adjuntar foto</span>
                       </>
                     )}
@@ -247,8 +247,8 @@ export default function ChangeStatusModal({
 
               {/* Contenedor de fotos */}
               {loadingAdjuntos ? (
-                <div className="py-6 text-center text-xs text-slate-500 bg-slate-800/30 rounded-xl border border-slate-800 flex items-center justify-center gap-2">
-                  <FontAwesomeIcon icon={faSpinner} spin className="text-amber-400" />
+                <div className="py-6 text-center text-xs text-slate-500 bg-slate-50 rounded-xl border border-slate-800 flex items-center justify-center gap-2">
+                  <FontAwesomeIcon icon={faSpinner} spin className="text-amber-500" />
                   <span>Cargando fotos de evidencia...</span>
                 </div>
               ) : adjuntos.length > 0 ? (
@@ -259,10 +259,10 @@ export default function ChangeStatusModal({
                       <div
                         key={adj.id}
                         onClick={() => setSelectedImage(adj)}
-                        className="group relative bg-slate-800/90 border border-slate-700 hover:border-amber-500/50 rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:shadow-black/40"
+                        className="group relative bg-white border border-slate-200 hover:border-amber-400 rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:shadow-black/40"
                       >
                         {/* Thumbnail */}
-                        <div className="w-full h-24 sm:h-28 overflow-hidden bg-slate-950 flex items-center justify-center">
+                        <div className="w-full h-24 sm:h-28 overflow-hidden bg-slate-100 flex items-center justify-center">
                           <img
                             src={fullUrl}
                             alt={adj.nombreOriginal}
@@ -275,17 +275,17 @@ export default function ChangeStatusModal({
                         </div>
 
                         {/* Hover Overlay */}
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white">
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white">
                           <FontAwesomeIcon icon={faMagnifyingGlassPlus} className="text-lg text-amber-400" />
                           <span className="text-[10px] font-semibold tracking-wider uppercase">Ver grande</span>
                         </div>
 
                         {/* Caption */}
-                        <div className="p-2 bg-slate-900/90 border-t border-slate-800">
-                          <p className="text-[11px] font-medium text-slate-300 truncate" title={adj.nombreOriginal}>
+                        <div className="p-2 bg-white border-t border-slate-200">
+                          <p className="text-[11px] font-medium text-slate-700 truncate" title={adj.nombreOriginal}>
                             {adj.nombreOriginal}
                           </p>
-                          <p className="text-[10px] text-slate-500 mt-0.5">
+                          <p className="text-[10px] text-slate-400 mt-0.5">
                             {(adj.tamanioByte / 1024 < 1024
                               ? `${(adj.tamanioByte / 1024).toFixed(0)} KB`
                               : `${(adj.tamanioByte / (1024 * 1024)).toFixed(1)} MB`)}
@@ -298,11 +298,11 @@ export default function ChangeStatusModal({
               ) : (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="py-5 px-4 text-center bg-slate-800/20 hover:bg-slate-800/40 border border-dashed border-slate-700/80 hover:border-amber-500/40 rounded-xl cursor-pointer transition-colors"
+                  className="py-5 px-4 text-center bg-slate-50 hover:bg-slate-100 border border-dashed border-slate-300 hover:border-amber-400 rounded-xl cursor-pointer transition-colors"
                 >
                   <FontAwesomeIcon icon={faImage} className="text-slate-500 text-lg mb-1 block mx-auto" />
                   <p className="text-xs text-slate-400 font-medium">No hay fotos de evidencia adjuntas</p>
-                  <p className="text-[11px] text-amber-400 mt-0.5 underline decoration-amber-400/30">
+                  <p className="text-[11px] text-amber-600 mt-0.5 underline decoration-amber-400/30">
                     Haz clic aquí para agregar una foto ahora
                   </p>
                 </div>
@@ -312,7 +312,7 @@ export default function ChangeStatusModal({
             {/* Technical Solution (if resolved or editing) */}
             {incident.solucionTecnica && !canEdit && (
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1 flex items-center gap-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1.5">
                   <FontAwesomeIcon icon={faCheckCircle} /> Solución Técnica
                 </label>
                 <div className="bg-emerald-950/20 border border-emerald-800/40 rounded-xl p-3.5 text-sm text-emerald-200">
@@ -323,15 +323,15 @@ export default function ChangeStatusModal({
 
             {/* Edit section for Admin/Technician */}
             {canEdit && (
-              <form onSubmit={handleSubmit} className="space-y-4 pt-2 border-t border-slate-800">
+              <form onSubmit={handleSubmit} className="space-y-4 pt-2 border-t border-slate-200">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                     Cambiar estado *
                   </label>
                   <select
                     value={nuevoEstado}
                     onChange={(e) => setNuevoEstado(e.target.value as IncidentStatus)}
-                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-amber-500 transition-colors"
                   >
                     <option value="Pendiente">Pendiente</option>
                     <option value="Asignada">Asignada</option>
@@ -351,7 +351,7 @@ export default function ChangeStatusModal({
                       value={solucionTecnica}
                       onChange={(e) => setSolucionTecnica(e.target.value)}
                       placeholder="Describe los pasos y repuestos aplicados para solucionar la incidencia..."
-                      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                      className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500/50 transition-colors"
                     />
                   </div>
                 )}
@@ -373,7 +373,7 @@ export default function ChangeStatusModal({
                   <button
                     type="submit"
                     disabled={loading}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : 'Guardar Estado'}
                   </button>
@@ -386,7 +386,7 @@ export default function ChangeStatusModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-red-400 hover:bg-red-600 transition-colors"
                 >
                   Cerrar
                 </button>
@@ -399,15 +399,15 @@ export default function ChangeStatusModal({
       {/* LIGHTBOX / VISOR DE IMAGEN EN PANTALLA COMPLETA */}
       {selectedImage && (
         <div
-          className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in"
           onClick={() => setSelectedImage(null)}
         >
           <div
-            className="relative max-w-4xl max-h-[90vh] flex flex-col items-center bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl"
+            className="relative max-w-4xl max-h-[90vh] flex flex-col items-center bg-white border border-slate-800 rounded-2xl overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top Toolbar */}
-            <div className="w-full flex items-center justify-between px-5 py-3 bg-slate-950 border-b border-slate-800 text-white">
+            <div className="w-full flex items-center justify-between px-5 py-3 bg-slate-800 border-b border-slate-800 text-white">
               <div className="flex items-center gap-2 min-w-0 pr-4">
                 <FontAwesomeIcon icon={faImage} className="text-amber-400 shrink-0" />
                 <span className="text-xs font-semibold truncate text-slate-200">
@@ -419,7 +419,7 @@ export default function ChangeStatusModal({
                   href={getAttachmentUrl(selectedImage.urlArchivo)}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-slate-500 hover:bg-slate-600 text-slate-300 hover:text-white text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
                   title="Abrir en pestaña nueva"
                 >
                   <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[11px]" />
@@ -437,7 +437,7 @@ export default function ChangeStatusModal({
             </div>
 
             {/* Main Image */}
-            <div className="p-4 flex items-center justify-center overflow-auto max-h-[75vh] bg-slate-950/60">
+            <div className="p-4 flex items-center justify-center overflow-auto max-h-[75vh] bg-white">
               <img
                 src={getAttachmentUrl(selectedImage.urlArchivo)}
                 alt={selectedImage.nombreOriginal}
@@ -446,7 +446,7 @@ export default function ChangeStatusModal({
             </div>
 
             {/* Footer with metadata */}
-            <div className="w-full px-5 py-2.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+            <div className="w-full px-5 py-2.5 bg-slate-800 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
               <span>Subido: {formatDate(selectedImage.fechaSubida)}</span>
               <span>
                 Tamaño:{' '}
