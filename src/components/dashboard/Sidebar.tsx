@@ -1,7 +1,7 @@
   import { NavLink, useNavigate } from 'react-router-dom';
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
   import {
-    faHome,
+    faHome, 
     faClipboardList,
     faUser,
     faUserGroup,

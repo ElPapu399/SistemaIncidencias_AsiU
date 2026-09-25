@@ -17,6 +17,9 @@ interface IncidentFormProps {
   onSave: () => void;
 }
 
+const INPUT_STYLE = "w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-amber-500 transition-colors";
+const LABEL_STYLE = "block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5";
+
 export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentFormProps) {
   const [titulo, setTitulo] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -186,10 +189,10 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
       <div className="relative bg-white border border-slate-700 rounded-2xl shadow-2xl w-full max-w-xl mx-4 overflow-hidden z-10">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
-          <h3 className="text-lg font-bold text-white">Registrar Nueva Incidencia</h3>
+          <h3 className="text-lg font-bold text-slate-900">Registrar Nueva Incidencia</h3>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+            className="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-400 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
           >
             <FontAwesomeIcon icon={faXmark} />
           </button>
@@ -198,27 +201,27 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className={LABEL_STYLE}>
               Título de la incidencia *
             </label>
             <input
               type="text"
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-yellow-500/50 transition-colors"
+              className={INPUT_STYLE}
               placeholder="Ej: Computadora 12 no da imagen o proyector desconectado"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className={LABEL_STYLE}>
               Descripción detallada *
             </label>
             <textarea
               rows={3}
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-yellow-500/50 transition-colors"
+              className={INPUT_STYLE}
               placeholder="Describe lo que sucede con el equipo o servicio..."
             />
           </div>
@@ -226,13 +229,13 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
           {isEstudiante ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                <label className={LABEL_STYLE}>
                   Categoría *
                 </label>
                 <select
                   value={categoriaId}
                   onChange={(e) => handleCategoriaChange(Number(e.target.value))}
-                  className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+                  className={INPUT_STYLE}
                 >
                   <option value={0} disabled>
                     Seleccionar categoría
@@ -246,13 +249,13 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                <label className={LABEL_STYLE}>
                   Ubicación *
                 </label>
                 <select
                   value={ubicacionId}
                   onChange={(e) => setUbicacionId(Number(e.target.value))}
-                  className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+                  className={INPUT_STYLE}
                 >
                   <option value={0} disabled>
                     Seleccionar aula / laboratorio
@@ -269,13 +272,13 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  <label className={LABEL_STYLE}>
                     Categoría *
                   </label>
                   <select
                     value={categoriaId}
                     onChange={(e) => handleCategoriaChange(Number(e.target.value))}
-                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+                    className={INPUT_STYLE}
                   >
                     <option value={0} disabled>
                       Seleccionar categoría
@@ -289,13 +292,13 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                  <label className={LABEL_STYLE}>
                     Prioridad *
                   </label>
                   <select
                     value={prioridadId}
                     onChange={(e) => setPrioridadId(Number(e.target.value))}
-                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+                    className={INPUT_STYLE}
                   >
                     <option value={0} disabled>
                       Seleccionar prioridad
@@ -310,13 +313,13 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                <label className={LABEL_STYLE}>
                   Ubicación *
                 </label>
                 <select
                   value={ubicacionId}
                   onChange={(e) => setUbicacionId(Number(e.target.value))}
-                  className="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500/50 transition-colors"
+                  className={INPUT_STYLE}
                 >
                   <option value={0} disabled>
                     Seleccionar aula / laboratorio
@@ -333,22 +336,22 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
 
           {/* Adjuntar imagen de evidencia */}
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center justify-between">
+            <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <FontAwesomeIcon icon={faCamera} className="text-amber-400" />
+                <FontAwesomeIcon icon={faCamera} className="text-amber-500" />
                 Evidencia fotográfica (Opcional)
               </span>
               <span className="text-[11px] font-normal text-slate-500">JPG, PNG, WEBP (Máx. 10MB)</span>
             </label>
 
             {!previewUrl ? (
-              <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-700 hover:border-amber-500/60 rounded-xl cursor-pointer bg-slate-800/40 hover:bg-slate-800/80 transition-all duration-200 group">
+              <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-700 hover:border-amber-500/60 rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-all duration-200 group">
                 <div className="flex flex-col items-center justify-center text-center px-4">
-                  <div className="w-8 h-8 rounded-full bg-slate-700/50 group-hover:bg-amber-500/20 flex items-center justify-center text-slate-400 group-hover:text-amber-400 transition-colors mb-1">
+                  <div className="w-8 h-8 rounded-full bg-slate-200 group-hover:bg-amber-500/20 flex items-center justify-center text-slate-400 group-hover:text-amber-400 transition-colors mb-1">
                     <FontAwesomeIcon icon={faCamera} className="text-xs" />
                   </div>
-                  <p className="text-xs text-slate-300 font-medium">
-                    <span className="text-amber-400 font-semibold underline decoration-amber-400/40 underline-offset-2">Haz clic para subir una foto</span> o arrastra aquí
+                  <p className="text-xs text-slate-700 font-medium">
+                    <span className="text-amber-600 font-semibold underline decoration-amber-400/40 underline-offset-2">Haz clic para subir una foto</span> o arrastra aquí
                   </p>
                 </div>
                 <input
@@ -360,8 +363,8 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
                 />
               </label>
             ) : (
-              <div className="relative flex items-center gap-3 p-3 bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
-                <div className="w-14 h-14 rounded-lg overflow-hidden bg-slate-900 border border-slate-700 shrink-0 flex items-center justify-center">
+              <div className="relative flex items-center gap-3 p-3 bg-slate-50 border border-slate-700 rounded-xl overflow-hidden">
+                <div className="w-14 h-14 rounded-lg overflow-hidden bg-white border border-slate-700 shrink-0 flex items-center justify-center">
                   <img
                     src={previewUrl}
                     alt="Vista previa"
@@ -369,7 +372,7 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-white truncate">{archivo?.name}</p>
+                  <p className="text-xs font-medium text-slate-900 truncate">{archivo?.name}</p>
                   <p className="text-[11px] text-slate-400 mt-0.5">
                     {archivo ? (archivo.size / 1024 < 1024 ? `${(archivo.size / 1024).toFixed(1)} KB` : `${(archivo.size / (1024 * 1024)).toFixed(2)} MB`) : ''}
                   </p>
@@ -401,7 +404,7 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-red-600/70 transition-colors"
             >
               Cancelar
             </button>

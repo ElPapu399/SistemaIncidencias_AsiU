@@ -318,12 +318,12 @@ export default function NuevaIncidenciaPage() {
 
                   {/* Evidencia Fotográfica */}
                   <div>
-                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center justify-between">
+                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5 flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
                         <FontAwesomeIcon icon={faCamera} className="text-amber-500" />
                         Evidencia fotográfica (Opcional)
                       </span>
-                      <span className="text-[11px] font-normal text-slate-400">JPG, PNG, WEBP (Máx. 10MB)</span>
+                      <span className="text-[11px] font-normal text-slate-500">JPG, PNG, WEBP (Máx. 10MB)</span>
                     </label>
 
                     {!previewUrl ? (
