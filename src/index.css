@@ -5,9 +5,14 @@
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
+  --text: #334155;
+  --text-h: #0f172a;
+  --bg: #f8fafc;
+  --code-bg: #f1f5f9;
+
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
+  color-scheme: light;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -17,13 +22,6 @@
 
   @media (max-width: 1024px) {
     font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
   }
 }
 

@@ -210,7 +210,7 @@ const Login = () => {
               Gestión eficiente de <br />
               <span className="text-yellow-500">incidencias tecnológicas</span>
             </div>
-            <p className="text-blue-200/80 text-base leading-relaxed max-w-sm">Plataforma centralizada para reportar, asignar y resolver problemas técincos en laboratorios universitarios</p>
+            <p className="text-blue-200/80 text-base leading-relaxed max-w-sm">Plataforma centralizada para reportar, asignar y resolver problemas técnicos en laboratorios universitarios</p>
           </div>
 
           <div className="mt-12 grid grid-cols-3 gap-4">
@@ -226,7 +226,7 @@ const Login = () => {
             ))}
           </div>
         </div>
-        <p className="relative text-blue-200/70 text-xs">© 2024 Universidad Tecnológica del Perú · ASIU v1.0</p>
+        <p className="relative text-blue-200/70 text-xs">© {new Date().getFullYear()} Universidad Tecnológica del Perú · ASIU v1.0</p>
       </div>
 
       <div className="flex flex-1 items-center justify-center bg-white">

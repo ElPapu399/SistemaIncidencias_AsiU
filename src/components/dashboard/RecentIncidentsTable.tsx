@@ -13,7 +13,7 @@ export default function RecentIncidentsTable({ incidents }: RecentIncidentsTable
   const currentUserRole = usuario?.rol;
 
   const visibleIncidents =
-    currentUserRole === 'ADMIN'
+    currentUserRole === 'ADMIN' || currentUserRole === 'TECNICO_GENERAL'
       ? incidents
       : currentUserRole === 'ESTUDIANTE'
       ? incidents.filter((i) => i.reporterId === usuario?.id)

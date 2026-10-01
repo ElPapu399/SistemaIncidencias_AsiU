@@ -1,4 +1,3 @@
-//añadido onchange para guardar valores del formulario
 interface InputBoxProps {
   label?: string;
   type?: string;

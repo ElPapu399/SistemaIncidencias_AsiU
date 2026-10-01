@@ -10,6 +10,7 @@ import {
   faPlus,
   faMagnifyingGlassPlus,
   faArrowUpRightFromSquare,
+  faClockRotateLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import type { Incident, IncidentStatus, ArchivoAdjunto } from '../../types/incident';
 import {
@@ -17,6 +18,7 @@ import {
   obtenerAdjuntos,
   subirAdjunto,
   getAttachmentUrl,
+  obtenerDetalleIncidencia,
 } from '../../services/incidenciasService';
 import { StatusBadge, PriorityBadge, formatDate } from './IncidentBadges';
 
@@ -47,6 +49,10 @@ export default function ChangeStatusModal({
   const [selectedImage, setSelectedImage] = useState<ArchivoAdjunto | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  // Trazabilidad / Historial de Estados
+  const [historial, setHistorial] = useState<any[]>([]);
+  const [loadingHistorial, setLoadingHistorial] = useState(false);
+
   useEffect(() => {
     if (!isOpen || !incident) return;
     setError('');
@@ -54,7 +60,7 @@ export default function ChangeStatusModal({
     setSolucionTecnica(incident.solucionTecnica || '');
     setSelectedImage(null);
 
-    // Cargar archivos adjuntos si tiene numericId
+    // Cargar archivos adjuntos y trazabilidad si tiene numericId
     if (incident.numericId) {
       setLoadingAdjuntos(true);
       obtenerAdjuntos(incident.numericId)
@@ -68,8 +74,22 @@ export default function ChangeStatusModal({
         .finally(() => {
           setLoadingAdjuntos(false);
         });
+
+      setLoadingHistorial(true);
+      obtenerDetalleIncidencia(incident.numericId)
+        .then((detalle) => {
+          setHistorial(detalle.historial || []);
+        })
+        .catch((err) => {
+          console.warn('Error al cargar historial de trazabilidad:', err);
+          setHistorial([]);
+        })
+        .finally(() => {
+          setLoadingHistorial(false);
+        });
     } else {
       setAdjuntos([]);
+      setHistorial([]);
     }
   }, [isOpen, incident]);
 
@@ -305,6 +325,94 @@ export default function ChangeStatusModal({
                   <p className="text-[11px] text-amber-600 mt-0.5 underline decoration-amber-400/30">
                     Haz clic aquí para agregar una foto ahora
                   </p>
+                </div>
+              )}
+            </div>
+
+            {/* SECCIÓN DE TRAZABILIDAD / HISTORIAL DE ACCIONES */}
+            <div className="pt-2 border-t border-slate-200">
+              <div className="flex items-center gap-2 mb-2.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                  <FontAwesomeIcon icon={faClockRotateLeft} className="text-violet-500" />
+                  Trazabilidad e Historial de Acciones
+                </label>
+                {historial.length > 0 && (
+                  <span className="px-2 py-0.5 bg-violet-50 border border-violet-200 text-violet-700 text-[10px] font-bold rounded-full">
+                    {historial.length} eventos
+                  </span>
+                )}
+              </div>
+
+              {loadingHistorial ? (
+                <div className="py-4 text-center text-xs text-slate-500 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-center gap-2">
+                  <FontAwesomeIcon icon={faSpinner} spin className="text-violet-500" />
+                  <span>Cargando traza de la incidencia...</span>
+                </div>
+              ) : historial.length > 0 ? (
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  {historial.map((item: any, idx: number) => {
+                    const isReasignacion = item.tipoAccion === 'REASIGNACION';
+                    const isAsignacion = item.tipoAccion === 'ASIGNACION';
+
+                    return (
+                      <div
+                        key={item.id || idx}
+                        className={`p-2.5 rounded-xl border text-xs transition-colors ${
+                          isReasignacion
+                            ? 'bg-violet-50/70 border-violet-200 text-violet-900'
+                            : isAsignacion
+                            ? 'bg-amber-50/70 border-amber-200 text-amber-900'
+                            : 'bg-slate-50 border-slate-200 text-slate-800'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between text-[11px] mb-1">
+                          <span className="font-bold flex items-center gap-1">
+                            {isReasignacion ? (
+                              <>
+                                <span className="w-2 h-2 rounded-full bg-violet-500 inline-block" />
+                                Reasignación de Técnico
+                              </>
+                            ) : isAsignacion ? (
+                              <>
+                                <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
+                                Asignación Inicial
+                              </>
+                            ) : (
+                              <>
+                                <span className="w-2 h-2 rounded-full bg-slate-400 inline-block" />
+                                Cambio de Estado: {item.estadoAnterior} → {item.estadoNuevo}
+                              </>
+                            )}
+                          </span>
+                          <span className="text-slate-500 text-[10px]">
+                            {formatDate(item.fechaCambio)}
+                          </span>
+                        </div>
+
+                        <div className="text-[11px] text-slate-700 space-y-0.5">
+                          <p>
+                            <span className="font-semibold text-slate-600">Realizado por:</span>{' '}
+                            <strong>{item.usuarioNombre || 'Sistema'}</strong>
+                          </p>
+                          {item.tecnicoAnteriorNombre && item.tecnicoNuevoNombre && (
+                            <p className="text-violet-800 font-medium">
+                              De: <span className="line-through">{item.tecnicoAnteriorNombre}</span> → A:{' '}
+                              <strong>{item.tecnicoNuevoNombre}</strong>
+                            </p>
+                          )}
+                          {item.comentario && (
+                            <p className="text-[10px] text-slate-600 italic bg-white/70 p-1.5 rounded border border-slate-200/50 mt-1 whitespace-pre-wrap">
+                              {item.comentario}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="py-3 px-4 text-center bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500">
+                  No hay registros en el historial de trazabilidad todavía.
                 </div>
               )}
             </div>

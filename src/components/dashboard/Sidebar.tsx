@@ -1,8 +1,9 @@
-  import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
   import {
     faHome, 
     faClipboardList,
+    faClipboardCheck,
     faUser,
     faUserGroup,
     faPlus,
@@ -28,13 +29,19 @@
       { to: '/dashboard', label: 'Inicio', icon: faHome, end: true, roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS] },
       { to: '/dashboard/nueva', label: 'Registrar incidencia', icon: faPlus, roles: ['ESTUDIANTE'] },
       {
+        to: '/dashboard/mis-incidencias',
+        label: 'Mis incidencias',
+        icon: faClipboardCheck,
+        roles: ['TECNICO_ESPECIALISTA', 'TECNICO'],
+      },
+      {
         to: '/dashboard/incidencias',
         label: {
           ADMIN: 'Incidencias',
           ESTUDIANTE: 'Mis incidencias',
-          TECNICO: 'Mis incidencias',
+          TECNICO: 'Todas las incidencias',
           TECNICO_GENERAL: 'Gestión de incidencias',
-          TECNICO_ESPECIALISTA: 'Mis incidencias',
+          TECNICO_ESPECIALISTA: 'Todas las incidencias',
         } as Record<string, string>,
         icon: faClipboardList,
         roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS],

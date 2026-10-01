@@ -10,4 +10,8 @@ import java.util.List;
 public interface HistorialEstadoRepository extends JpaRepository<HistorialEstado, Integer> {
 
     List<HistorialEstado> findByIncidenciaIdOrderByFechaCambioAsc(Integer incidenciaId);
+
+    List<HistorialEstado> findByTipoAccionOrderByFechaCambioDesc(String tipoAccion);
+
+    List<HistorialEstado> findByTipoAccionOrderByFechaCambioAsc(String tipoAccion);
 }

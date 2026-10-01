@@ -38,6 +38,15 @@ export interface Incident {
   closedAt?: string | null;
   updatedAt?: string;
   adjuntos?: ArchivoAdjunto[];
+  fueReasignada?: boolean;
+  tecnicoAnteriorId?: number | null;
+  tecnicoAnteriorNombre?: string | null;
+  reasignadoPorNombre?: string | null;
+  motivoReasignacion?: string | null;
+  fechaReasignacion?: string | null;
+  asignadoPorNombre?: string | null;
+  equipoCodigo?: string | null;
+  equipoTipo?: string | null;
 }
 
 export interface ArchivoAdjunto {

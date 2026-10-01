@@ -10,8 +10,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.Year;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+/**
+ * Servicio principal de incidencias con trazabilidad completa
+ * de asignaciones, reasignaciones y cambios de estado.
+ */
 
 @Service
 public class IncidenciaService {
@@ -51,10 +58,7 @@ public class IncidenciaService {
 
     @Transactional(readOnly = true)
     public List<IncidenciaResponse> listarTodas() {
-        return incidenciaRepository.findAll()
-                .stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+        return mapearListaConTrazabilidad(incidenciaRepository.findAll());
     }
 
     /**
@@ -89,23 +93,18 @@ public class IncidenciaService {
         Incidencia incidencia = incidenciaRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Incidencia no encontrada con id: " + id));
-        return toResponse(incidencia);
+        List<IncidenciaResponse> res = mapearListaConTrazabilidad(List.of(incidencia));
+        return res.isEmpty() ? toResponse(incidencia) : res.get(0);
     }
 
     @Transactional(readOnly = true)
     public List<IncidenciaResponse> listarPorEstudiante(Integer estudianteId) {
-        return incidenciaRepository.findByEstudianteId(estudianteId)
-                .stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+        return mapearListaConTrazabilidad(incidenciaRepository.findByEstudianteId(estudianteId));
     }
 
     @Transactional(readOnly = true)
     public List<IncidenciaResponse> listarPorTecnico(Integer tecnicoId) {
-        return incidenciaRepository.findByTecnicoId(tecnicoId)
-                .stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+        return mapearListaConTrazabilidad(incidenciaRepository.findByTecnicoId(tecnicoId));
     }
 
     // ==================== CREAR ====================
@@ -145,7 +144,8 @@ public class IncidenciaService {
         incidenciaRepository.save(incidencia);
 
         // Registrar en historial: ticket creado
-        registrarHistorial(incidencia, null, "Pendiente", estudiante, "Ticket registrado");
+        registrarHistorial(incidencia, null, "Pendiente", "CREACION",
+                estudiante, "Ticket registrado", null, null);
 
         return toResponse(incidencia);
     }
@@ -166,6 +166,9 @@ public class IncidenciaService {
             throw new RuntimeException("El usuario seleccionado debe ser un técnico especialista");
         }
 
+        // Obtener el usuario autenticado (quien realiza la asignación)
+        Usuario asignador = obtenerUsuarioAutenticado();
+
         String estadoAnterior = incidencia.getEstado();
         incidencia.setTecnico(tecnico);
         incidencia.setEstado("Asignada");
@@ -173,9 +176,65 @@ public class IncidenciaService {
 
         incidenciaRepository.save(incidencia);
 
-        // Registrar en historial
-        registrarHistorial(incidencia, estadoAnterior, "Asignada", tecnico,
-                "Técnico asignado: " + tecnico.getNombre() + " " + tecnico.getApellido());
+        // Registrar en historial: quién asignó a quién
+        registrarHistorial(incidencia, estadoAnterior, "Asignada", "ASIGNACION",
+                asignador,
+                "Técnico asignado: " + tecnico.getNombre() + " " + tecnico.getApellido()
+                        + " (asignado por " + asignador.getNombre() + " " + asignador.getApellido() + ")",
+                null, tecnico);
+
+        return toResponse(incidencia);
+    }
+
+    // ==================== REASIGNAR TÉCNICO ====================
+
+    /**
+     * Reasigna una incidencia de un técnico a otro.
+     * Registra en el historial: quién reasignó, de quién a quién, y por qué.
+     */
+    @Transactional
+    public IncidenciaResponse reasignarTecnico(Integer incidenciaId, ReasignarTecnicoRequest request) {
+        Incidencia incidencia = incidenciaRepository.findById(incidenciaId)
+                .orElseThrow(() -> new RuntimeException("Incidencia no encontrada con id: " + incidenciaId));
+
+        if (incidencia.getTecnico() == null) {
+            throw new RuntimeException("La incidencia no tiene un técnico asignado. Use la asignación inicial.");
+        }
+
+        Usuario tecnicoNuevo = usuarioRepository.findById(request.getTecnicoNuevoId())
+                .orElseThrow(() -> new RuntimeException("Técnico no encontrado con id: " + request.getTecnicoNuevoId()));
+
+        // Validar que el nuevo usuario es técnico
+        String rolNombre = tecnicoNuevo.getRol() != null ? tecnicoNuevo.getRol().getNombre() : "";
+        if (!"TECNICO_ESPECIALISTA".equals(rolNombre) && !"TECNICO".equals(rolNombre)) {
+            throw new RuntimeException("El usuario seleccionado debe ser un técnico");
+        }
+
+        // Obtener quién está haciendo la reasignación
+        Usuario reasignador = obtenerUsuarioAutenticado();
+        Usuario tecnicoAnterior = incidencia.getTecnico();
+
+        // Validar que no se reasigne al mismo técnico
+        if (tecnicoAnterior.getId().equals(tecnicoNuevo.getId())) {
+            throw new RuntimeException("El técnico nuevo debe ser diferente al actual");
+        }
+
+        String estadoAnterior = incidencia.getEstado();
+        incidencia.setTecnico(tecnicoNuevo);
+        incidencia.setEstado("Asignada");
+
+        incidenciaRepository.save(incidencia);
+
+        // Registrar reasignación en historial con trazabilidad completa
+        String comentario = String.format(
+                "Reasignado de %s %s a %s %s. Motivo: %s (reasignado por %s %s)",
+                tecnicoAnterior.getNombre(), tecnicoAnterior.getApellido(),
+                tecnicoNuevo.getNombre(), tecnicoNuevo.getApellido(),
+                request.getMotivo(),
+                reasignador.getNombre(), reasignador.getApellido());
+
+        registrarHistorial(incidencia, estadoAnterior, "Asignada", "REASIGNACION",
+                reasignador, comentario, tecnicoAnterior, tecnicoNuevo);
 
         return toResponse(incidencia);
     }
@@ -234,7 +293,8 @@ public class IncidenciaService {
         incidenciaRepository.save(incidencia);
 
         // Registrar en historial
-        registrarHistorial(incidencia, estadoAnterior, nuevoEstado, usuario, request.getComentario());
+        registrarHistorial(incidencia, estadoAnterior, nuevoEstado, "CAMBIO_ESTADO",
+                usuario, request.getComentario(), null, null);
 
         return toResponse(incidencia);
     }
@@ -259,6 +319,18 @@ public class IncidenciaService {
     }
 
     // ==================== UTILIDADES ====================
+
+    /**
+     * Obtiene el usuario autenticado actual desde el SecurityContext.
+     */
+    private Usuario obtenerUsuarioAutenticado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getName() != null && !auth.getName().equals("anonymousUser")) {
+            return usuarioRepository.findByCorreo(auth.getName())
+                    .orElseThrow(() -> new RuntimeException("Usuario autenticado no encontrado: " + auth.getName()));
+        }
+        throw new RuntimeException("No se pudo determinar el usuario autenticado");
+    }
 
     /**
      * Genera un código de ticket auto-incremental único: INC-2026-0001, INC-2026-0002...
@@ -288,16 +360,25 @@ public class IncidenciaService {
     }
 
     /**
-     * Registra un cambio de estado en el historial.
+     * Registra una acción en el historial con trazabilidad completa.
+     *
+     * @param tipoAccion     CREACION, CAMBIO_ESTADO, ASIGNACION, REASIGNACION, SOLICITUD_REASIGNACION
+     * @param tecnicoAnterior técnico anterior (solo para REASIGNACION)
+     * @param tecnicoNuevo    técnico nuevo (para ASIGNACION y REASIGNACION)
      */
     private void registrarHistorial(Incidencia incidencia, String estadoAnterior,
-                                     String estadoNuevo, Usuario usuario, String comentario) {
+                                     String estadoNuevo, String tipoAccion,
+                                     Usuario usuario, String comentario,
+                                     Usuario tecnicoAnterior, Usuario tecnicoNuevo) {
         HistorialEstado historial = new HistorialEstado();
         historial.setIncidencia(incidencia);
         historial.setEstadoAnterior(estadoAnterior != null ? estadoAnterior : "Nuevo");
         historial.setEstadoNuevo(estadoNuevo);
+        historial.setTipoAccion(tipoAccion);
         historial.setUsuario(usuario);
         historial.setComentario(comentario);
+        historial.setTecnicoAnterior(tecnicoAnterior);
+        historial.setTecnicoNuevo(tecnicoNuevo);
         historialEstadoRepository.save(historial);
     }
 
@@ -342,6 +423,63 @@ public class IncidenciaService {
                 inc.getFechaInicioAtencion(),
                 inc.getFechaCierre()
         );
+    }
+
+    private List<IncidenciaResponse> mapearListaConTrazabilidad(List<Incidencia> incidencias) {
+        if (incidencias.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Obtener reasignaciones (la más reciente por incidencia)
+        Map<Integer, HistorialEstado> reasignaciones = historialEstadoRepository
+                .findByTipoAccionOrderByFechaCambioDesc("REASIGNACION")
+                .stream()
+                .filter(h -> h.getIncidencia() != null)
+                .collect(Collectors.toMap(
+                        h -> h.getIncidencia().getId(),
+                        h -> h,
+                        (h1, h2) -> h1
+                ));
+
+        // Obtener asignaciones iniciales (la primera por incidencia)
+        Map<Integer, HistorialEstado> asignaciones = historialEstadoRepository
+                .findByTipoAccionOrderByFechaCambioAsc("ASIGNACION")
+                .stream()
+                .filter(h -> h.getIncidencia() != null)
+                .collect(Collectors.toMap(
+                        h -> h.getIncidencia().getId(),
+                        h -> h,
+                        (h1, h2) -> h1
+                ));
+
+        return incidencias.stream()
+                .map(inc -> toResponseConTrazabilidad(inc, reasignaciones.get(inc.getId()), asignaciones.get(inc.getId())))
+                .collect(Collectors.toList());
+    }
+
+    private IncidenciaResponse toResponseConTrazabilidad(Incidencia inc, HistorialEstado reasig, HistorialEstado asig) {
+        IncidenciaResponse resp = toResponse(inc);
+
+        if (reasig != null) {
+            resp.setFueReasignada(true);
+            if (reasig.getTecnicoAnterior() != null) {
+                resp.setTecnicoAnteriorId(reasig.getTecnicoAnterior().getId());
+                resp.setTecnicoAnteriorNombre(reasig.getTecnicoAnterior().getNombre() + " " + reasig.getTecnicoAnterior().getApellido());
+            }
+            if (reasig.getUsuario() != null) {
+                resp.setReasignadoPorNombre(reasig.getUsuario().getNombre() + " " + reasig.getUsuario().getApellido());
+            }
+            resp.setMotivoReasignacion(reasig.getComentario());
+            resp.setFechaReasignacion(reasig.getFechaCambio());
+        } else {
+            resp.setFueReasignada(false);
+        }
+
+        if (asig != null && asig.getUsuario() != null) {
+            resp.setAsignadoPorNombre(asig.getUsuario().getNombre() + " " + asig.getUsuario().getApellido());
+        }
+
+        return resp;
     }
 
     /**
@@ -396,9 +534,18 @@ public class IncidenciaService {
                 h.getId(),
                 h.getEstadoAnterior(),
                 h.getEstadoNuevo(),
+                h.getTipoAccion(),
                 h.getUsuario().getId(),
                 h.getUsuario().getNombre() + " " + h.getUsuario().getApellido(),
                 h.getComentario(),
+                h.getTecnicoAnterior() != null ? h.getTecnicoAnterior().getId() : null,
+                h.getTecnicoAnterior() != null
+                        ? h.getTecnicoAnterior().getNombre() + " " + h.getTecnicoAnterior().getApellido()
+                        : null,
+                h.getTecnicoNuevo() != null ? h.getTecnicoNuevo().getId() : null,
+                h.getTecnicoNuevo() != null
+                        ? h.getTecnicoNuevo().getNombre() + " " + h.getTecnicoNuevo().getApellido()
+                        : null,
                 h.getFechaCambio()
         );
     }

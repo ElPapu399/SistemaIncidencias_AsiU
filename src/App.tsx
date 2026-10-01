@@ -19,8 +19,18 @@ function App() {
           path="incidencias"
           element={
             <IncidenciasPage
-              title="Incidencias"
+              title="Todas las Incidencias"
               description="Aquí podrás consultar, filtrar y gestionar todas las incidencias del campus."
+            />
+          }
+        />
+        <Route
+          path="mis-incidencias"
+          element={
+            <IncidenciasPage
+              title="Mis Incidencias Asignadas"
+              description="Consulta, atiende y da seguimiento a las incidencias asignadas a tu cuenta."
+              soloMisIncidencias={true}
             />
           }
         />

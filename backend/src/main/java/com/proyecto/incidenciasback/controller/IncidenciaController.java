@@ -54,6 +54,16 @@ public class IncidenciaController {
         return ResponseEntity.ok(incidenciaService.asignarTecnico(id, request));
     }
 
+    /**
+     * Reasigna una incidencia de un técnico a otro con trazabilidad completa.
+     * Registra: quién reasignó, de quién a quién, y el motivo.
+     */
+    @PutMapping("/{id}/reasignar")
+    public ResponseEntity<IncidenciaResponse> reasignarTecnico(@PathVariable Integer id,
+                                                                @Valid @RequestBody ReasignarTecnicoRequest request) {
+        return ResponseEntity.ok(incidenciaService.reasignarTecnico(id, request));
+    }
+
     @PutMapping("/{id}/estado")
     public ResponseEntity<IncidenciaResponse> cambiarEstado(@PathVariable Integer id,
                                                             @Valid @RequestBody CambiarEstadoRequest request) {
@@ -62,6 +72,7 @@ public class IncidenciaController {
 
     /**
      * Historial de cambios de estado (timeline) de una incidencia.
+     * Incluye tipo de acción: CREACION, ASIGNACION, REASIGNACION, CAMBIO_ESTADO.
      */
     @GetMapping("/{id}/historial")
     public ResponseEntity<List<HistorialEstadoResponse>> obtenerHistorial(@PathVariable Integer id) {

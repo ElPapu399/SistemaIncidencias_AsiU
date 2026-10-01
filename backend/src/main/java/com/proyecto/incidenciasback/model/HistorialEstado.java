@@ -26,12 +26,26 @@ public class HistorialEstado {
     @Column(name = "estado_nuevo", nullable = false, length = 20)
     private String estadoNuevo;
 
+    /** Tipo de acción: CREACION, CAMBIO_ESTADO, ASIGNACION, REASIGNACION, SOLICITUD_REASIGNACION */
+    @Column(name = "tipo_accion", nullable = false, length = 30)
+    private String tipoAccion = "CAMBIO_ESTADO";
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @Column(length = 255)
+    @Column(length = 500)
     private String comentario;
+
+    /** Técnico anterior (solo para REASIGNACION) */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "tecnico_anterior_id")
+    private Usuario tecnicoAnterior;
+
+    /** Técnico nuevo (para ASIGNACION y REASIGNACION) */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "tecnico_nuevo_id")
+    private Usuario tecnicoNuevo;
 
     @Column(name = "fecha_cambio")
     private LocalDateTime fechaCambio;
@@ -43,3 +57,4 @@ public class HistorialEstado {
         }
     }
 }
+

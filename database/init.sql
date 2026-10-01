@@ -133,18 +133,49 @@ CREATE TABLE IF NOT EXISTS archivos_adjuntos (
 ) ENGINE=InnoDB;
 
 -- 10. Tabla de Auditoría e Historial de Estados
+-- tipo_accion: 'CREACION', 'CAMBIO_ESTADO', 'ASIGNACION', 'REASIGNACION', 'SOLICITUD_REASIGNACION'
 CREATE TABLE IF NOT EXISTS historial_estados (
     id INT AUTO_INCREMENT PRIMARY KEY,
     incidencia_id INT NOT NULL,
     estado_anterior VARCHAR(20) NOT NULL,
     estado_nuevo VARCHAR(20) NOT NULL,
+    tipo_accion VARCHAR(30) NOT NULL DEFAULT 'CAMBIO_ESTADO',
     usuario_id INT NOT NULL,
-    comentario VARCHAR(255) NULL,
+    comentario VARCHAR(500) NULL,
+    tecnico_anterior_id INT NULL,
+    tecnico_nuevo_id INT NULL,
     fecha_cambio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_historial_incidencia FOREIGN KEY (incidencia_id)
         REFERENCES incidencias(id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT fk_historial_usuario FOREIGN KEY (usuario_id)
-        REFERENCES usuarios(id) ON UPDATE CASCADE ON DELETE RESTRICT
+        REFERENCES usuarios(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_historial_tecnico_anterior FOREIGN KEY (tecnico_anterior_id)
+        REFERENCES usuarios(id) ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT fk_historial_tecnico_nuevo FOREIGN KEY (tecnico_nuevo_id)
+        REFERENCES usuarios(id) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+-- 11. Tabla de Solicitudes de Reasignación (técnico solicita ser reasignado)
+-- estado: 'PENDIENTE', 'APROBADA', 'RECHAZADA'
+CREATE TABLE IF NOT EXISTS solicitudes_reasignacion (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    incidencia_id INT NOT NULL,
+    tecnico_solicitante_id INT NOT NULL,
+    motivo TEXT NOT NULL,
+    estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
+    revisado_por_id INT NULL,
+    comentario_respuesta VARCHAR(500) NULL,
+    tecnico_nuevo_id INT NULL,
+    fecha_solicitud TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_respuesta TIMESTAMP NULL,
+    CONSTRAINT fk_solicitud_incidencia FOREIGN KEY (incidencia_id)
+        REFERENCES incidencias(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_solicitud_tecnico FOREIGN KEY (tecnico_solicitante_id)
+        REFERENCES usuarios(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_solicitud_revisor FOREIGN KEY (revisado_por_id)
+        REFERENCES usuarios(id) ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT fk_solicitud_tecnico_nuevo FOREIGN KEY (tecnico_nuevo_id)
+        REFERENCES usuarios(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
 
@@ -250,45 +281,45 @@ VALUES
         14, 3, 3, NULL, 'Se reemplazó el cable de audio y se actualizó el driver de sonido.');
 
 INSERT IGNORE INTO historial_estados
-    (incidencia_id, estado_anterior, estado_nuevo, usuario_id, comentario)
+    (incidencia_id, estado_anterior, estado_nuevo, tipo_accion, usuario_id, comentario, tecnico_anterior_id, tecnico_nuevo_id)
 VALUES
     -- INC-001: Pendiente → Asignada → En atención
-    (1, 'Nuevo', 'Pendiente', 3, 'Ticket registrado'),
-    (1, 'Pendiente', 'Asignada', 1, 'Técnico asignado: Carlos Mendoza'),
-    (1, 'Asignada', 'En atención', 2, 'Carlos Mendoza inició atención en Laboratorio A'),
+    (1, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
+    (1, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Carlos Mendoza', NULL, 2),
+    (1, 'Asignada', 'En atención', 'CAMBIO_ESTADO', 2, 'Carlos Mendoza inició atención en Laboratorio A', NULL, NULL),
     -- INC-002: Pendiente
-    (2, 'Nuevo', 'Pendiente', 3, 'Ticket registrado'),
+    (2, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
     -- INC-003: Pendiente → Asignada → En atención → Resuelta
-    (3, 'Nuevo', 'Pendiente', 3, 'Ticket registrado'),
-    (3, 'Pendiente', 'Asignada', 1, 'Técnico asignado: Carlos Mendoza'),
-    (3, 'Asignada', 'En atención', 2, 'Se inició revisión de la conectividad'),
-    (3, 'En atención', 'Resuelta', 2, 'Se reconfiguró IP y se reinició el punto de acceso'),
+    (3, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
+    (3, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Carlos Mendoza', NULL, 2),
+    (3, 'Asignada', 'En atención', 'CAMBIO_ESTADO', 2, 'Se inició revisión de la conectividad', NULL, NULL),
+    (3, 'En atención', 'Resuelta', 'CAMBIO_ESTADO', 2, 'Se reconfiguró IP y se reinició el punto de acceso', NULL, NULL),
     -- INC-004: Completa hasta Cerrada
-    (4, 'Nuevo', 'Pendiente', 3, 'Ticket registrado'),
-    (4, 'Pendiente', 'Asignada', 1, 'Técnico asignado: Carlos Mendoza'),
-    (4, 'Asignada', 'En atención', 2, 'Se inició revisión del monitor'),
-    (4, 'En atención', 'Resuelta', 2, 'Cable HDMI reemplazado, firmware actualizado'),
-    (4, 'Resuelta', 'Cerrada', 1, 'Incidencia cerrada por el administrador'),
+    (4, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
+    (4, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Carlos Mendoza', NULL, 2),
+    (4, 'Asignada', 'En atención', 'CAMBIO_ESTADO', 2, 'Se inició revisión del monitor', NULL, NULL),
+    (4, 'En atención', 'Resuelta', 'CAMBIO_ESTADO', 2, 'Cable HDMI reemplazado, firmware actualizado', NULL, NULL),
+    (4, 'Resuelta', 'Cerrada', 'CAMBIO_ESTADO', 1, 'Incidencia cerrada por el administrador', NULL, NULL),
     -- INC-005: Pendiente → Asignada
-    (5, 'Nuevo', 'Pendiente', 3, 'Ticket registrado'),
-    (5, 'Pendiente', 'Asignada', 1, 'Técnico asignado: Diego Vargas'),
+    (5, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
+    (5, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Diego Vargas', NULL, 4),
     -- INC-006: Completa hasta Cerrada
-    (6, 'Nuevo', 'Pendiente', 3, 'Ticket registrado'),
-    (6, 'Pendiente', 'Asignada', 1, 'Técnico asignado: Carlos Mendoza'),
-    (6, 'Asignada', 'En atención', 2, 'Se revisó el teclado'),
-    (6, 'En atención', 'Resuelta', 2, 'Teclado reemplazado'),
-    (6, 'Resuelta', 'Cerrada', 1, 'Incidencia cerrada'),
+    (6, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
+    (6, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Carlos Mendoza', NULL, 2),
+    (6, 'Asignada', 'En atención', 'CAMBIO_ESTADO', 2, 'Se revisó el teclado', NULL, NULL),
+    (6, 'En atención', 'Resuelta', 'CAMBIO_ESTADO', 2, 'Teclado reemplazado', NULL, NULL),
+    (6, 'Resuelta', 'Cerrada', 'CAMBIO_ESTADO', 1, 'Incidencia cerrada', NULL, NULL),
     -- INC-007: Pendiente → Asignada → En atención
-    (7, 'Nuevo', 'Pendiente', 3, 'Ticket registrado'),
-    (7, 'Pendiente', 'Asignada', 1, 'Técnico asignado: Diego Vargas'),
-    (7, 'Asignada', 'En atención', 4, 'Diego Vargas inició revisión del kernel'),
+    (7, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
+    (7, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Diego Vargas', NULL, 4),
+    (7, 'Asignada', 'En atención', 'CAMBIO_ESTADO', 4, 'Diego Vargas inició revisión del kernel', NULL, NULL),
     -- INC-008: Pendiente → Asignada
-    (8, 'Nuevo', 'Pendiente', 3, 'Ticket registrado'),
-    (8, 'Pendiente', 'Asignada', 1, 'Técnico asignado: Carlos Mendoza'),
+    (8, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
+    (8, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Carlos Mendoza', NULL, 2),
     -- INC-009: Pendiente
-    (9, 'Nuevo', 'Pendiente', 3, 'Ticket registrado'),
+    (9, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
     -- INC-010: Completa hasta Resuelta
-    (10, 'Nuevo', 'Pendiente', 3, 'Ticket registrado'),
-    (10, 'Pendiente', 'Asignada', 1, 'Técnico asignado: Carlos Mendoza'),
-    (10, 'Asignada', 'En atención', 2, 'Se revisó el sistema de audio'),
-    (10, 'En atención', 'Resuelta', 2, 'Cable de audio reemplazado, driver actualizado');
+    (10, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
+    (10, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Carlos Mendoza', NULL, 2),
+    (10, 'Asignada', 'En atención', 'CAMBIO_ESTADO', 2, 'Se revisó el sistema de audio', NULL, NULL),
+    (10, 'En atención', 'Resuelta', 'CAMBIO_ESTADO', 2, 'Cable de audio reemplazado, driver actualizado', NULL, NULL);
