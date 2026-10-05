@@ -35,3 +35,17 @@ app:
 # CORS: acepta tanto localhost como el dominio de producción
 cors:
   allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
+
+# ── Configuración de correo (Gmail SMTP) ──
+spring.mail:
+  host: smtp.gmail.com
+  port: 587
+  username: loayzajhosep58@gmail.com
+  password: vxxdjvizkpexggqf
+  properties:
+    mail.smtp:
+      auth: true
+      starttls.enable: true
+
+app.mail:
+  from: ${MAIL_FROM:loayzajhosep58@gmail.com}

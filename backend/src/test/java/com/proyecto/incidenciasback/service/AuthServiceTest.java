@@ -36,13 +36,16 @@ class AuthServiceTest {
     @Mock
     private JwtUtil jwtUtil;
 
+    @Mock
+    private EmailService emailService;
+
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService(usuarioRepository, passwordEncoder, jwtUtil);
+        authService = new AuthService(usuarioRepository, passwordEncoder, jwtUtil, emailService);
     }
 
     private Usuario crearUsuario(String correo, String rawPassword) {
@@ -111,7 +114,7 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("Recuperación: correo existente genera código")
+    @DisplayName("Recuperación: correo existente genera código y envía email")
     void solicitarRecuperacion_correoExistente_retornaCodigo() {
         Usuario usuario = crearUsuario("admin@universidad.edu.pe", "admin123");
         when(usuarioRepository.findByCorreo("admin@universidad.edu.pe"))
@@ -122,25 +125,26 @@ class AuthServiceTest {
 
         RecuperarPasswordResponse response = authService.solicitarRecuperacion(request);
 
-        assertThat(response.getCodigo()).isNotBlank();
-        assertThat(response.getCodigo()).hasSize(6);
         assertThat(response.getMensaje()).contains("código");
+        assertThat(response.getCodigo()).isNull();
+        org.mockito.Mockito.verify(emailService)
+                .enviarCodigoRecuperacion(org.mockito.ArgumentMatchers.eq("admin@universidad.edu.pe"), org.mockito.ArgumentMatchers.anyString());
     }
 
     @Test
-    @DisplayName("Recuperación: correo inexistente no revela si existe")
-    void solicitarRecuperacion_correoInexistente_noDevuelveCodigo() {
+    @DisplayName("Recuperación: correo inexistente lanza excepción")
+    void solicitarRecuperacion_correoInexistente_lanzaExcepcion() {
         when(usuarioRepository.findByCorreo("no-existe@universidad.edu.pe"))
                 .thenReturn(Optional.empty());
 
         RecuperarPasswordRequest request = new RecuperarPasswordRequest();
         request.setCorreo("no-existe@universidad.edu.pe");
 
-        RecuperarPasswordResponse response = authService.solicitarRecuperacion(request);
-
-        assertThat(response.getCodigo()).isNull();
-        assertThat(response.getMensaje()).isEqualTo(
-                "Si el correo está registrado, te enviaremos un código de verificación.");
+        assertThatThrownBy(() -> authService.solicitarRecuperacion(request))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("El correo no está registrado en el sistema");
+        org.mockito.Mockito.verify(emailService, org.mockito.Mockito.never())
+                .enviarCodigoRecuperacion(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString());
     }
 
     @Test
@@ -153,7 +157,12 @@ class AuthServiceTest {
 
         RecuperarPasswordRequest recuperar = new RecuperarPasswordRequest();
         recuperar.setCorreo("admin@universidad.edu.pe");
-        String codigo = authService.solicitarRecuperacion(recuperar).getCodigo();
+        authService.solicitarRecuperacion(recuperar);
+
+        org.mockito.ArgumentCaptor<String> codigoCaptor = org.mockito.ArgumentCaptor.forClass(String.class);
+        org.mockito.Mockito.verify(emailService)
+                .enviarCodigoRecuperacion(org.mockito.ArgumentMatchers.eq("admin@universidad.edu.pe"), codigoCaptor.capture());
+        String codigo = codigoCaptor.getValue();
 
         RestablecerPasswordRequest restablecer = new RestablecerPasswordRequest();
         restablecer.setCorreo("admin@universidad.edu.pe");

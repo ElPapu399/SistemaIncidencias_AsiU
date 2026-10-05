@@ -22,21 +22,23 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AuthService {
 
     private static final long CODIGO_TTL_SECONDS = 15 * 60;
-    private static final String MENSAJE_RECUPERACION =
-            "Si el correo está registrado, te enviaremos un código de verificación.";
+    private static final String MENSAJE_RECUPERACION = "Te hemos enviado un código de verificación a tu correo.";
 
     private final UsuarioRepository usuarioRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final EmailService emailService;
     private final SecureRandom secureRandom = new SecureRandom();
     private final Map<String, CodigoRecuperacion> codigosRecuperacion = new ConcurrentHashMap<>();
 
     public AuthService(UsuarioRepository usuarioRepository,
-                       BCryptPasswordEncoder passwordEncoder,
-                       JwtUtil jwtUtil) {
+            BCryptPasswordEncoder passwordEncoder,
+            JwtUtil jwtUtil,
+            EmailService emailService) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.emailService = emailService;
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -58,29 +60,31 @@ public class AuthService {
                 usuario.getApellido(),
                 usuario.getCorreo(),
                 usuario.getRol().getNombre(),
-                token
-        );
+                token);
     }
 
     public RecuperarPasswordResponse solicitarRecuperacion(RecuperarPasswordRequest request) {
+        limpiarCodigosExpirados();
         String correo = request.getCorreo().trim().toLowerCase();
         Optional<Usuario> usuario = usuarioRepository.findByCorreo(correo);
 
         if (usuario.isEmpty()) {
-            return new RecuperarPasswordResponse(MENSAJE_RECUPERACION, null);
+            throw new RuntimeException("El correo no está registrado en el sistema");
         }
 
         String codigo = String.format("%06d", secureRandom.nextInt(1_000_000));
         codigosRecuperacion.put(correo, new CodigoRecuperacion(
                 passwordEncoder.encode(codigo),
-                Instant.now().plusSeconds(CODIGO_TTL_SECONDS)
-        ));
+                Instant.now().plusSeconds(CODIGO_TTL_SECONDS)));
 
-        // Sin servidor de correo configurado: el código se devuelve para completar el flujo en demo.
-        return new RecuperarPasswordResponse(MENSAJE_RECUPERACION, codigo);
+        // Enviar el código por correo electrónico de forma asíncrona
+        emailService.enviarCodigoRecuperacion(correo, codigo);
+
+        return new RecuperarPasswordResponse(MENSAJE_RECUPERACION, null);
     }
 
     public MensajeResponse restablecerPassword(RestablecerPasswordRequest request) {
+        limpiarCodigosExpirados();
         String correo = request.getCorreo().trim().toLowerCase();
         CodigoRecuperacion registro = codigosRecuperacion.get(correo);
 
@@ -101,6 +105,10 @@ public class AuthService {
         codigosRecuperacion.remove(correo);
 
         return new MensajeResponse("Contraseña actualizada. Ya puedes iniciar sesión.");
+    }
+
+    private void limpiarCodigosExpirados() {
+        codigosRecuperacion.entrySet().removeIf(entry -> Instant.now().isAfter(entry.getValue().expiraEn()));
     }
 
     private record CodigoRecuperacion(String codigoHash, Instant expiraEn) {

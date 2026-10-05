@@ -32,8 +32,12 @@ public class AuthController {
     }
 
     @PostMapping("/recuperar")
-    public ResponseEntity<RecuperarPasswordResponse> recuperar(@Valid @RequestBody RecuperarPasswordRequest request) {
-        return ResponseEntity.ok(authService.solicitarRecuperacion(request));
+    public ResponseEntity<?> recuperar(@Valid @RequestBody RecuperarPasswordRequest request) {
+        try {
+            return ResponseEntity.ok(authService.solicitarRecuperacion(request));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new MensajeResponse(e.getMessage()));
+        }
     }
 
     @PostMapping("/restablecer")

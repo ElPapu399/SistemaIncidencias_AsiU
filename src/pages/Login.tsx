@@ -35,7 +35,6 @@ const Login = () => {
   const [codigo, setCodigo] = useState('');
   const [nuevaPassword, setNuevaPassword] = useState('');
   const [confirmarPassword, setConfirmarPassword] = useState('');
-  const [codigoDemo, setCodigoDemo] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -64,7 +63,6 @@ const Login = () => {
     setCodigo('');
     setNuevaPassword('');
     setConfirmarPassword('');
-    setCodigoDemo('');
     resetMessages();
   };
 
@@ -74,7 +72,6 @@ const Login = () => {
     setCodigo('');
     setNuevaPassword('');
     setConfirmarPassword('');
-    setCodigoDemo('');
     resetMessages();
   };
 
@@ -118,7 +115,6 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setCodigoDemo(data.codigo || '');
         setView('restablecer');
         setSuccess(data.mensaje || 'Revisa tu correo e ingresa el código de verificación.');
       } else {
@@ -161,7 +157,6 @@ const Login = () => {
         setCodigo('');
         setNuevaPassword('');
         setConfirmarPassword('');
-        setCodigoDemo('');
         setSuccess(data.mensaje || 'Contraseña actualizada. Ya puedes iniciar sesión.');
       } else {
         setError(await parseApiError(response, 'No se pudo restablecer la contraseña'));
@@ -368,11 +363,9 @@ const Login = () => {
 
             {view === 'restablecer' && (
               <form className="space-y-5" onSubmit={handleRestablecer}>
-                {codigoDemo && (
-                  <div className="text-yellow-200 text-sm bg-yellow-950/40 border border-yellow-700/50 rounded-xl px-4 py-3">
-                    Código de verificación (demostración): <span className="font-bold tracking-widest">{codigoDemo}</span>
-                  </div>
-                )}
+                <div className="text-blue-200 text-sm bg-blue-950/40 border border-blue-700/50 rounded-xl px-4 py-3">
+                  📧 Revisa tu bandeja de entrada en <span className="font-semibold">{correo}</span> para obtener el código de verificación.
+                </div>
 
                 <div className="relative w-full">
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">

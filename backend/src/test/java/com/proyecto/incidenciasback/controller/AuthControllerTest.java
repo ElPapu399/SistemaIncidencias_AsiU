@@ -139,14 +139,29 @@ class AuthControllerTest {
         request.setCorreo("admin@universidad.edu.pe");
 
         when(authService.solicitarRecuperacion(any(RecuperarPasswordRequest.class)))
-                .thenReturn(new RecuperarPasswordResponse("Si el correo está registrado, te enviaremos un código de verificación.", "123456"));
+                .thenReturn(new RecuperarPasswordResponse("Te hemos enviado un código de verificación a tu correo.", null));
 
         mockMvc.perform(post("/api/auth/recuperar")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.mensaje").isNotEmpty())
-                .andExpect(jsonPath("$.codigo").value("123456"));
+                .andExpect(jsonPath("$.mensaje").isNotEmpty());
+    }
+
+    @Test
+    @DisplayName("Recuperación: correo no registrado devuelve 400")
+    void recuperarConCorreoNoRegistrado_deberiaRetornar400() throws Exception {
+        RecuperarPasswordRequest request = new RecuperarPasswordRequest();
+        request.setCorreo("no-existe@universidad.edu.pe");
+
+        when(authService.solicitarRecuperacion(any(RecuperarPasswordRequest.class)))
+                .thenThrow(new RuntimeException("El correo no está registrado en el sistema"));
+
+        mockMvc.perform(post("/api/auth/recuperar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensaje").value("El correo no está registrado en el sistema"));
     }
 
     @Test
