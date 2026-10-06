@@ -77,10 +77,11 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Email (SMTP) -->
+		<!-- Resend (email vía HTTPS – reemplaza SMTP bloqueado en Railway) -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-mail</artifactId>
+			<groupId>com.resend</groupId>
+			<artifactId>resend-java</artifactId>
+			<version>3.1.0</version>
 		</dependency>
 
 		<!-- Testing -->

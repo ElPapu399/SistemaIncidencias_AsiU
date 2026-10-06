@@ -1,11 +1,11 @@
 package com.proyecto.incidenciasback.service;
 
-import jakarta.mail.internet.MimeMessage;
+import com.resend.Resend;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.CreateEmailOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -14,29 +14,22 @@ public class EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
-    private final JavaMailSender mailSender;
+    private final Resend resend;
 
-    @Value("${app.mail.from:loayzajhosep58@gmail.com}")
+    @Value("${app.mail.from:onboarding@resend.dev}")
     private String fromEmail;
 
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
+    public EmailService(@Value("${resend.api-key:re_placeholder}") String apiKey) {
+        this.resend = new Resend(apiKey);
     }
 
     /**
-     * Envía el código de verificación por correo electrónico.
+     * Envía el código de verificación por correo electrónico usando Resend (HTTPS).
      * Se ejecuta en un hilo separado (@Async) para no bloquear la respuesta HTTP del usuario.
      */
     @Async
     public void enviarCodigoRecuperacion(String destinatario, String codigo) {
         try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom(fromEmail, "ASIU - Sistema de Incidencias");
-            helper.setTo(destinatario);
-            helper.setSubject("ASIU – Código de recuperación de contraseña");
-
             String html = """
                 <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">
                   <div style="text-align: center; margin-bottom: 24px;">
@@ -61,11 +54,17 @@ public class EmailService {
                 </div>
                 """.formatted(codigo);
 
-            helper.setText(html, true);
-            mailSender.send(message);
+            CreateEmailOptions params = CreateEmailOptions.builder()
+                    .from(fromEmail)
+                    .to(destinatario)
+                    .subject("ASIU – Código de recuperación de contraseña")
+                    .html(html)
+                    .build();
+
+            resend.emails().send(params);
             log.info("Código de recuperación enviado con éxito a {}", destinatario);
 
-        } catch (Exception e) {
+        } catch (ResendException e) {
             log.error("Error al enviar correo de recuperación a {}: {}", destinatario, e.getMessage());
         }
     }

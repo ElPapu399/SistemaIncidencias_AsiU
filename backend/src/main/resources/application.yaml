@@ -22,16 +22,13 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-  # ── Configuración de correo (Gmail SMTP) ──
-  mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:loayzajhosep58@gmail.com}
-    password: ${MAIL_PASSWORD:vxxdjvizkpexggqf}
-    properties:
-      mail.smtp:
-        auth: true
-        starttls.enable: true
+  # ── Configuración de correo (Resend HTTPS API) ──
+  # Railway bloquea SMTP (puertos 25/465/587) en planes Free/Hobby.
+  # Resend usa HTTPS (puerto 443) que siempre está permitido.
+
+# Resend API key (obtener en https://resend.com/api-keys)
+resend:
+  api-key: ${RESEND_API_KEY:re_placeholder}
 
 server:
   port: ${SERVER_PORT:8080}
