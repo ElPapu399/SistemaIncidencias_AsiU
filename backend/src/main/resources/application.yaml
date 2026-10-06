@@ -22,6 +22,17 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
+  # ── Configuración de correo (Gmail SMTP) ──
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:loayzajhosep58@gmail.com}
+    password: ${MAIL_PASSWORD:vxxdjvizkpexggqf}
+    properties:
+      mail.smtp:
+        auth: true
+        starttls.enable: true
+
 server:
   port: ${SERVER_PORT:8080}
 
@@ -31,21 +42,9 @@ app:
   jwt:
     secret: ${JWT_SECRET:AsIU-SistemaIncidencias-JWT-SecretKey-2026-MinLength32!}
     expiration-ms: ${JWT_EXPIRATION:1800000}  # 30 minutos
+  mail:
+    from: ${MAIL_FROM:loayzajhosep58@gmail.com}
 
 # CORS: acepta tanto localhost como el dominio de producción
 cors:
   allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
-
-# ── Configuración de correo (Gmail SMTP) ──
-spring.mail:
-  host: smtp.gmail.com
-  port: 587
-  username: loayzajhosep58@gmail.com
-  password: vxxdjvizkpexggqf
-  properties:
-    mail.smtp:
-      auth: true
-      starttls.enable: true
-
-app.mail:
-  from: ${MAIL_FROM:loayzajhosep58@gmail.com}
