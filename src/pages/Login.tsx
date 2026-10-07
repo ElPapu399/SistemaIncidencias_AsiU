@@ -18,12 +18,11 @@ import { saveSession, isLoggedIn, onSessionChange } from '../utils/auth';
 type AuthView = 'login' | 'recuperar' | 'restablecer';
 
 const parseApiError = async (response: Response, fallback: string) => {
-  const rawText = await response.text();
   try {
-    const parsed = JSON.parse(rawText);
-    return parsed.error || parsed.message || parsed.mensaje || rawText || fallback;
+    const data = await response.json();
+    return data.error || data.message || data.mensaje || fallback;
   } catch {
-    return rawText?.trim() ? rawText : fallback;
+    return fallback;
   }
 };
 

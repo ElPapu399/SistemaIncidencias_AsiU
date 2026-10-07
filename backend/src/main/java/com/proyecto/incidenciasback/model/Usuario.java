@@ -39,7 +39,7 @@ public class Usuario {
     @Column(length = 100)
     private String carrera;
 
-    // Solo para técnicos: 'Activo', 'Inactivo'
+    // Estado del usuario: 'Activo', 'Inactivo'
     @Column(length = 20)
     private String estado;
 

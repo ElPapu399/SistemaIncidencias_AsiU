@@ -6,7 +6,6 @@ import com.proyecto.incidenciasback.repository.EquipoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EquipoService {
@@ -21,14 +20,14 @@ public class EquipoService {
         return equipoRepository.findAll()
                 .stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<EquipoResponse> listarPorUbicacion(Integer ubicacionId) {
         return equipoRepository.findByUbicacionId(ubicacionId)
                 .stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public EquipoResponse obtenerPorId(Integer id) {

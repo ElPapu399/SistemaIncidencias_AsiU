@@ -22,7 +22,6 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class ArchivoAdjuntoService {
@@ -111,7 +110,7 @@ public class ArchivoAdjuntoService {
         return archivoAdjuntoRepository.findByIncidenciaIdOrderByFechaSubidaDesc(incidenciaId)
                 .stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

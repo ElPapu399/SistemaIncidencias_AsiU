@@ -9,14 +9,12 @@ import com.proyecto.incidenciasback.model.Usuario;
 import com.proyecto.incidenciasback.repository.IncidenciaRepository;
 import com.proyecto.incidenciasback.repository.SolicitudReasignacionRepository;
 import com.proyecto.incidenciasback.repository.UsuarioRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.proyecto.incidenciasback.security.AuthHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Servicio para gestionar las solicitudes de reasignación de técnicos.
@@ -29,15 +27,18 @@ public class SolicitudReasignacionService {
     private final IncidenciaRepository incidenciaRepository;
     private final UsuarioRepository usuarioRepository;
     private final IncidenciaService incidenciaService;
+    private final AuthHelper authHelper;
 
     public SolicitudReasignacionService(SolicitudReasignacionRepository solicitudRepository,
                                          IncidenciaRepository incidenciaRepository,
                                          UsuarioRepository usuarioRepository,
-                                         IncidenciaService incidenciaService) {
+                                         IncidenciaService incidenciaService,
+                                         AuthHelper authHelper) {
         this.solicitudRepository = solicitudRepository;
         this.incidenciaRepository = incidenciaRepository;
         this.usuarioRepository = usuarioRepository;
         this.incidenciaService = incidenciaService;
+        this.authHelper = authHelper;
     }
 
     // ==================== CREAR SOLICITUD (Técnico) ====================
@@ -52,7 +53,7 @@ public class SolicitudReasignacionService {
         Incidencia incidencia = incidenciaRepository.findById(incidenciaId)
                 .orElseThrow(() -> new RuntimeException("Incidencia no encontrada con id: " + incidenciaId));
 
-        Usuario tecnico = obtenerUsuarioAutenticado();
+        Usuario tecnico = authHelper.obtenerUsuarioAutenticado();
 
         // Validar que el técnico está asignado a esta incidencia
         if (incidencia.getTecnico() == null || !incidencia.getTecnico().getId().equals(tecnico.getId())) {
@@ -97,7 +98,7 @@ public class SolicitudReasignacionService {
             throw new RuntimeException("La decisión debe ser APROBADA o RECHAZADA");
         }
 
-        Usuario revisor = obtenerUsuarioAutenticado();
+        Usuario revisor = authHelper.obtenerUsuarioAutenticado();
 
         solicitud.setEstado(decision);
         solicitud.setRevisadoPor(revisor);
@@ -138,7 +139,7 @@ public class SolicitudReasignacionService {
         return solicitudRepository.findByEstadoOrderByFechaSolicitudAsc("PENDIENTE")
                 .stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /** Lista todas las solicitudes (para historial) */
@@ -147,7 +148,7 @@ public class SolicitudReasignacionService {
         return solicitudRepository.findAll()
                 .stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /** Lista las solicitudes de una incidencia específica */
@@ -156,7 +157,7 @@ public class SolicitudReasignacionService {
         return solicitudRepository.findByIncidenciaIdOrderByFechaSolicitudDesc(incidenciaId)
                 .stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /** Lista las solicitudes de un técnico específico */
@@ -165,19 +166,10 @@ public class SolicitudReasignacionService {
         return solicitudRepository.findByTecnicoSolicitanteIdOrderByFechaSolicitudDesc(tecnicoId)
                 .stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // ==================== UTILIDADES ====================
-
-    private Usuario obtenerUsuarioAutenticado() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getName() != null && !auth.getName().equals("anonymousUser")) {
-            return usuarioRepository.findByCorreo(auth.getName())
-                    .orElseThrow(() -> new RuntimeException("Usuario autenticado no encontrado: " + auth.getName()));
-        }
-        throw new RuntimeException("No se pudo determinar el usuario autenticado");
-    }
 
     private SolicitudReasignacionResponse toResponse(SolicitudReasignacion s) {
         return new SolicitudReasignacionResponse(

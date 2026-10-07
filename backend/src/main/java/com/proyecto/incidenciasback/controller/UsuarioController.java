@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Controlador para la gestión de usuarios (estudiantes, técnicos y administradores).
@@ -91,7 +90,7 @@ public class UsuarioController {
             map.put("especialidad", t.getEspecialidad() != null ? t.getEspecialidad().getNombre() : null);
             map.put("incidenciasActivas", incidenciaService.contarIncidenciasActivas(t.getId()));
             return map;
-        }).collect(Collectors.toList());
+        }).toList();
 
         return ResponseEntity.ok(resultado);
     }

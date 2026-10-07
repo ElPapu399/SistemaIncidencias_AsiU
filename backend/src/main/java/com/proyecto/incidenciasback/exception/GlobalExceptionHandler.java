@@ -11,15 +11,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Manejador global centralizado de excepciones para todos los controladores REST.
+ * Manejador global centralizado de excepciones para todos los controladores
+ * REST.
  * Elimina la necesidad de envolver cada endpoint en bloques try-catch manuales.
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Map<String, String>> handleAuthenticationException(AuthenticationException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", ex.getMessage() != null ? ex.getMessage() : "No autorizado"));
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
-        // Errores con mensaje "no encontrado" o "no existe" devuelven 404, de lo contrario 400
+        // Errores con mensaje "no encontrado" o "no existe" devuelven 404, de lo
+        // contrario 400
         String msg = ex.getMessage() != null ? ex.getMessage() : "Error inesperado en el servidor";
         HttpStatus status = msg.toLowerCase().contains("no encontrado") || msg.toLowerCase().contains("no existe")
                 ? HttpStatus.NOT_FOUND

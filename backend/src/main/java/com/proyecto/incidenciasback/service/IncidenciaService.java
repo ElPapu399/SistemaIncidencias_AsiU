@@ -3,8 +3,7 @@ package com.proyecto.incidenciasback.service;
 import com.proyecto.incidenciasback.dto.*;
 import com.proyecto.incidenciasback.model.*;
 import com.proyecto.incidenciasback.repository.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.proyecto.incidenciasback.security.AuthHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +34,7 @@ public class IncidenciaService {
     private final EquipoRepository equipoRepository;
     private final HistorialEstadoRepository historialEstadoRepository;
     private final ArchivoAdjuntoRepository archivoAdjuntoRepository;
+    private final AuthHelper authHelper;
 
     public IncidenciaService(IncidenciaRepository incidenciaRepository,
                              UsuarioRepository usuarioRepository,
@@ -43,7 +43,8 @@ public class IncidenciaService {
                              UbicacionRepository ubicacionRepository,
                              EquipoRepository equipoRepository,
                              HistorialEstadoRepository historialEstadoRepository,
-                             ArchivoAdjuntoRepository archivoAdjuntoRepository) {
+                             ArchivoAdjuntoRepository archivoAdjuntoRepository,
+                             AuthHelper authHelper) {
         this.incidenciaRepository = incidenciaRepository;
         this.usuarioRepository = usuarioRepository;
         this.categoriaRepository = categoriaRepository;
@@ -52,6 +53,7 @@ public class IncidenciaService {
         this.equipoRepository = equipoRepository;
         this.historialEstadoRepository = historialEstadoRepository;
         this.archivoAdjuntoRepository = archivoAdjuntoRepository;
+        this.authHelper = authHelper;
     }
 
     // ==================== LISTAR ====================
@@ -74,13 +76,13 @@ public class IncidenciaService {
                 .findByIncidenciaIdOrderByFechaCambioAsc(id)
                 .stream()
                 .map(this::toHistorialResponse)
-                .collect(Collectors.toList());
+                .toList();
 
         List<ArchivoAdjuntoResponse> adjuntos = archivoAdjuntoRepository
                 .findByIncidenciaIdOrderByFechaSubidaDesc(id)
                 .stream()
                 .map(this::toAdjuntoResponse)
-                .collect(Collectors.toList());
+                .toList();
 
         return toDetalleResponse(inc, historial, adjuntos);
     }
@@ -113,6 +115,10 @@ public class IncidenciaService {
     public IncidenciaResponse crearIncidencia(IncidenciaRequest request) {
         Usuario estudiante = usuarioRepository.findById(request.getEstudianteId())
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado con id: " + request.getEstudianteId()));
+
+        if ("Inactivo".equalsIgnoreCase(estudiante.getEstado())) {
+            throw new RuntimeException("El estudiante se encuentra inactivo y no puede registrar incidencias");
+        }
 
         Categoria categoria = categoriaRepository.findById(request.getCategoriaId())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada con id: " + request.getCategoriaId()));
@@ -167,7 +173,7 @@ public class IncidenciaService {
         }
 
         // Obtener el usuario autenticado (quien realiza la asignación)
-        Usuario asignador = obtenerUsuarioAutenticado();
+        Usuario asignador = authHelper.obtenerUsuarioAutenticado();
 
         String estadoAnterior = incidencia.getEstado();
         incidencia.setTecnico(tecnico);
@@ -211,7 +217,7 @@ public class IncidenciaService {
         }
 
         // Obtener quién está haciendo la reasignación
-        Usuario reasignador = obtenerUsuarioAutenticado();
+        Usuario reasignador = authHelper.obtenerUsuarioAutenticado();
         Usuario tecnicoAnterior = incidencia.getTecnico();
 
         // Validar que no se reasigne al mismo técnico
@@ -251,13 +257,7 @@ public class IncidenciaService {
             usuario = usuarioRepository.findById(request.getUsuarioId())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + request.getUsuarioId()));
         } else {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null && auth.getName() != null && !auth.getName().equals("anonymousUser")) {
-                usuario = usuarioRepository.findByCorreo(auth.getName())
-                        .orElseThrow(() -> new RuntimeException("Usuario autenticado no encontrado: " + auth.getName()));
-            } else {
-                throw new RuntimeException("El usuario es obligatorio para registrar el cambio de estado");
-            }
+            usuario = authHelper.obtenerUsuarioAutenticado();
         }
 
         String rawEstado = request.getEstado() != null ? request.getEstado().trim() : "";
@@ -315,22 +315,10 @@ public class IncidenciaService {
                 .findByIncidenciaIdOrderByFechaCambioAsc(incidenciaId)
                 .stream()
                 .map(this::toHistorialResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // ==================== UTILIDADES ====================
-
-    /**
-     * Obtiene el usuario autenticado actual desde el SecurityContext.
-     */
-    private Usuario obtenerUsuarioAutenticado() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getName() != null && !auth.getName().equals("anonymousUser")) {
-            return usuarioRepository.findByCorreo(auth.getName())
-                    .orElseThrow(() -> new RuntimeException("Usuario autenticado no encontrado: " + auth.getName()));
-        }
-        throw new RuntimeException("No se pudo determinar el usuario autenticado");
-    }
 
     /**
      * Genera un código de ticket auto-incremental único: INC-2026-0001, INC-2026-0002...
@@ -454,7 +442,7 @@ public class IncidenciaService {
 
         return incidencias.stream()
                 .map(inc -> toResponseConTrazabilidad(inc, reasignaciones.get(inc.getId()), asignaciones.get(inc.getId())))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private IncidenciaResponse toResponseConTrazabilidad(Incidencia inc, HistorialEstado reasig, HistorialEstado asig) {

@@ -6,6 +6,7 @@ import com.proyecto.incidenciasback.dto.MensajeResponse;
 import com.proyecto.incidenciasback.dto.RecuperarPasswordRequest;
 import com.proyecto.incidenciasback.dto.RecuperarPasswordResponse;
 import com.proyecto.incidenciasback.dto.RestablecerPasswordRequest;
+import com.proyecto.incidenciasback.exception.AuthenticationException;
 import com.proyecto.incidenciasback.model.Rol;
 import com.proyecto.incidenciasback.model.Usuario;
 import com.proyecto.incidenciasback.repository.UsuarioRepository;
@@ -60,7 +61,25 @@ class AuthServiceTest {
         usuario.setCorreo(correo);
         usuario.setPasswordHash(passwordEncoder.encode(rawPassword));
         usuario.setRol(rol);
+        usuario.setEstado("Activo");
         return usuario;
+    }
+
+    @Test
+    @DisplayName("Credenciales inválidas: usuario inactivo lanza excepción")
+    void login_usuarioInactivo_lanzaExcepcion() {
+        Usuario usuario = crearUsuario("inactivo@universidad.edu.pe", "admin123");
+        usuario.setEstado("Inactivo");
+        when(usuarioRepository.findByCorreo("inactivo@universidad.edu.pe"))
+                .thenReturn(Optional.of(usuario));
+
+        LoginRequest request = new LoginRequest();
+        request.setCorreo("inactivo@universidad.edu.pe");
+        request.setPassword("admin123");
+
+        assertThatThrownBy(() -> authService.login(request))
+                .isInstanceOf(AuthenticationException.class)
+                .hasMessage("Tu cuenta se encuentra inactiva. Contacta al administrador.");
     }
 
     @Test
@@ -94,7 +113,7 @@ class AuthServiceTest {
         request.setPassword("password-incorrecto");
 
         assertThatThrownBy(() -> authService.login(request))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(AuthenticationException.class)
                 .hasMessage("Correo o contraseña incorrectos");
     }
 
@@ -109,7 +128,7 @@ class AuthServiceTest {
         request.setPassword("cualquiera123");
 
         assertThatThrownBy(() -> authService.login(request))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(AuthenticationException.class)
                 .hasMessage("Correo o contraseña incorrectos");
     }
 

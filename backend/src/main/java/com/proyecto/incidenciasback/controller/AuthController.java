@@ -22,31 +22,17 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
-        try {
-            LoginResponse response = authService.login(request);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(401).body(e.getMessage());
-        }
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/recuperar")
-    public ResponseEntity<?> recuperar(@Valid @RequestBody RecuperarPasswordRequest request) {
-        try {
-            return ResponseEntity.ok(authService.solicitarRecuperacion(request));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new MensajeResponse(e.getMessage()));
-        }
+    public ResponseEntity<RecuperarPasswordResponse> recuperar(@Valid @RequestBody RecuperarPasswordRequest request) {
+        return ResponseEntity.ok(authService.solicitarRecuperacion(request));
     }
 
     @PostMapping("/restablecer")
-    public ResponseEntity<?> restablecer(@Valid @RequestBody RestablecerPasswordRequest request) {
-        try {
-            MensajeResponse response = authService.restablecerPassword(request);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<MensajeResponse> restablecer(@Valid @RequestBody RestablecerPasswordRequest request) {
+        return ResponseEntity.ok(authService.restablecerPassword(request));
     }
 }

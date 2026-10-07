@@ -6,6 +6,7 @@ import com.proyecto.incidenciasback.dto.MensajeResponse;
 import com.proyecto.incidenciasback.dto.RecuperarPasswordRequest;
 import com.proyecto.incidenciasback.dto.RecuperarPasswordResponse;
 import com.proyecto.incidenciasback.dto.RestablecerPasswordRequest;
+import com.proyecto.incidenciasback.exception.AuthenticationException;
 import com.proyecto.incidenciasback.model.Usuario;
 import com.proyecto.incidenciasback.repository.UsuarioRepository;
 import com.proyecto.incidenciasback.security.JwtUtil;
@@ -44,11 +45,16 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
         // Buscar usuario por correo
         Usuario usuario = usuarioRepository.findByCorreo(request.getCorreo())
-                .orElseThrow(() -> new RuntimeException("Correo o contraseña incorrectos"));
+                .orElseThrow(() -> new AuthenticationException("Correo o contraseña incorrectos"));
 
         // Verificar contraseña con BCrypt
         if (!passwordEncoder.matches(request.getPassword(), usuario.getPasswordHash())) {
-            throw new RuntimeException("Correo o contraseña incorrectos");
+            throw new AuthenticationException("Correo o contraseña incorrectos");
+        }
+
+        // Verificar si la cuenta está inactiva
+        if ("Inactivo".equalsIgnoreCase(usuario.getEstado())) {
+            throw new AuthenticationException("Tu cuenta se encuentra inactiva. Contacta al administrador.");
         }
 
         // Generar token JWT

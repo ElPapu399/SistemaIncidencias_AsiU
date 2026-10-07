@@ -8,6 +8,7 @@ import com.proyecto.incidenciasback.dto.LoginResponse;
 import com.proyecto.incidenciasback.dto.RecuperarPasswordRequest;
 import com.proyecto.incidenciasback.dto.RecuperarPasswordResponse;
 import com.proyecto.incidenciasback.dto.RestablecerPasswordRequest;
+import com.proyecto.incidenciasback.exception.AuthenticationException;
 import com.proyecto.incidenciasback.security.JwtAuthFilter;
 import com.proyecto.incidenciasback.security.JwtUtil;
 import com.proyecto.incidenciasback.service.AuthService;
@@ -68,13 +69,13 @@ class AuthControllerTest {
         request.setPassword("password-incorrecto");
 
         when(authService.login(any(LoginRequest.class)))
-                .thenThrow(new RuntimeException("Correo o contraseña incorrectos"));
+                .thenThrow(new AuthenticationException("Correo o contraseña incorrectos"));
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Correo o contraseña incorrectos"));
+                .andExpect(jsonPath("$.error").value("Correo o contraseña incorrectos"));
     }
 
     @Test
@@ -85,12 +86,13 @@ class AuthControllerTest {
         request.setPassword("cualquiera123");
 
         when(authService.login(any(LoginRequest.class)))
-                .thenThrow(new RuntimeException("Correo o contraseña incorrectos"));
+                .thenThrow(new AuthenticationException("Correo o contraseña incorrectos"));
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error").value("Correo o contraseña incorrectos"));
     }
 
     @Test
@@ -161,7 +163,7 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.mensaje").value("El correo no está registrado en el sistema"));
+                .andExpect(jsonPath("$.error").value("El correo no está registrado en el sistema"));
     }
 
     @Test
@@ -179,6 +181,6 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("El código es inválido o ha expirado"));
+                .andExpect(jsonPath("$.error").value("El código es inválido o ha expirado"));
     }
 }

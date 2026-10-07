@@ -151,14 +151,14 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
                     especialidadId: canHaveEspecialidad ? especialidadId : null,
                     carrera: isEstudiante ? carrera || null : null,
                     telefono: isTecnico ? telefono || null : null,
-                    estado: isTecnico ? estado : null,
+                    estado,
                 }
                 : {
                     nombre, apellido, correo, password, rolId: effectiveRolId,
                     especialidadId: canHaveEspecialidad ? especialidadId : null,
                     carrera: isEstudiante ? carrera || null : null,
                     telefono: isTecnico ? telefono || null : null,
-                    estado: isTecnico ? estado : 'Activo',
+                    estado,
                 };
 
             const response = await fetchWithAuth(url, {
@@ -302,17 +302,30 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
                         </div>
                     )}
 
-                    {/* MODO ESTUDIANTE: Carrera universitaria */}
+                    {/* MODO ESTUDIANTE: Carrera universitaria y Estado */}
                     {mode === 'estudiante' && (
-                        <div>
-                            <label className={LABEL_STYLE}>Carrera universitaria</label>
-                            <input
-                                type="text"
-                                value={carrera}
-                                onChange={e => setCarrera(e.target.value)}
-                                className={INPUT_STYLE}
-                                placeholder="Ej: Ingeniería de Sistemas e Informática"
-                            />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className={LABEL_STYLE}>Carrera universitaria</label>
+                                <input
+                                    type="text"
+                                    value={carrera}
+                                    onChange={e => setCarrera(e.target.value)}
+                                    className={INPUT_STYLE}
+                                    placeholder="Ej: Ingeniería de Sistemas e Informática"
+                                />
+                            </div>
+                            <div>
+                                <label className={LABEL_STYLE}>Estado</label>
+                                <select
+                                    value={estado}
+                                    onChange={e => setEstado(e.target.value)}
+                                    className={INPUT_STYLE}
+                                >
+                                    <option value="Activo">Activo</option>
+                                    <option value="Inactivo">Inactivo</option>
+                                </select>
+                            </div>
                         </div>
                     )}
 
@@ -446,15 +459,28 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
                             </div>
 
                             {isEstudiante && (
-                                <div>
-                                    <label className={LABEL_STYLE}>Carrera</label>
-                                    <input
-                                        type="text"
-                                        value={carrera}
-                                        onChange={e => setCarrera(e.target.value)}
-                                        className={INPUT_STYLE}
-                                        placeholder="Ej: Ingeniería de Sistemas"
-                                    />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className={LABEL_STYLE}>Carrera</label>
+                                        <input
+                                            type="text"
+                                            value={carrera}
+                                            onChange={e => setCarrera(e.target.value)}
+                                            className={INPUT_STYLE}
+                                            placeholder="Ej: Ingeniería de Sistemas"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className={LABEL_STYLE}>Estado</label>
+                                        <select
+                                            value={estado}
+                                            onChange={e => setEstado(e.target.value)}
+                                            className={INPUT_STYLE}
+                                        >
+                                            <option value="Activo">Activo</option>
+                                            <option value="Inactivo">Inactivo</option>
+                                        </select>
+                                    </div>
                                 </div>
                             )}
 

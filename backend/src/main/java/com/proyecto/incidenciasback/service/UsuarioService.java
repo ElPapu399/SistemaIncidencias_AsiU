@@ -14,10 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
+
+    public static final List<String> ROLES_TECNICOS = List.of("TECNICO", "TECNICO_GENERAL", "TECNICO_ESPECIALISTA");
 
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
@@ -39,7 +40,7 @@ public class UsuarioService {
         return usuarioRepository.findAll()
                 .stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -47,14 +48,14 @@ public class UsuarioService {
         String upperRol = rolNombre.toUpperCase();
         List<Usuario> usuarios;
         if ("TECNICO".equals(upperRol)) {
-            usuarios = usuarioRepository.findByRolNombreIn(List.of("TECNICO", "TECNICO_GENERAL", "TECNICO_ESPECIALISTA"));
+            usuarios = usuarioRepository.findByRolNombreIn(ROLES_TECNICOS);
         } else {
             usuarios = usuarioRepository.findByRolNombre(upperRol);
         }
 
         return usuarios.stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional(readOnly = true)
