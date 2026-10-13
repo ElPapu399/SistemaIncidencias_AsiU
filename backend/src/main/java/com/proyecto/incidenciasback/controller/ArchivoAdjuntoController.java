@@ -22,11 +22,6 @@ public class ArchivoAdjuntoController {
         this.archivoAdjuntoService = archivoAdjuntoService;
     }
 
-    /**
-     * Subir un archivo adjunto a una incidencia.
-     * POST /api/incidencias/{incidenciaId}/adjuntos
-     * Form-data: file (MultipartFile), usuarioId (Integer)
-     */
     @PostMapping("/incidencias/{incidenciaId}/adjuntos")
     public ResponseEntity<ArchivoAdjuntoResponse> subirArchivo(
             @PathVariable Integer incidenciaId,
@@ -36,19 +31,11 @@ public class ArchivoAdjuntoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    /**
-     * Listar archivos adjuntos de una incidencia.
-     * GET /api/incidencias/{incidenciaId}/adjuntos
-     */
     @GetMapping("/incidencias/{incidenciaId}/adjuntos")
     public ResponseEntity<List<ArchivoAdjuntoResponse>> listarAdjuntos(@PathVariable Integer incidenciaId) {
         return ResponseEntity.ok(archivoAdjuntoService.listarPorIncidencia(incidenciaId));
     }
 
-    /**
-     * Descargar/servir un archivo adjunto.
-     * GET /api/adjuntos/{incidenciaId}/{filename}
-     */
     @GetMapping("/adjuntos/{incidenciaId}/{filename}")
     public ResponseEntity<Resource> descargarArchivo(
             @PathVariable Integer incidenciaId,

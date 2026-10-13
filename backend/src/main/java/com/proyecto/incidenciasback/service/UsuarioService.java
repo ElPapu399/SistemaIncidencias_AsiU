@@ -67,7 +67,6 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponse crearUsuario(UsuarioRequest request) {
-        // Validar que el correo no exista
         if (usuarioRepository.findByCorreo(request.getCorreo()).isPresent()) {
             throw new RuntimeException("Ya existe un usuario con el correo: " + request.getCorreo());
         }
@@ -101,7 +100,6 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
 
-        // Validar que el correo no esté usado por otro usuario
         usuarioRepository.findByCorreo(request.getCorreo()).ifPresent(existente -> {
             if (!existente.getId().equals(id)) {
                 throw new RuntimeException("Ya existe otro usuario con el correo: " + request.getCorreo());

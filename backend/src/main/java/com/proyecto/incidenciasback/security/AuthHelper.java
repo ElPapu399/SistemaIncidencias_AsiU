@@ -6,9 +6,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-/**
- * Componente utilitario para obtener el usuario autenticado desde el SecurityContext.
- */
 @Component
 public class AuthHelper {
 
@@ -18,9 +15,6 @@ public class AuthHelper {
         this.usuarioRepository = usuarioRepository;
     }
 
-    /**
-     * Obtiene el usuario autenticado actual desde el SecurityContext.
-     */
     public Usuario obtenerUsuarioAutenticado() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getName() != null && !auth.getName().equals("anonymousUser")) {

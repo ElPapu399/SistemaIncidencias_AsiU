@@ -10,11 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Manejador global centralizado de excepciones para todos los controladores
- * REST.
- * Elimina la necesidad de envolver cada endpoint en bloques try-catch manuales.
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -26,9 +21,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
-        // Errores con mensaje "no encontrado" o "no existe" devuelven 404, de lo
-        // contrario 400
         String msg = ex.getMessage() != null ? ex.getMessage() : "Error inesperado en el servidor";
+        // Mapeo semántico: entidades no encontradas a 404, validaciones de negocio a 400
         HttpStatus status = msg.toLowerCase().contains("no encontrado") || msg.toLowerCase().contains("no existe")
                 ? HttpStatus.NOT_FOUND
                 : HttpStatus.BAD_REQUEST;

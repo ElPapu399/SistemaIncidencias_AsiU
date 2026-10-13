@@ -16,10 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Servicio para gestionar las solicitudes de reasignación de técnicos.
- * Flujo: Técnico solicita → Admin revisa → Aprueba (reasigna) o Rechaza.
- */
 @Service
 public class SolicitudReasignacionService {
 
@@ -41,12 +37,6 @@ public class SolicitudReasignacionService {
         this.authHelper = authHelper;
     }
 
-    // ==================== CREAR SOLICITUD (Técnico) ====================
-
-    /**
-     * Un técnico solicita ser reasignado de una incidencia.
-     * Valida que el técnico esté asignado a la incidencia y no tenga una solicitud pendiente.
-     */
     @Transactional
     public SolicitudReasignacionResponse crearSolicitud(Integer incidenciaId,
                                                          SolicitudReasignacionRequest request) {
@@ -55,12 +45,11 @@ public class SolicitudReasignacionService {
 
         Usuario tecnico = authHelper.obtenerUsuarioAutenticado();
 
-        // Validar que el técnico está asignado a esta incidencia
         if (incidencia.getTecnico() == null || !incidencia.getTecnico().getId().equals(tecnico.getId())) {
             throw new RuntimeException("Solo el técnico asignado puede solicitar reasignación");
         }
 
-        // Validar que no tenga una solicitud pendiente para esta incidencia
+        // Invariante: máximo una solicitud en cola por técnico y ticket
         if (solicitudRepository.existsByIncidenciaIdAndTecnicoSolicitanteIdAndEstado(
                 incidenciaId, tecnico.getId(), "PENDIENTE")) {
             throw new RuntimeException("Ya existe una solicitud de reasignación pendiente para esta incidencia");
@@ -77,12 +66,6 @@ public class SolicitudReasignacionService {
         return toResponse(solicitud);
     }
 
-    // ==================== RESPONDER SOLICITUD (Admin) ====================
-
-    /**
-     * Un admin o técnico de soporte aprueba o rechaza una solicitud de reasignación.
-     * Si se aprueba, se reasigna la incidencia al nuevo técnico con trazabilidad completa.
-     */
     @Transactional
     public SolicitudReasignacionResponse responderSolicitud(Integer solicitudId,
                                                              RespuestaSolicitudRequest request) {
@@ -116,13 +99,13 @@ public class SolicitudReasignacionService {
 
             solicitud.setTecnicoNuevo(tecnicoNuevo);
 
-            // Reasignar la incidencia con trazabilidad completa
             var reasignarRequest = new com.proyecto.incidenciasback.dto.ReasignarTecnicoRequest();
             reasignarRequest.setTecnicoNuevoId(request.getTecnicoNuevoId());
             reasignarRequest.setMotivo("Solicitud de reasignación aprobada. Motivo original: "
                     + solicitud.getMotivo()
                     + (request.getComentario() != null ? ". Comentario del revisor: " + request.getComentario() : ""));
 
+            // Delega en IncidenciaService para registrar trazabilidad completa en historial
             incidenciaService.reasignarTecnico(solicitud.getIncidencia().getId(), reasignarRequest);
         }
 
@@ -131,9 +114,6 @@ public class SolicitudReasignacionService {
         return toResponse(solicitud);
     }
 
-    // ==================== LISTAR ====================
-
-    /** Lista todas las solicitudes pendientes (para el admin) */
     @Transactional(readOnly = true)
     public List<SolicitudReasignacionResponse> listarPendientes() {
         return solicitudRepository.findByEstadoOrderByFechaSolicitudAsc("PENDIENTE")
@@ -142,7 +122,6 @@ public class SolicitudReasignacionService {
                 .toList();
     }
 
-    /** Lista todas las solicitudes (para historial) */
     @Transactional(readOnly = true)
     public List<SolicitudReasignacionResponse> listarTodas() {
         return solicitudRepository.findAll()
@@ -151,7 +130,6 @@ public class SolicitudReasignacionService {
                 .toList();
     }
 
-    /** Lista las solicitudes de una incidencia específica */
     @Transactional(readOnly = true)
     public List<SolicitudReasignacionResponse> listarPorIncidencia(Integer incidenciaId) {
         return solicitudRepository.findByIncidenciaIdOrderByFechaSolicitudDesc(incidenciaId)
@@ -160,7 +138,6 @@ public class SolicitudReasignacionService {
                 .toList();
     }
 
-    /** Lista las solicitudes de un técnico específico */
     @Transactional(readOnly = true)
     public List<SolicitudReasignacionResponse> listarPorTecnico(Integer tecnicoId) {
         return solicitudRepository.findByTecnicoSolicitanteIdOrderByFechaSolicitudDesc(tecnicoId)
@@ -168,8 +145,6 @@ public class SolicitudReasignacionService {
                 .map(this::toResponse)
                 .toList();
     }
-
-    // ==================== UTILIDADES ====================
 
     private SolicitudReasignacionResponse toResponse(SolicitudReasignacion s) {
         return new SolicitudReasignacionResponse(

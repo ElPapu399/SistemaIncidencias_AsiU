@@ -16,9 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Controlador para la gestión de usuarios (estudiantes, técnicos y administradores).
- */
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
@@ -34,8 +31,6 @@ public class UsuarioController {
         this.usuarioRepository = usuarioRepository;
         this.incidenciaService = incidenciaService;
     }
-
-    // ==================== USUARIOS para el CRUD ====================
 
     @GetMapping
     public ResponseEntity<List<UsuarioResponse>> listarUsuarios(@RequestParam(required = false) String rol) {
@@ -66,8 +61,6 @@ public class UsuarioController {
         usuarioService.eliminarUsuario(id);
         return ResponseEntity.ok(Map.of("mensaje", "Usuario eliminado correctamente"));
     }
-
-    // ==================== TÉCNICOS por especialidad ====================
 
     @GetMapping("/tecnicos")
     public ResponseEntity<List<Map<String, Object>>> listarTecnicos(

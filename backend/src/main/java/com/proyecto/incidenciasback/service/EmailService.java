@@ -23,10 +23,6 @@ public class EmailService {
         this.resend = new Resend(apiKey);
     }
 
-    /**
-     * Envía el código de verificación por correo electrónico usando Resend (HTTPS).
-     * Se ejecuta en un hilo separado (@Async) para no bloquear la respuesta HTTP del usuario.
-     */
     @Async
     public void enviarCodigoRecuperacion(String destinatario, String codigo) {
         try {

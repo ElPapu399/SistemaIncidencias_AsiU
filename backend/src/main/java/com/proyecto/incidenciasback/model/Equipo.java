@@ -15,10 +15,10 @@ public class Equipo {
     private Integer id;
 
     @Column(nullable = false, unique = true, length = 50)
-    private String codigo; // Ej: PC-LAB-A-05
+    private String codigo;
 
     @Column(nullable = false, length = 50)
-    private String tipo; // 'PC', 'Impresora', 'Proyector', 'Switch', etc.
+    private String tipo;
 
     @Column(length = 100)
     private String marca;
@@ -31,5 +31,5 @@ public class Equipo {
     private Ubicacion ubicacion;
 
     @Column(nullable = false, length = 20)
-    private String estado; // 'Operativo', 'En reparación', 'Dado de baja'
+    private String estado;
 }

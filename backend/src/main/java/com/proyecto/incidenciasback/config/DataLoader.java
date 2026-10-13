@@ -52,25 +52,21 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // === 1. Roles ===
         obtenerOCrearRol("ADMIN");
         obtenerOCrearRol("ESTUDIANTE");
         obtenerOCrearRol("TECNICO");
         obtenerOCrearRol("TECNICO_GENERAL");
         obtenerOCrearRol("TECNICO_ESPECIALISTA");
 
-        // === 2. Especialidades ===
         crearEspecialidadSiNoExiste("Hardware", "Problemas físicos: equipos, periféricos, impresoras");
         crearEspecialidadSiNoExiste("Redes", "Conectividad, Wi-Fi, switches, puntos de acceso");
         crearEspecialidadSiNoExiste("Software", "Sistemas operativos, aplicaciones, licencias");
         crearEspecialidadSiNoExiste("Audiovisual", "Proyectores, pantallas, audio");
 
-        // === 3. Prioridades ===
         crearPrioridadSiNoExiste("Alta", 4, "Afecta a múltiples usuarios o servicios críticos");
         crearPrioridadSiNoExiste("Media", 24, "Afecta a un usuario, tiene solución temporal");
         crearPrioridadSiNoExiste("Baja", 72, "Inconveniente menor, no bloquea el trabajo");
 
-        // === 4. Ubicaciones ===
         crearUbicacionSiNoExiste("Pabellón A", "Laboratorio A", 1, "Laboratorio");
         crearUbicacionSiNoExiste("Pabellón A", "Laboratorio B", 1, "Laboratorio");
         crearUbicacionSiNoExiste("Pabellón B", "Laboratorio C", 1, "Laboratorio");
@@ -80,7 +76,6 @@ public class DataLoader implements CommandLineRunner {
         crearUbicacionSiNoExiste("Pabellón D", "Aula 301", 3, "Aula");
         crearUbicacionSiNoExiste("Pabellón D", "Auditorio", 1, "Auditorio");
 
-        // === 5. Categorías ===
         crearCategoriaSiNoExiste("Computadora no enciende", "Hardware", "Alta");
         crearCategoriaSiNoExiste("Problema con teclado o mouse", "Hardware", "Baja");
         crearCategoriaSiNoExiste("Problema con monitor", "Hardware", "Media");
@@ -100,21 +95,16 @@ public class DataLoader implements CommandLineRunner {
         crearCategoriaSiNoExiste("Cable de red con conector roto", "Redes", "Media");
         crearCategoriaSiNoExiste("Base de datos local bloqueada", "Software", "Alta");
 
-        // === 6. Usuarios ===
-        // Admin
         crearUsuarioSiNoExiste("Ana", "Rodríguez", "admin@universidad.edu.pe", "admin123", "ADMIN", null, "987-000-000", null, "Activo");
 
-        // Técnicos de Soporte General (Mesa de ayuda / Asignadores)
         crearUsuarioSiNoExiste("Rosa", "Flores", "r.flores@utp.edu.pe", "tecnico123", "TECNICO_GENERAL", null, "987-666-321", null, "Activo");
         crearUsuarioSiNoExiste("Jorge", "Herrera", "j.herrera@utp.edu.pe", "tecnico123", "TECNICO_GENERAL", null, "987-777-888", null, "Activo");
 
-        // Técnicos de Soporte Especializado (Resolutores de campo)
         crearUsuarioSiNoExiste("Carlos", "Mendoza", "c.mendoza@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA", "Hardware", "987-111-222", null, "Activo");
         crearUsuarioSiNoExiste("Pedro", "Sánchez", "p.sanchez@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA", "Redes", "987-333-789", null, "Activo");
         crearUsuarioSiNoExiste("Lucía", "Ramos", "l.ramos@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA", "Software", "987-444-100", null, "Activo");
         crearUsuarioSiNoExiste("Marcos", "Vega", "m.vega@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA", "Audiovisual", "987-555-200", null, "Activo");
 
-        // Estudiantes
         crearUsuarioSiNoExiste("María", "García", "m.garcia@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-654-321", "Ingeniería de Sistemas", "Activo");
         crearUsuarioSiNoExiste("Luis", "Torres", "l.torres@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-555-123", "Ciencias de la Computación", "Activo");
         crearUsuarioSiNoExiste("Sofía", "Quispe", "s.quispe@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-444-789", "Ingeniería de Sistemas", "Activo");
@@ -126,14 +116,9 @@ public class DataLoader implements CommandLineRunner {
         crearUsuarioSiNoExiste("Valeria", "Rojas", "v.rojas@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-441-890", "Ciencias de la Computación", "Activo");
         crearUsuarioSiNoExiste("Rodrigo", "Castillo", "r.castillo@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-990-112", "Ingeniería de Sistemas", "Activo");
 
-        // === 7. Equipos de ejemplo ===
         crearEquiposSiVacio();
-
-        // === 8. Incidencias de ejemplo ===
         crearIncidenciasSiVacio();
     }
-
-    // ==================== Helpers ====================
 
     private Rol obtenerOCrearRol(String nombreRol) {
         return rolRepository.findByNombre(nombreRol).orElseGet(() -> {
@@ -202,7 +187,6 @@ public class DataLoader implements CommandLineRunner {
         var existenteOpt = usuarioRepository.findByCorreo(correo);
         if (existenteOpt.isPresent()) {
             Usuario existente = existenteOpt.get();
-            // Actualizar rol si cambió respecto a la inicialización previa
             if (existente.getRol() != null && !nombreRol.equals(existente.getRol().getNombre())) {
                 Rol rol = obtenerOCrearRol(nombreRol);
                 existente.setRol(rol);
@@ -212,7 +196,7 @@ public class DataLoader implements CommandLineRunner {
                 usuarioRepository.save(existente);
                 System.out.println("🔄 Rol actualizado para: " + correo + " -> " + nombreRol);
             }
-            return; // Ya existe
+            return;
         }
 
         Rol rol = obtenerOCrearRol(nombreRol);
@@ -245,7 +229,6 @@ public class DataLoader implements CommandLineRunner {
         var ubicaciones = ubicacionRepository.findAll();
         if (ubicaciones.isEmpty()) return;
 
-        // Helper para buscar ubicación por nombre de aula
         java.util.function.Function<String, Ubicacion> findUbicacion = (aula) ->
                 ubicaciones.stream()
                         .filter(u -> u.getAulaLaboratorio().equals(aula))
@@ -295,8 +278,6 @@ public class DataLoader implements CommandLineRunner {
         var prioridades = prioridadRepository.findAll();
         var ubicaciones = ubicacionRepository.findAll();
         var equipos = equipoRepository.findAll();
-
-        // Helper functions
         java.util.function.Function<String, Categoria> findCat = (nombre) ->
                 categorias.stream().filter(c -> c.getNombre().equals(nombre)).findFirst().orElse(null);
         java.util.function.Function<String, Prioridad> findPri = (nivel) ->
@@ -306,7 +287,6 @@ public class DataLoader implements CommandLineRunner {
         java.util.function.Function<String, Equipo> findEq = (codigo) ->
                 equipos.stream().filter(e -> e.getCodigo().equals(codigo)).findFirst().orElse(null);
 
-        // Necesitamos usuarios para las incidencias
         Usuario estudiante = usuarioRepository.findByCorreo("m.garcia@utp.edu.pe").orElse(null);
         Usuario tecHardware = usuarioRepository.findByCorreo("c.mendoza@utp.edu.pe").orElse(null);
         Usuario tecSoftware = usuarioRepository.findByCorreo("l.ramos@utp.edu.pe").orElse(null);
@@ -319,7 +299,6 @@ public class DataLoader implements CommandLineRunner {
 
         LocalDateTime now = LocalDateTime.now();
 
-        // INC-001: En atención
         crearIncidencia("INC-001", "Computadora no enciende – Puesto #5",
                 "La computadora en el puesto #5 no responde al intentar encenderla. Se escucha un pitido corto al presionar el botón de encendido.",
                 "En atención", estudiante, tecHardware,
@@ -327,7 +306,6 @@ public class DataLoader implements CommandLineRunner {
                 findUbi.apply("Laboratorio A"), findEq.apply("PC-LAB-A-05"), null,
                 now.minusDays(3), now.minusDays(2), null);
 
-        // INC-002: Pendiente
         crearIncidencia("INC-002", "Proyector sin señal HDMI – Lab B",
                 "El proyector del laboratorio B no recibe señal HDMI desde ninguna computadora. Se probó con diferentes cables.",
                 "Pendiente", estudiante, null,
@@ -335,7 +313,6 @@ public class DataLoader implements CommandLineRunner {
                 findUbi.apply("Laboratorio B"), findEq.apply("PROY-LAB-B-01"), null,
                 now.minusDays(2), null, null);
 
-        // INC-003: Resuelta
         crearIncidencia("INC-003", "Sin salida a internet local – Puesto #12",
                 "El equipo no tiene acceso a Internet desde el laboratorio. Otros equipos funcionan correctamente.",
                 "Resuelta", estudiante, tecHardware,
@@ -344,7 +321,6 @@ public class DataLoader implements CommandLineRunner {
                 "Se reconfiguró la dirección IP estática y se reinició el punto de acceso.",
                 now.minusDays(5), now.minusDays(4), now.minusDays(3));
 
-        // INC-004: Cerrada
         crearIncidencia("INC-004", "Monitor parpadea al compilar – Puesto #02",
                 "El monitor presenta parpadeo intermitente cuando se ejecutan compilaciones pesadas.",
                 "Cerrada", estudiante, tecHardware,
@@ -353,7 +329,6 @@ public class DataLoader implements CommandLineRunner {
                 "Se reemplazó el cable HDMI defectuoso y se actualizó el firmware del monitor.",
                 now.minusDays(10), now.minusDays(9), now.minusDays(7));
 
-        // INC-005: Asignada
         crearIncidencia("INC-005", "Error de licencia en IDE IntelliJ – Lab C",
                 "IntelliJ IDEA muestra error de licencia expirada. No se puede activar con la cuenta institucional.",
                 "Asignada", estudiante, tecSoftware,
@@ -361,7 +336,6 @@ public class DataLoader implements CommandLineRunner {
                 findUbi.apply("Laboratorio C"), findEq.apply("PC-LAB-C-01"), null,
                 now.minusDays(1), null, null);
 
-        // INC-006: Cerrada
         crearIncidencia("INC-006", "Teclado con teclas bloqueadas – Puesto #18",
                 "Las teclas F1-F5 del teclado no responden. Se limpió con aire comprimido pero no mejoró.",
                 "Cerrada", estudiante, tecHardware,
@@ -370,7 +344,6 @@ public class DataLoader implements CommandLineRunner {
                 "Se reemplazó el teclado por uno nuevo del inventario.",
                 now.minusDays(8), now.minusDays(7), now.minusDays(6));
 
-        // INC-007: En atención
         crearIncidencia("INC-007", "Kernel de Python no inicia – Puesto #04",
                 "Jupyter Notebook no puede iniciar el kernel de Python. Muestra error de conexión.",
                 "En atención", estudiante, tecSoftware,
@@ -378,7 +351,6 @@ public class DataLoader implements CommandLineRunner {
                 findUbi.apply("Laboratorio F"), findEq.apply("PC-LAB-F-01"), null,
                 now.minusDays(2), now.minusDays(1), null);
 
-        // INC-008: Asignada
         crearIncidencia("INC-008", "Cable de red con conector roto – Puesto #20",
                 "El cable de red del puesto #20 tiene el conector RJ-45 roto. No se puede conectar al switch.",
                 "Asignada", estudiante, tecHardware,
@@ -386,7 +358,6 @@ public class DataLoader implements CommandLineRunner {
                 findUbi.apply("Laboratorio B"), null, null,
                 now.minusDays(1), null, null);
 
-        // INC-009: Pendiente
         crearIncidencia("INC-009", "Base de datos local bloqueada – Puesto #15",
                 "MySQL Workbench no puede conectarse a la instancia local. Muestra error \"too many connections\".",
                 "Pendiente", estudiante, null,
@@ -394,7 +365,6 @@ public class DataLoader implements CommandLineRunner {
                 findUbi.apply("Laboratorio D"), findEq.apply("PC-LAB-D-01"), null,
                 now.minusHours(6), null, null);
 
-        // INC-010: Resuelta
         crearIncidencia("INC-010", "Ruido estático en altavoces – Puesto #11",
                 "Los altavoces del aula producen ruido estático constante incluso sin entrada de audio.",
                 "Resuelta", estudiante, tecHardware,
@@ -405,7 +375,6 @@ public class DataLoader implements CommandLineRunner {
 
         System.out.println("✅ Incidencias de ejemplo cargadas");
 
-        // === 9. Archivos Adjuntos de Ejemplo (Evidencia fotográfica) ===
         cargarAdjuntosDePrueba(estudiante);
     }
 
@@ -415,7 +384,6 @@ public class DataLoader implements CommandLineRunner {
         try {
             java.nio.file.Path baseUploadDir = java.nio.file.Paths.get(uploadPath).toAbsolutePath().normalize();
 
-            // Adjunto 1: Para INC-001 (Monitor no enciende)
             incidenciaRepository.findAll().stream()
                     .filter(i -> "INC-001".equals(i.getCodigoTicket()))
                     .findFirst()
@@ -437,7 +405,6 @@ public class DataLoader implements CommandLineRunner {
                         guardarAdjuntoSemilla(inc, estudiante, baseUploadDir, filename, "Falla_Monitor_Puesto05.svg", svgContent);
                     });
 
-            // Adjunto 2: Para INC-006 (Teclado)
             incidenciaRepository.findAll().stream()
                     .filter(i -> "INC-006".equals(i.getCodigoTicket()))
                     .findFirst()
@@ -465,7 +432,6 @@ public class DataLoader implements CommandLineRunner {
                         guardarAdjuntoSemilla(inc, estudiante, baseUploadDir, filename, "Teclas_Danadas_Puesto18.svg", svgContent);
                     });
 
-            // Adjunto 3: Para INC-008 (Cable de red)
             incidenciaRepository.findAll().stream()
                     .filter(i -> "INC-008".equals(i.getCodigoTicket()))
                     .findFirst()

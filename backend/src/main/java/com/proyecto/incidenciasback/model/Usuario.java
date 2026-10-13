@@ -35,11 +35,9 @@ public class Usuario {
     @Column(length = 20)
     private String telefono;
 
-    // Solo para estudiantes: carrera universitaria
     @Column(length = 100)
     private String carrera;
 
-    // Estado del usuario: 'Activo', 'Inactivo'
     @Column(length = 20)
     private String estado;
 

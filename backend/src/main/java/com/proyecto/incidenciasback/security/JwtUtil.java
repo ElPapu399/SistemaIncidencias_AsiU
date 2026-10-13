@@ -10,9 +10,6 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-/**
- * Utilidad para generar y validar tokens JWT.
- */
 @Component
 public class JwtUtil {
 
@@ -24,9 +21,6 @@ public class JwtUtil {
         this.expirationMs = jwtConfig.getExpirationMs();
     }
 
-    /**
-     * Genera un JWT con los datos del usuario.
-     */
     public String generateToken(Usuario usuario) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
@@ -43,10 +37,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    /**
-     * Valida un token y retorna los claims si es válido.
-     * Lanza excepción si el token es inválido o expirado.
-     */
     public Claims validateAndGetClaims(String token) {
         return Jwts.parser()
                 .verifyWith(key)
@@ -55,9 +45,6 @@ public class JwtUtil {
                 .getPayload();
     }
 
-    /**
-     * Verifica si un token es válido (no expirado, firma correcta).
-     */
     public boolean isValid(String token) {
         try {
             validateAndGetClaims(token);

@@ -43,10 +43,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos (no requieren token)
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/adjuntos/**").permitAll()
-                        // Todo lo demás requiere autenticación
                         .anyRequest().authenticated())
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, authException) -> {

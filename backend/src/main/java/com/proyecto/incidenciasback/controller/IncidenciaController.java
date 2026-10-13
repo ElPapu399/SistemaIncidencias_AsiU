@@ -24,10 +24,6 @@ public class IncidenciaController {
         return ResponseEntity.ok(incidenciaService.listarTodas());
     }
 
-    /**
-     * Detalle enriquecido de una incidencia (con historial + adjuntos + equipo).
-     * Usar este endpoint para el modal de detalle.
-     */
     @GetMapping("/{id}")
     public ResponseEntity<IncidenciaDetalleResponse> obtenerIncidencia(@PathVariable Integer id) {
         return ResponseEntity.ok(incidenciaService.obtenerDetallePorId(id));
@@ -54,10 +50,6 @@ public class IncidenciaController {
         return ResponseEntity.ok(incidenciaService.asignarTecnico(id, request));
     }
 
-    /**
-     * Reasigna una incidencia de un técnico a otro con trazabilidad completa.
-     * Registra: quién reasignó, de quién a quién, y el motivo.
-     */
     @PutMapping("/{id}/reasignar")
     public ResponseEntity<IncidenciaResponse> reasignarTecnico(@PathVariable Integer id,
                                                                 @Valid @RequestBody ReasignarTecnicoRequest request) {
@@ -70,12 +62,14 @@ public class IncidenciaController {
         return ResponseEntity.ok(incidenciaService.cambiarEstado(id, request));
     }
 
-    /**
-     * Historial de cambios de estado (timeline) de una incidencia.
-     * Incluye tipo de acción: CREACION, ASIGNACION, REASIGNACION, CAMBIO_ESTADO.
-     */
     @GetMapping("/{id}/historial")
     public ResponseEntity<List<HistorialEstadoResponse>> obtenerHistorial(@PathVariable Integer id) {
         return ResponseEntity.ok(incidenciaService.obtenerHistorial(id));
+    }
+
+    @PostMapping("/{id}/calificar")
+    public ResponseEntity<IncidenciaResponse> calificarIncidencia(@PathVariable Integer id,
+                                                                   @Valid @RequestBody CalificacionRequest request) {
+        return ResponseEntity.ok(incidenciaService.calificarIncidencia(id, request));
     }
 }

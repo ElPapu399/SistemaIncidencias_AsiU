@@ -17,10 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * Controlador para endpoints de catálogos generales del campus
- * (roles, especialidades, categorías, ubicaciones y prioridades).
- */
 @RestController
 @RequestMapping("/api")
 public class CatalogoController {

@@ -18,37 +18,23 @@ public class IncidenciaResponse {
     private String descripcion;
     private String estado;
 
-    // Estudiante
     private Integer estudianteId;
     private String estudianteNombre;
-
-    // Técnico (puede ser null)
     private Integer tecnicoId;
     private String tecnicoNombre;
-
-    // Categoría y especialidad
     private Integer categoriaId;
     private String categoriaNombre;
     private String especialidadNombre;
-
-    // Prioridad
     private Integer prioridadId;
     private String prioridadNivel;
-
-    // Ubicación
     private Integer ubicacionId;
     private String ubicacionTexto;
-
-    // Equipo (puede ser null)
     private Integer equipoId;
     private String equipoCodigo;
-
     private String solucionTecnica;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaInicioAtencion;
     private LocalDateTime fechaCierre;
-
-    // Trazabilidad de asignación y reasignación
     private Boolean fueReasignada;
     private Integer tecnicoAnteriorId;
     private String tecnicoAnteriorNombre;
@@ -56,8 +42,10 @@ public class IncidenciaResponse {
     private String motivoReasignacion;
     private LocalDateTime fechaReasignacion;
     private String asignadoPorNombre;
+    private Integer calificacion;
+    private String motivoCalificacion;
+    private String comentarioCalificacion;
 
-    // Constructor de compatibilidad sin trazabilidad
     public IncidenciaResponse(Integer id, String codigoTicket, String titulo, String descripcion, String estado,
                               Integer estudianteId, String estudianteNombre,
                               Integer tecnicoId, String tecnicoNombre,
@@ -73,6 +61,7 @@ public class IncidenciaResponse {
                 prioridadId, prioridadNivel, ubicacionId, ubicacionTexto,
                 equipoId, equipoCodigo, solucionTecnica, fechaCreacion,
                 fechaInicioAtencion, fechaCierre,
-                false, null, null, null, null, null, null);
+                false, null, null, null, null, null, null,
+                null, null, null);
     }
 }

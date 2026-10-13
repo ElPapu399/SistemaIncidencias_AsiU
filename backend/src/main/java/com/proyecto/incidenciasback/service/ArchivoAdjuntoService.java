@@ -40,7 +40,6 @@ public class ArchivoAdjuntoService {
         this.usuarioRepository = usuarioRepository;
         this.uploadDir = Paths.get(uploadPath).toAbsolutePath().normalize();
 
-        // Crear directorio de uploads si no existe
         try {
             Files.createDirectories(this.uploadDir);
         } catch (IOException e) {
@@ -48,9 +47,6 @@ public class ArchivoAdjuntoService {
         }
     }
 
-    /**
-     * Sube un archivo adjunto a una incidencia.
-     */
     public ArchivoAdjuntoResponse subirArchivo(Integer incidenciaId, Integer usuarioId, MultipartFile file) {
         if (file.isEmpty()) {
             throw new RuntimeException("El archivo está vacío");
@@ -68,11 +64,9 @@ public class ArchivoAdjuntoService {
         }
 
         try {
-            // Crear subdirectorio por incidencia
             Path incidenciaDir = this.uploadDir.resolve("incidencias").resolve(String.valueOf(incidenciaId));
             Files.createDirectories(incidenciaDir);
 
-            // Generar nombre único para evitar colisiones
             String originalFilename = file.getOriginalFilename();
             String extension = "";
             if (originalFilename != null && originalFilename.contains(".")) {
@@ -80,11 +74,9 @@ public class ArchivoAdjuntoService {
             }
             String uniqueFilename = UUID.randomUUID().toString() + extension;
 
-            // Guardar archivo en disco
             Path targetPath = incidenciaDir.resolve(uniqueFilename);
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
-            // Guardar registro en BD
             ArchivoAdjunto adjunto = new ArchivoAdjunto();
             adjunto.setIncidencia(incidencia);
             adjunto.setUrlArchivo("/api/adjuntos/" + incidenciaId + "/" + uniqueFilename);
@@ -103,9 +95,6 @@ public class ArchivoAdjuntoService {
         }
     }
 
-    /**
-     * Lista los archivos adjuntos de una incidencia.
-     */
     public List<ArchivoAdjuntoResponse> listarPorIncidencia(Integer incidenciaId) {
         return archivoAdjuntoRepository.findByIncidenciaIdOrderByFechaSubidaDesc(incidenciaId)
                 .stream()
@@ -113,9 +102,6 @@ public class ArchivoAdjuntoService {
                 .toList();
     }
 
-    /**
-     * Carga un archivo desde disco para descarga.
-     */
     public Resource cargarArchivo(Integer incidenciaId, String filename) {
         try {
             Path filePath = this.uploadDir

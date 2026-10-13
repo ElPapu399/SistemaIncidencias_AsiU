@@ -14,15 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Servicio principal de incidencias con trazabilidad completa
- * de asignaciones, reasignaciones y cambios de estado.
- */
-
 @Service
 public class IncidenciaService {
 
-    /** Estados válidos según el prototipo */
     private static final List<String> ESTADOS_VALIDOS =
             List.of("Pendiente", "Asignada", "En atención", "Resuelta", "Cerrada");
 
@@ -56,16 +50,11 @@ public class IncidenciaService {
         this.authHelper = authHelper;
     }
 
-    // ==================== LISTAR ====================
-
     @Transactional(readOnly = true)
     public List<IncidenciaResponse> listarTodas() {
         return mapearListaConTrazabilidad(incidenciaRepository.findAll());
     }
 
-    /**
-     * Obtener detalle enriquecido de una incidencia (con historial + adjuntos).
-     */
     @Transactional(readOnly = true)
     public IncidenciaDetalleResponse obtenerDetallePorId(Integer id) {
         Incidencia inc = incidenciaRepository.findById(id)
@@ -87,9 +76,6 @@ public class IncidenciaService {
         return toDetalleResponse(inc, historial, adjuntos);
     }
 
-    /**
-     * Obtener respuesta simple (para listas).
-     */
     @Transactional(readOnly = true)
     public IncidenciaResponse obtenerPorId(Integer id) {
         Incidencia incidencia = incidenciaRepository.findById(id)
@@ -109,13 +95,12 @@ public class IncidenciaService {
         return mapearListaConTrazabilidad(incidenciaRepository.findByTecnicoId(tecnicoId));
     }
 
-    // ==================== CREAR ====================
-
     @Transactional
     public IncidenciaResponse crearIncidencia(IncidenciaRequest request) {
         Usuario estudiante = usuarioRepository.findById(request.getEstudianteId())
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado con id: " + request.getEstudianteId()));
 
+        // Bloqueo preventivo para cuentas deshabilitadas o egresados
         if ("Inactivo".equalsIgnoreCase(estudiante.getEstado())) {
             throw new RuntimeException("El estudiante se encuentra inactivo y no puede registrar incidencias");
         }
@@ -140,7 +125,6 @@ public class IncidenciaService {
         incidencia.setUbicacion(ubicacion);
         incidencia.setFechaCreacion(LocalDateTime.now());
 
-        // Equipo (opcional)
         if (request.getEquipoId() != null) {
             Equipo equipo = equipoRepository.findById(request.getEquipoId())
                     .orElseThrow(() -> new RuntimeException("Equipo no encontrado con id: " + request.getEquipoId()));
@@ -149,14 +133,11 @@ public class IncidenciaService {
 
         incidenciaRepository.save(incidencia);
 
-        // Registrar en historial: ticket creado
         registrarHistorial(incidencia, null, "Pendiente", "CREACION",
                 estudiante, "Ticket registrado", null, null);
 
         return toResponse(incidencia);
     }
-
-    // ==================== ASIGNAR TÉCNICO ====================
 
     @Transactional
     public IncidenciaResponse asignarTecnico(Integer incidenciaId, AsignarTecnicoRequest request) {
@@ -166,13 +147,12 @@ public class IncidenciaService {
         Usuario tecnico = usuarioRepository.findById(request.getTecnicoId())
                 .orElseThrow(() -> new RuntimeException("Técnico no encontrado con id: " + request.getTecnicoId()));
 
-        // Validar que el usuario es técnico especialista
+        // Solo personal resolutor de campo puede recibir tickets asignados
         String rolNombre = tecnico.getRol() != null ? tecnico.getRol().getNombre() : "";
         if (!"TECNICO_ESPECIALISTA".equals(rolNombre) && !"TECNICO".equals(rolNombre)) {
             throw new RuntimeException("El usuario seleccionado debe ser un técnico especialista");
         }
 
-        // Obtener el usuario autenticado (quien realiza la asignación)
         Usuario asignador = authHelper.obtenerUsuarioAutenticado();
 
         String estadoAnterior = incidencia.getEstado();
@@ -182,7 +162,6 @@ public class IncidenciaService {
 
         incidenciaRepository.save(incidencia);
 
-        // Registrar en historial: quién asignó a quién
         registrarHistorial(incidencia, estadoAnterior, "Asignada", "ASIGNACION",
                 asignador,
                 "Técnico asignado: " + tecnico.getNombre() + " " + tecnico.getApellido()
@@ -192,12 +171,6 @@ public class IncidenciaService {
         return toResponse(incidencia);
     }
 
-    // ==================== REASIGNAR TÉCNICO ====================
-
-    /**
-     * Reasigna una incidencia de un técnico a otro.
-     * Registra en el historial: quién reasignó, de quién a quién, y por qué.
-     */
     @Transactional
     public IncidenciaResponse reasignarTecnico(Integer incidenciaId, ReasignarTecnicoRequest request) {
         Incidencia incidencia = incidenciaRepository.findById(incidenciaId)
@@ -210,17 +183,14 @@ public class IncidenciaService {
         Usuario tecnicoNuevo = usuarioRepository.findById(request.getTecnicoNuevoId())
                 .orElseThrow(() -> new RuntimeException("Técnico no encontrado con id: " + request.getTecnicoNuevoId()));
 
-        // Validar que el nuevo usuario es técnico
         String rolNombre = tecnicoNuevo.getRol() != null ? tecnicoNuevo.getRol().getNombre() : "";
         if (!"TECNICO_ESPECIALISTA".equals(rolNombre) && !"TECNICO".equals(rolNombre)) {
             throw new RuntimeException("El usuario seleccionado debe ser un técnico");
         }
 
-        // Obtener quién está haciendo la reasignación
         Usuario reasignador = authHelper.obtenerUsuarioAutenticado();
         Usuario tecnicoAnterior = incidencia.getTecnico();
 
-        // Validar que no se reasigne al mismo técnico
         if (tecnicoAnterior.getId().equals(tecnicoNuevo.getId())) {
             throw new RuntimeException("El técnico nuevo debe ser diferente al actual");
         }
@@ -231,7 +201,6 @@ public class IncidenciaService {
 
         incidenciaRepository.save(incidencia);
 
-        // Registrar reasignación en historial con trazabilidad completa
         String comentario = String.format(
                 "Reasignado de %s %s a %s %s. Motivo: %s (reasignado por %s %s)",
                 tecnicoAnterior.getNombre(), tecnicoAnterior.getApellido(),
@@ -244,8 +213,6 @@ public class IncidenciaService {
 
         return toResponse(incidencia);
     }
-
-    // ==================== CAMBIAR ESTADO ====================
 
     @Transactional
     public IncidenciaResponse cambiarEstado(Integer incidenciaId, CambiarEstadoRequest request) {
@@ -260,6 +227,7 @@ public class IncidenciaService {
             usuario = authHelper.obtenerUsuarioAutenticado();
         }
 
+        // Compatibilidad con estados heredados del frontend
         String rawEstado = request.getEstado() != null ? request.getEstado().trim() : "";
         String nuevoEstado = switch (rawEstado) {
             case "En Proceso" -> "En atención";
@@ -268,13 +236,12 @@ public class IncidenciaService {
             default -> rawEstado;
         };
 
-        // Validar estados permitidos
         if (!ESTADOS_VALIDOS.contains(nuevoEstado)) {
             throw new RuntimeException("Estado no válido: " + nuevoEstado
                     + ". Estados permitidos: " + String.join(", ", ESTADOS_VALIDOS));
         }
 
-        // Si se resuelve, la solución técnica es obligatoria
+        // Exigir informe de solución técnica antes de dar por resuelta la incidencia
         if ("Resuelta".equals(nuevoEstado)) {
             if (request.getSolucionTecnica() == null || request.getSolucionTecnica().isBlank()) {
                 throw new RuntimeException("La solución técnica es obligatoria al resolver una incidencia");
@@ -283,7 +250,6 @@ public class IncidenciaService {
             incidencia.setFechaCierre(LocalDateTime.now());
         }
 
-        // Si se cierra, también se registra fecha de cierre
         if ("Cerrada".equals(nuevoEstado) && incidencia.getFechaCierre() == null) {
             incidencia.setFechaCierre(LocalDateTime.now());
         }
@@ -292,21 +258,56 @@ public class IncidenciaService {
         incidencia.setEstado(nuevoEstado);
         incidenciaRepository.save(incidencia);
 
-        // Registrar en historial
         registrarHistorial(incidencia, estadoAnterior, nuevoEstado, "CAMBIO_ESTADO",
                 usuario, request.getComentario(), null, null);
 
         return toResponse(incidencia);
     }
 
-    // ==================== HISTORIAL ====================
+    @Transactional
+    public IncidenciaResponse calificarIncidencia(Integer incidenciaId, CalificacionRequest request) {
+        Incidencia incidencia = incidenciaRepository.findById(incidenciaId)
+                .orElseThrow(() -> new RuntimeException("Incidencia no encontrada con id: " + incidenciaId));
 
-    /**
-     * Obtiene el historial de cambios de estado de una incidencia.
-     */
+        if (!"Resuelta".equals(incidencia.getEstado())) {
+            throw new RuntimeException("Solo se pueden calificar incidencias en estado 'Resuelta'. Estado actual: " + incidencia.getEstado());
+        }
+
+        Usuario estudiante = authHelper.obtenerUsuarioAutenticado();
+
+        if (!incidencia.getEstudiante().getId().equals(estudiante.getId())) {
+            throw new RuntimeException("Solo el estudiante que reportó la incidencia puede calificarla");
+        }
+
+        // Calificación final del estudiante cierra el ciclo de vida del ticket
+        String estadoAnterior = incidencia.getEstado();
+        incidencia.setCalificacion(request.getCalificacion());
+        incidencia.setMotivoCalificacion(request.getMotivo());
+        incidencia.setComentarioCalificacion(request.getComentario());
+        incidencia.setEstado("Cerrada");
+
+        if (incidencia.getFechaCierre() == null) {
+            incidencia.setFechaCierre(LocalDateTime.now());
+        }
+
+        incidenciaRepository.save(incidencia);
+
+        StringBuilder sb = new StringBuilder(String.format("Calificación: %d/5.", request.getCalificacion()));
+        if (request.getMotivo() != null && !request.getMotivo().isBlank()) {
+            sb.append(" Motivo: ").append(request.getMotivo()).append(".");
+        }
+        if (request.getComentario() != null && !request.getComentario().isBlank()) {
+            sb.append(" Comentario: ").append(request.getComentario());
+        }
+
+        registrarHistorial(incidencia, estadoAnterior, "Cerrada", "CALIFICACION",
+                estudiante, sb.toString(), null, null);
+
+        return toResponse(incidencia);
+    }
+
     @Transactional(readOnly = true)
     public List<HistorialEstadoResponse> obtenerHistorial(Integer incidenciaId) {
-        // Verificar que la incidencia existe
         if (!incidenciaRepository.existsById(incidenciaId)) {
             throw new RuntimeException("Incidencia no encontrada con id: " + incidenciaId);
         }
@@ -318,18 +319,12 @@ public class IncidenciaService {
                 .toList();
     }
 
-    // ==================== UTILIDADES ====================
-
-    /**
-     * Genera un código de ticket auto-incremental único: INC-2026-0001, INC-2026-0002...
-     */
     private String generarCodigoTicket() {
         long total = incidenciaRepository.count();
         String anio = String.valueOf(Year.now().getValue());
         long correlativo = total + 1;
         String codigo = String.format("INC-%s-%04d", anio, correlativo);
 
-        // Prevenir colisión si se borraron tickets o en pruebas
         while (incidenciaRepository.existsByCodigoTicket(codigo)) {
             correlativo++;
             codigo = String.format("INC-%s-%04d", anio, correlativo);
@@ -338,22 +333,12 @@ public class IncidenciaService {
         return codigo;
     }
 
-    /**
-     * Cuenta las incidencias activas (Pendiente, Asignada o En atención) de un técnico.
-     */
     @Transactional(readOnly = true)
     public long contarIncidenciasActivas(Integer tecnicoId) {
         return incidenciaRepository.countByTecnicoIdAndEstadoIn(
                 tecnicoId, List.of("Pendiente", "Asignada", "En atención"));
     }
 
-    /**
-     * Registra una acción en el historial con trazabilidad completa.
-     *
-     * @param tipoAccion     CREACION, CAMBIO_ESTADO, ASIGNACION, REASIGNACION, SOLICITUD_REASIGNACION
-     * @param tecnicoAnterior técnico anterior (solo para REASIGNACION)
-     * @param tecnicoNuevo    técnico nuevo (para ASIGNACION y REASIGNACION)
-     */
     private void registrarHistorial(Incidencia incidencia, String estadoAnterior,
                                      String estadoNuevo, String tipoAccion,
                                      Usuario usuario, String comentario,
@@ -370,47 +355,39 @@ public class IncidenciaService {
         historialEstadoRepository.save(historial);
     }
 
-    // ==================== MAPPERS ====================
-
-    /**
-     * Convierte una entidad Incidencia a su DTO de respuesta (para listas).
-     */
     private IncidenciaResponse toResponse(Incidencia inc) {
-        return new IncidenciaResponse(
+        IncidenciaResponse resp = new IncidenciaResponse(
                 inc.getId(),
                 inc.getCodigoTicket(),
                 inc.getTitulo(),
                 inc.getDescripcion(),
                 inc.getEstado(),
-                // Estudiante
                 inc.getEstudiante().getId(),
                 inc.getEstudiante().getNombre() + " " + inc.getEstudiante().getApellido(),
-                // Técnico
                 inc.getTecnico() != null ? inc.getTecnico().getId() : null,
                 inc.getTecnico() != null
                         ? inc.getTecnico().getNombre() + " " + inc.getTecnico().getApellido()
                         : null,
-                // Categoría
                 inc.getCategoria().getId(),
                 inc.getCategoria().getNombre(),
                 inc.getCategoria().getEspecialidad() != null
                         ? inc.getCategoria().getEspecialidad().getNombre()
                         : null,
-                // Prioridad
                 inc.getPrioridad().getId(),
                 inc.getPrioridad().getNivel(),
-                // Ubicación
                 inc.getUbicacion().getId(),
                 inc.getUbicacion().getPabellon() + " - " + inc.getUbicacion().getAulaLaboratorio(),
-                // Equipo
                 inc.getEquipo() != null ? inc.getEquipo().getId() : null,
                 inc.getEquipo() != null ? inc.getEquipo().getCodigo() : null,
-                // Otros
                 inc.getSolucionTecnica(),
                 inc.getFechaCreacion(),
                 inc.getFechaInicioAtencion(),
                 inc.getFechaCierre()
         );
+        resp.setCalificacion(inc.getCalificacion());
+        resp.setMotivoCalificacion(inc.getMotivoCalificacion());
+        resp.setComentarioCalificacion(inc.getComentarioCalificacion());
+        return resp;
     }
 
     private List<IncidenciaResponse> mapearListaConTrazabilidad(List<Incidencia> incidencias) {
@@ -418,7 +395,6 @@ public class IncidenciaService {
             return Collections.emptyList();
         }
 
-        // Obtener reasignaciones (la más reciente por incidencia)
         Map<Integer, HistorialEstado> reasignaciones = historialEstadoRepository
                 .findByTipoAccionOrderByFechaCambioDesc("REASIGNACION")
                 .stream()
@@ -429,7 +405,6 @@ public class IncidenciaService {
                         (h1, h2) -> h1
                 ));
 
-        // Obtener asignaciones iniciales (la primera por incidencia)
         Map<Integer, HistorialEstado> asignaciones = historialEstadoRepository
                 .findByTipoAccionOrderByFechaCambioAsc("ASIGNACION")
                 .stream()
@@ -470,9 +445,6 @@ public class IncidenciaService {
         return resp;
     }
 
-    /**
-     * Convierte una entidad Incidencia a su DTO de detalle (para vista individual).
-     */
     private IncidenciaDetalleResponse toDetalleResponse(Incidencia inc,
                                                          List<HistorialEstadoResponse> historial,
                                                          List<ArchivoAdjuntoResponse> adjuntos) {
@@ -482,36 +454,31 @@ public class IncidenciaService {
                 inc.getTitulo(),
                 inc.getDescripcion(),
                 inc.getEstado(),
-                // Estudiante
                 inc.getEstudiante().getId(),
                 inc.getEstudiante().getNombre() + " " + inc.getEstudiante().getApellido(),
-                // Técnico
                 inc.getTecnico() != null ? inc.getTecnico().getId() : null,
                 inc.getTecnico() != null
                         ? inc.getTecnico().getNombre() + " " + inc.getTecnico().getApellido()
                         : null,
-                // Categoría
                 inc.getCategoria().getId(),
                 inc.getCategoria().getNombre(),
                 inc.getCategoria().getEspecialidad() != null
                         ? inc.getCategoria().getEspecialidad().getNombre()
                         : null,
-                // Prioridad
                 inc.getPrioridad().getId(),
                 inc.getPrioridad().getNivel(),
-                // Ubicación
                 inc.getUbicacion().getId(),
                 inc.getUbicacion().getPabellon() + " - " + inc.getUbicacion().getAulaLaboratorio(),
-                // Equipo
                 inc.getEquipo() != null ? inc.getEquipo().getId() : null,
                 inc.getEquipo() != null ? inc.getEquipo().getCodigo() : null,
                 inc.getEquipo() != null ? inc.getEquipo().getTipo() : null,
-                // Otros
                 inc.getSolucionTecnica(),
                 inc.getFechaCreacion(),
                 inc.getFechaInicioAtencion(),
                 inc.getFechaCierre(),
-                // Relaciones
+                inc.getCalificacion(),
+                inc.getMotivoCalificacion(),
+                inc.getComentarioCalificacion(),
                 historial,
                 adjuntos
         );

@@ -63,4 +63,13 @@ public class Incidencia {
 
     @Column(name = "fecha_cierre")
     private LocalDateTime fechaCierre;
+
+    @Column(name = "calificacion")
+    private Integer calificacion;
+
+    @Column(name = "motivo_calificacion", length = 100)
+    private String motivoCalificacion;
+
+    @Column(name = "comentario_calificacion", columnDefinition = "TEXT")
+    private String comentarioCalificacion;
 }

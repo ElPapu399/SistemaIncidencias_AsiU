@@ -43,21 +43,18 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        // Buscar usuario por correo
         Usuario usuario = usuarioRepository.findByCorreo(request.getCorreo())
                 .orElseThrow(() -> new AuthenticationException("Correo o contraseña incorrectos"));
 
-        // Verificar contraseña con BCrypt
+        // Mensaje genérico para evitar enumeración de usuarios
         if (!passwordEncoder.matches(request.getPassword(), usuario.getPasswordHash())) {
             throw new AuthenticationException("Correo o contraseña incorrectos");
         }
 
-        // Verificar si la cuenta está inactiva
         if ("Inactivo".equalsIgnoreCase(usuario.getEstado())) {
             throw new AuthenticationException("Tu cuenta se encuentra inactiva. Contacta al administrador.");
         }
 
-        // Generar token JWT
         String token = jwtUtil.generateToken(usuario);
 
         return new LoginResponse(
@@ -78,12 +75,12 @@ public class AuthService {
             throw new RuntimeException("El correo no está registrado en el sistema");
         }
 
+        // OTP temporal de 6 dígitos con hash BCrypt en memoria
         String codigo = String.format("%06d", secureRandom.nextInt(1_000_000));
         codigosRecuperacion.put(correo, new CodigoRecuperacion(
                 passwordEncoder.encode(codigo),
                 Instant.now().plusSeconds(CODIGO_TTL_SECONDS)));
 
-        // Enviar el código por correo electrónico de forma asíncrona
         emailService.enviarCodigoRecuperacion(correo, codigo);
 
         return new RecuperarPasswordResponse(MENSAJE_RECUPERACION, null);
@@ -108,6 +105,7 @@ public class AuthService {
 
         usuario.setPasswordHash(passwordEncoder.encode(request.getNuevaPassword()));
         usuarioRepository.save(usuario);
+        // Consumir el código para prevenir reutilización
         codigosRecuperacion.remove(correo);
 
         return new MensajeResponse("Contraseña actualizada. Ya puedes iniciar sesión.");

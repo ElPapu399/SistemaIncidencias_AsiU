@@ -14,10 +14,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Filtro que intercepta cada request, extrae el token JWT del header
- * Authorization, lo valida y establece el SecurityContext.
- */
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -52,8 +48,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
-                // Token inválido o expirado — no se establece autenticación.
-                // Spring Security denegará el acceso a endpoints protegidos.
+                // Token expirado o alterado: limpiar contexto para que el entry point devuelva 401
                 SecurityContextHolder.clearContext();
             }
         }

@@ -5,10 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * DTO para reasignar una incidencia de un técnico a otro.
- * Registra quién hizo la reasignación y por qué.
- */
 @Getter
 @Setter
 public class ReasignarTecnicoRequest {

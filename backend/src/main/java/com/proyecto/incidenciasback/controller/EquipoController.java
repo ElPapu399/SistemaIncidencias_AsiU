@@ -17,11 +17,6 @@ public class EquipoController {
         this.equipoService = equipoService;
     }
 
-    /**
-     * Listar todos los equipos o filtrar por ubicación.
-     * GET /api/equipos
-     * GET /api/equipos?ubicacionId=4
-     */
     @GetMapping
     public ResponseEntity<List<EquipoResponse>> listarEquipos(
             @RequestParam(required = false) Integer ubicacionId) {

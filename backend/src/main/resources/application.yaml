@@ -10,8 +10,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update          # Crea/actualiza tablas automáticamente (cambiar a 'validate' en producción)
-    show-sql: true              # Ver las queries en la consola (útil para desarrollo)
+      ddl-auto: update
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
@@ -22,26 +22,19 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-  # ── Configuración de correo (Resend HTTPS API) ──
-  # Railway bloquea SMTP (puertos 25/465/587) en planes Free/Hobby.
-  # Resend usa HTTPS (puerto 443) que siempre está permitido.
-
-# Resend API key (obtener en https://resend.com/api-keys)
 resend:
   api-key: ${RESEND_API_KEY:re_placeholder}
 
 server:
   port: ${SERVER_PORT:8080}
 
-# Directorio donde se almacenan los archivos adjuntos (evidencia fotográfica)
 app:
   upload-dir: ./uploads
   jwt:
     secret: ${JWT_SECRET:AsIU-SistemaIncidencias-JWT-SecretKey-2026-MinLength32!}
-    expiration-ms: ${JWT_EXPIRATION:1800000}  # 30 minutos
+    expiration-ms: ${JWT_EXPIRATION:1800000}
   mail:
     from: ${MAIL_FROM:loayzajhosep58@gmail.com}
 
-# CORS: acepta tanto localhost como el dominio de producción
 cors:
   allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
