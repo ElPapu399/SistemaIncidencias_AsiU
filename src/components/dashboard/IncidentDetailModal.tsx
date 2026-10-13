@@ -65,6 +65,8 @@ export default function IncidentDetailModal({
   if (!isOpen || !incident) return null;
 
   const canChangeStatus = ['ADMIN', 'TECNICO_GENERAL', 'TECNICO_ESPECIALISTA', 'TECNICO'].includes(currentUserRole || '');
+  const isReporter = !currentUserId || !incident.reporterId || Number(currentUserId) === Number(incident.reporterId);
+  const canRate = Boolean(onRate && currentUserRole === 'ESTUDIANTE' && incident.status === 'Resuelta' && !incident.calificacion && isReporter);
 
   const openAndClose = (fn?: (inc: Incident) => void) => {
     if (!fn) return undefined;
@@ -270,7 +272,7 @@ export default function IncidentDetailModal({
               </button>
             )}
             <div className="flex items-center gap-2 ml-auto">
-              {onRate && currentUserRole === 'ESTUDIANTE' && incident.status === 'Resuelta' && !incident.calificacion && (
+              {canRate && (
                 <button type="button" onClick={openAndClose(onRate)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 bg-amber-100 hover:bg-amber-200 border border-amber-300 transition-all cursor-pointer shadow-xs">
                   <Star className="w-3.5 h-3.5" />
                   <span>Calificar Atención</span>
