@@ -11,9 +11,6 @@ import { fetchWithAuth } from '../utils/fetchWithAuth';
 import { getCurrentUser } from '../utils/auth';
 import { API_BASE } from '../config/api';
 
-/**
- * Convierte una URL relativa de archivo adjunto en una URL absoluta funcional.
- */
 export function getAttachmentUrl(urlArchivo?: string | number | null): string {
   if (!urlArchivo) return '';
   const str = String(urlArchivo).trim();
@@ -21,6 +18,7 @@ export function getAttachmentUrl(urlArchivo?: string | number | null): string {
   if (str.startsWith('http://') || str.startsWith('https://')) {
     return str;
   }
+  // Los adjuntos se resuelven contra el host base del backend
   const baseUrl = API_BASE.replace(/\/api\/?$/, '');
   const cleanPath = str.startsWith('/') ? str : `/${str}`;
   return `${baseUrl}${cleanPath}`;
@@ -53,6 +51,9 @@ function mapIncidentDto(inc: any): Incident {
     motivoReasignacion: inc.motivoReasignacion ?? null,
     fechaReasignacion: inc.fechaReasignacion ?? null,
     asignadoPorNombre: inc.asignadoPorNombre ?? null,
+    calificacion: inc.calificacion ?? null,
+    motivoCalificacion: inc.motivoCalificacion ?? null,
+    comentarioCalificacion: inc.comentarioCalificacion ?? null,
   };
 }
 
@@ -67,9 +68,6 @@ export async function obtenerIncidencias(): Promise<Incident[]> {
   return data.map(mapIncidentDto);
 }
 
-/**
- * Obtiene las incidencias reportadas por un estudiante en específico.
- */
 export async function obtenerIncidenciasPorEstudiante(estudianteId: number): Promise<Incident[]> {
   const response = await fetchWithAuth(`/incidencias/estudiante/${estudianteId}`);
 
@@ -81,9 +79,6 @@ export async function obtenerIncidenciasPorEstudiante(estudianteId: number): Pro
   return data.map(mapIncidentDto);
 }
 
-/**
- * Obtiene las incidencias asignadas a un técnico en específico.
- */
 export async function obtenerIncidenciasPorTecnico(tecnicoId: number): Promise<Incident[]> {
   const response = await fetchWithAuth(`/incidencias/tecnico/${tecnicoId}`);
 
@@ -143,6 +138,23 @@ export async function cambiarEstado(
   }
 }
 
+export async function calificarIncidencia(
+  incidenciaId: number,
+  calificacion: number,
+  motivo?: string,
+  comentario?: string
+): Promise<void> {
+  const response = await fetchWithAuth(`/incidencias/${incidenciaId}/calificar`, {
+    method: 'POST',
+    body: JSON.stringify({ calificacion, motivo, comentario }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.error || 'Error al calificar la incidencia');
+  }
+}
+
 export async function obtenerCategorias(): Promise<Categoria[]> {
   const response = await fetchWithAuth('/categorias');
   if (!response.ok) throw new Error('Error al cargar categorías');
@@ -170,9 +182,6 @@ export async function obtenerTecnicosPorEspecialidad(especialidadId?: number): P
   return response.json();
 }
 
-/**
- * Obtiene el detalle enriquecido de una incidencia (con adjuntos e historial).
- */
 export async function obtenerDetalleIncidencia(id: number): Promise<any> {
   const response = await fetchWithAuth(`/incidencias/${id}`);
   if (!response.ok) {
@@ -181,9 +190,6 @@ export async function obtenerDetalleIncidencia(id: number): Promise<any> {
   return response.json();
 }
 
-/**
- * Lista los archivos adjuntos de una incidencia específica.
- */
 export async function obtenerAdjuntos(incidenciaId: number): Promise<ArchivoAdjunto[]> {
   const response = await fetchWithAuth(`/incidencias/${incidenciaId}/adjuntos`);
   if (!response.ok) {
@@ -192,9 +198,6 @@ export async function obtenerAdjuntos(incidenciaId: number): Promise<ArchivoAdju
   return response.json();
 }
 
-/**
- * Sube un archivo adjunto (imagen/documento de evidencia) a una incidencia.
- */
 export async function subirAdjunto(
   incidenciaId: number,
   file: File,
@@ -219,12 +222,6 @@ export async function subirAdjunto(
   return response.json();
 }
 
-// ==================== REASIGNACIÓN CON TRAZABILIDAD ====================
-
-/**
- * Reasigna una incidencia de un técnico a otro (admin/soporte).
- * Registra quién reasignó, de quién a quién, y el motivo.
- */
 export async function reasignarTecnico(
   incidenciaId: number,
   tecnicoNuevoId: number,
@@ -240,8 +237,6 @@ export async function reasignarTecnico(
     throw new Error(errorData?.error || 'Error al reasignar el técnico');
   }
 }
-
-// ==================== SOLICITUDES DE REASIGNACIÓN ====================
 
 export interface SolicitudReasignacion {
   id: number;
@@ -261,9 +256,6 @@ export interface SolicitudReasignacion {
   fechaRespuesta: string | null;
 }
 
-/**
- * Un técnico solicita ser reasignado de una incidencia, explicando sus motivos.
- */
 export async function solicitarReasignacion(
   incidenciaId: number,
   motivo: string
@@ -281,27 +273,18 @@ export async function solicitarReasignacion(
   return response.json();
 }
 
-/**
- * Obtiene las solicitudes de reasignación pendientes (para admin).
- */
 export async function obtenerSolicitudesPendientes(): Promise<SolicitudReasignacion[]> {
   const response = await fetchWithAuth('/solicitudes-reasignacion/pendientes');
   if (!response.ok) throw new Error('Error al obtener solicitudes pendientes');
   return response.json();
 }
 
-/**
- * Obtiene todas las solicitudes de reasignación (historial).
- */
 export async function obtenerTodasSolicitudes(): Promise<SolicitudReasignacion[]> {
   const response = await fetchWithAuth('/solicitudes-reasignacion');
   if (!response.ok) throw new Error('Error al obtener solicitudes');
   return response.json();
 }
 
-/**
- * Admin aprueba o rechaza una solicitud de reasignación.
- */
 export async function responderSolicitud(
   solicitudId: number,
   decision: 'APROBADA' | 'RECHAZADA',

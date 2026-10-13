@@ -18,7 +18,7 @@ export interface DashboardStats {
 }
 
 export interface Incident {
-  id: string; // codigoTicket ej: "INC-2026-0001"
+  id: string;
   numericId?: number;
   title: string;
   description: string;
@@ -47,6 +47,9 @@ export interface Incident {
   asignadoPorNombre?: string | null;
   equipoCodigo?: string | null;
   equipoTipo?: string | null;
+  calificacion?: number | null;
+  motivoCalificacion?: string | null;
+  comentarioCalificacion?: string | null;
 }
 
 export interface ArchivoAdjunto {

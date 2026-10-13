@@ -30,8 +30,6 @@ export default function NuevaIncidenciaPage() {
   const [categoriaId, setCategoriaId] = useState<number>(0);
   const [prioridadId, setPrioridadId] = useState<number>(0);
   const [ubicacionId, setUbicacionId] = useState<number>(0);
-
-  // Evidencia
   const [archivo, setArchivo] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);

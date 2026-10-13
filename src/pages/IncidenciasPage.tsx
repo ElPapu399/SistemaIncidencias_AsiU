@@ -14,6 +14,7 @@ import RequestReassignModal from '../components/dashboard/RequestReassignModal';
 import ManageReassignmentsModal from '../components/dashboard/ManageReassignmentsModal';
 import IncidentDetailModal from '../components/dashboard/IncidentDetailModal';
 import IncidentTraceabilityModal from '../components/dashboard/IncidentTraceabilityModal';
+import RateIncidentModal from '../components/dashboard/RateIncidentModal';
 
 import {
   obtenerIncidencias, obtenerIncidenciasPorEstudiante, obtenerIncidenciasPorTecnico,
@@ -25,7 +26,7 @@ import Button from '../components/Button';
 
 const CLOSED_STATUSES = ['Resuelta', 'Resuelto', 'Cerrada', 'Cancelado'];
 
-type ModalKey = 'form' | 'detail' | 'traceability' | 'assign' | 'status' | 'reassign' | 'manageReassign' | null;
+type ModalKey = 'form' | 'detail' | 'traceability' | 'assign' | 'status' | 'reassign' | 'manageReassign' | 'rate' | null;
 
 interface IncidenciasPageProps {
   title?: string;
@@ -44,7 +45,6 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
     soloMisIncidencias ? 'mine' : 'all'
   );
 
-  // Un solo estado para controlar qué modal está abierto
   const [activeModal, setActiveModal] = useState<ModalKey>(null);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
 
@@ -120,7 +120,6 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
     };
   }, [isEstudiante, soloMisIncidencias, isTecnicoEspecialista, usuario?.id, currentUserRole]);
 
-  // Helpers de modal
   const openModal = useCallback((modal: ModalKey, incident?: Incident) => {
     if (incident) setSelectedIncident(incident);
     setActiveModal(modal);
@@ -133,7 +132,6 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
     [solicitudesPendientes]
   );
 
-  // Helpers de filtrado para tabs de técnico
   const isAssignedToMe = useCallback((i: Incident) =>
     Number(i.assigneeId) === Number(usuario?.id) ||
     (i.assignee && usuario?.nombre && i.assignee.toLowerCase().includes(usuario.nombre.toLowerCase())),
@@ -169,7 +167,6 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
     }
   }, [usuario?.id, recargar]);
 
-  // Títulos dinámicos
   const pageTitle = isEstudiante ? 'Mis Incidencias'
     : soloMisIncidencias ? 'Mis Incidencias Asignadas'
     : isTecnicoEspecialista ? 'Todas las Incidencias'
@@ -190,7 +187,6 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
   const countLabel = loading ? 'Cargando incidencias...'
     : `${n} incidencia${n !== 1 ? 's' : ''} ${soloMisIncidencias ? 'asignada' : isEstudiante ? 'reportada' : 'registrada'}${n !== 1 ? 's' : ''}`;
 
-  // Config de tabs para técnico especialista
   const tecnicoTabs = [
     { key: 'all' as const, label: 'Todas las incidencias', icon: faListUl, count: incidents.length, activeClass: 'bg-white text-slate-900 shadow-sm', badgeClass: 'bg-slate-100 text-slate-700' },
     { key: 'mine' as const, label: 'Mis asignadas', icon: faClipboardCheck, count: myAssignedCount, activeClass: 'bg-violet-600 text-white shadow-sm', badgeClass: 'bg-violet-500 text-white', inactiveClass: 'bg-violet-100 text-violet-800' },
@@ -298,6 +294,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
               onSelfAssign={handleSelfAssign}
               pendingIncidentIds={pendingIncidentIds}
               onReviewReassignments={() => openModal('manageReassign')}
+              onRate={(inc) => openModal('rate', inc)}
             />
           </div>
         )}
@@ -310,9 +307,11 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
         isOpen={activeModal === 'detail'}
         incident={selectedIncident}
         currentUserRole={currentUserRole}
+        currentUserId={usuario?.id}
         onClose={closeModal}
         onOpenTraceability={(inc) => openModal('traceability', inc)}
         onOpenChangeStatus={(inc) => openModal('status', inc)}
+        onRate={(inc) => openModal('rate', inc)}
       />
 
       <IncidentTraceabilityModal isOpen={activeModal === 'traceability'} incident={selectedIncident} onClose={closeModal} />
@@ -320,6 +319,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
       <ChangeStatusModal isOpen={activeModal === 'status'} incident={selectedIncident} currentUserRole={currentUserRole} onClose={closeModal} onUpdated={recargar} />
       <RequestReassignModal isOpen={activeModal === 'reassign'} incident={selectedIncident} onClose={closeModal} onRequested={recargar} />
       <ManageReassignmentsModal isOpen={activeModal === 'manageReassign'} onClose={closeModal} onProcessed={recargar} />
+      <RateIncidentModal isOpen={activeModal === 'rate'} incident={selectedIncident} onClose={closeModal} onRated={recargar} />
     </>
   );
 }

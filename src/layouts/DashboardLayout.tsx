@@ -7,20 +7,17 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 1. Guardia de sesión: si no hay sesión válida o ya expiró, ir al login
     if (!isLoggedIn()) {
       navigate('/', { replace: true });
       return;
     }
 
-    // 2. Sincronización entre pestañas: si se cierra sesión en otra pestaña, cerrar aquí
     const unsubscribeSession = onSessionChange((user) => {
       if (!user) {
         navigate('/', { replace: true });
       }
     });
 
-    // 3. Temporizador de expiración exacta de la sesión (JWT exp)
     const msRemaining = getTimeUntilExpiration();
     let expirationTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -31,7 +28,6 @@ export default function DashboardLayout() {
       }, msRemaining);
     }
 
-    // 4. Verificación periódica cada 15 segundos (por si la máquina entra en suspensión)
     const interval = setInterval(() => {
       if (!isLoggedIn()) {
         logout();

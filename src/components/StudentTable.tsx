@@ -31,13 +31,11 @@ export default function StudentTable({ usuarios, onEdit }: StudentTableProps) {
         [usuarios]
     );
 
-    // Extraer carreras únicas para el selector de filtro
     const carreras = useMemo(
         () => [...new Set(estudiantes.map(u => u.carrera).filter(Boolean))] as string[],
         [estudiantes]
     );
 
-    // Lista filtrada memoizada para evitar recalcular en renders no relacionados
     const filtered = useMemo(() => {
         const query = search.toLowerCase().trim();
         return estudiantes.filter(u => {

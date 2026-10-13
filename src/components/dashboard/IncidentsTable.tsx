@@ -2,12 +2,11 @@ import { useState, useMemo } from 'react';
 import type { Incident } from '../../types/incident';
 import { StatusBadge, PriorityBadge, CategoryLabel, formatDate } from './IncidentBadges';
 import SearchBar from '../dashboard/SearchBar';
-import { UserCheck, Eye, RefreshCw, ArrowRightLeft, UserPlus, History } from 'lucide-react';
+import { UserCheck, Eye, RefreshCw, ArrowRightLeft, UserPlus, History, Star } from 'lucide-react';
 import { getCurrentUser, type UsuarioSession } from '../../utils/auth';
 
 const CLOSED_STATUSES = ['Resuelta', 'Resuelto', 'Cerrada', 'Cancelado'];
 
-/** Mapa de estados sinónimos para el filtrado */
 const STATUS_SYNONYMS: Record<string, string[]> = {
   'En atención': ['En Proceso'], 'En Proceso': ['En atención'],
   'Resuelta': ['Resuelto'], 'Resuelto': ['Resuelta'],
@@ -25,13 +24,14 @@ interface IncidentsTableProps {
   onSelfAssign?: (incident: Incident) => void;
   pendingIncidentIds?: Set<number>;
   onReviewReassignments?: () => void;
+  onRate?: (incident: Incident) => void;
 }
 
 const selectClass = "px-3 py-2 text-xs font-medium bg-white border border-slate-300 rounded-xl text-slate-700 focus:outline-none focus:border-amber-500";
 
 export default function IncidentsTable({
   incidents, role, onAssign, onView, onViewTraceability, onChangeStatus,
-  onRequestReassign, onSelfAssign, pendingIncidentIds, onReviewReassignments,
+  onRequestReassign, onSelfAssign, pendingIncidentIds, onReviewReassignments, onRate,
 }: IncidentsTableProps) {
   const usuario = getCurrentUser();
   const isPrivileged = role === 'ADMIN' || role === 'TECNICO_GENERAL' || usuario?.rol === 'ADMIN' || usuario?.rol === 'TECNICO_GENERAL';
@@ -160,7 +160,7 @@ export default function IncidentsTable({
                       onView={onView} onViewTraceability={onViewTraceability}
                       onAssign={onAssign} onChangeStatus={onChangeStatus}
                       onRequestReassign={onRequestReassign} onSelfAssign={onSelfAssign}
-                      onReviewReassignments={onReviewReassignments}
+                      onReviewReassignments={onReviewReassignments} onRate={onRate}
                     />
                   </td>
                 </tr>
@@ -177,7 +177,6 @@ export default function IncidentsTable({
   );
 }
 
-/** Celda del técnico asignado con trazabilidad de reasignación */
 function AssigneeCell({ incident, isPrivileged }: { incident: Incident; isPrivileged: boolean }) {
   if (incident.assignee === 'Sin asignar') return <span className="text-slate-400 italic font-medium">Sin asignar</span>;
 
@@ -212,18 +211,19 @@ function AssigneeCell({ incident, isPrivileged }: { incident: Incident; isPrivil
   );
 }
 
-/** Botones de acción por fila */
-function ActionButtons({ incident, role, usuario, isPendingReassign, onView, onViewTraceability, onAssign, onChangeStatus, onRequestReassign, onSelfAssign, onReviewReassignments }: {
+function ActionButtons({ incident, role, usuario, isPendingReassign, onView, onViewTraceability, onAssign, onChangeStatus, onRequestReassign, onSelfAssign, onReviewReassignments, onRate }: {
   incident: Incident; role?: string; usuario: UsuarioSession | null; isPendingReassign?: boolean;
   onView: (i: Incident) => void; onViewTraceability?: (i: Incident) => void;
   onAssign?: (i: Incident) => void; onChangeStatus?: (i: Incident) => void;
   onRequestReassign?: (i: Incident) => void; onSelfAssign?: (i: Incident) => void;
-  onReviewReassignments?: () => void;
+  onReviewReassignments?: () => void; onRate?: (i: Incident) => void;
 }) {
   const isAdmin = role === 'ADMIN' || role === 'TECNICO_GENERAL';
   const isEspecialista = role === 'TECNICO_ESPECIALISTA';
   const isClosed = CLOSED_STATUSES.includes(incident.status);
   const isUnassigned = !incident.assigneeId || incident.assignee === 'Sin asignar';
+  const isEstudiante = role === 'ESTUDIANTE';
+  const canRate = isEstudiante && incident.status === 'Resuelta' && !incident.calificacion;
 
   const btnBase = "inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs transition-colors cursor-pointer";
 
@@ -279,6 +279,33 @@ function ActionButtons({ incident, role, usuario, isPendingReassign, onView, onV
           </button>
         );
       })()}
+
+      {onRate && canRate && (
+        <button type="button" onClick={() => onRate(incident)} className={`${btnBase} font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 hover:scale-105 active:scale-95 shadow-xs`} title="Calificar atención">
+          <Star className="w-3.5 h-3.5" />
+          <span className="hidden md:inline">Calificar</span>
+        </button>
+      )}
+
+      {incident.calificacion && (
+        <span
+          className={`inline-flex items-center gap-0.5 px-2 py-1 rounded-lg text-xs font-semibold border ${
+            incident.calificacion <= 2
+              ? 'bg-red-50 border-red-200 text-red-700'
+              : 'bg-amber-50 border-amber-200 text-amber-700'
+          }`}
+          title={`Calificación: ${incident.calificacion}/5${incident.motivoCalificacion ? ` - Motivo: ${incident.motivoCalificacion}` : ''}`}
+        >
+          {Array.from({ length: incident.calificacion }, (_, i) => (
+            <Star
+              key={i}
+              className={`w-3 h-3 ${
+                incident.calificacion! <= 2 ? 'fill-red-400 text-red-400' : 'fill-amber-400 text-amber-400'
+              }`}
+            />
+          ))}
+        </span>
+      )}
     </div>
   );
 }

@@ -26,8 +26,6 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
   const [categoriaId, setCategoriaId] = useState<number>(0);
   const [prioridadId, setPrioridadId] = useState<number>(0);
   const [ubicacionId, setUbicacionId] = useState<number>(0);
-
-  // Imagen / Evidencia
   const [archivo, setArchivo] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -39,7 +37,6 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Usuario actual
   const usuario = getCurrentUser();
   const estudianteId = usuario?.id;
   const isEstudiante = usuario?.rol === 'ESTUDIANTE';
@@ -78,7 +75,6 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
     if (cat?.prioridadDefecto?.id) {
       setPrioridadId(cat.prioridadDefecto.id);
     } else {
-      // Si la categoría no tiene prioridad por defecto, asignar Media o la primera disponible
       const fallbackPrio = prioridades.find((p) => p.nivel === 'Media') || prioridades[0];
       if (fallbackPrio) {
         setPrioridadId(fallbackPrio.id);
@@ -160,7 +156,6 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
         estudianteId,
       });
 
-      // Subir archivo adjunto si el usuario seleccionó una imagen
       if (archivo && nuevaIncidencia?.id) {
         try {
           await subirAdjunto(nuevaIncidencia.id, archivo, estudianteId);

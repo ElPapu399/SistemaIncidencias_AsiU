@@ -1,10 +1,6 @@
 import { API_BASE } from '../config/api';
 import { getToken, logout } from './auth';
 
-/**
- * Wrapper de fetch que agrega automáticamente el token JWT
- * y maneja respuestas 401 (sesión expirada o token inválido).
- */
 export async function fetchWithAuth(
   endpoint: string,
   options: RequestInit = {}
@@ -16,7 +12,7 @@ export async function fetchWithAuth(
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  // Solo agregar Content-Type JSON si no es FormData y no tiene header ya definido
+  // Para FormData el navegador debe calcular el Content-Type con su propio boundary
   if (!headers.has('Content-Type') && options.body && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
   }
@@ -30,7 +26,7 @@ export async function fetchWithAuth(
     headers,
   });
 
-  // Si el backend responde 401 o 403, la sesión expiró o el token es inválido
+  // Si el backend rechaza las credenciales, limpiar sesión y forzar login
   if (response.status === 401 || response.status === 403) {
     logout();
     if (window.location.pathname !== '/') {

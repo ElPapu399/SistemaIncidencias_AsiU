@@ -42,14 +42,12 @@ export default function ChangeStatusModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Evidencia Fotográfica / Adjuntos
   const [adjuntos, setAdjuntos] = useState<ArchivoAdjunto[]>([]);
   const [loadingAdjuntos, setLoadingAdjuntos] = useState(false);
   const [uploadingAdjunto, setUploadingAdjunto] = useState(false);
   const [selectedImage, setSelectedImage] = useState<ArchivoAdjunto | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Trazabilidad / Historial de Estados
   const [historial, setHistorial] = useState<any[]>([]);
   const [loadingHistorial, setLoadingHistorial] = useState(false);
 
@@ -60,7 +58,6 @@ export default function ChangeStatusModal({
     setSolucionTecnica(incident.solucionTecnica || '');
     setSelectedImage(null);
 
-    // Cargar archivos adjuntos y trazabilidad si tiene numericId
     if (incident.numericId) {
       setLoadingAdjuntos(true);
       obtenerAdjuntos(incident.numericId)
@@ -288,7 +285,6 @@ export default function ChangeStatusModal({
                             alt={adj.nombreOriginal}
                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                             onError={(e) => {
-                              // Fallback si la imagen no carga
                               (e.target as HTMLElement).style.display = 'none';
                             }}
                           />

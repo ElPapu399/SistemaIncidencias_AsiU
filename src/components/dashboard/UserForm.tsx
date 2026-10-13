@@ -48,7 +48,6 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
 
     const isEditing = editingUser !== null;
 
-    // Cargar catálogos y rellenar si estamos editando
     useEffect(() => {
         if (!isOpen) return;
 
@@ -57,7 +56,6 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
             fetchWithAuth('/especialidades').then(r => r.json()),
         ]).then(([rolesData, espData]) => {
             const allRoles = rolesData as Role[];
-            // Filtrar rol legacy 'TECNICO' y filtrar por modo si corresponde
             let cleanRoles = allRoles.filter((r: Role) => r.nombre !== 'TECNICO');
 
             if (mode === 'estudiante') {
@@ -91,7 +89,6 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
                     const estRol = cleanRoles.find(r => r.nombre === 'ESTUDIANTE');
                     setRolId(estRol ? estRol.id : 0);
                 } else if (mode === 'tecnico') {
-                    // Preseleccionar Técnico Especialista por defecto para mayor comodidad
                     const espRol = cleanRoles.find(r => r.nombre === 'TECNICO_ESPECIALISTA');
                     setRolId(espRol ? espRol.id : (cleanRoles[0]?.id || 0));
                 } else {
@@ -106,7 +103,6 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
         }).catch(() => setError('No se pudieron cargar los catálogos'));
     }, [isOpen, editingUser, mode]);
 
-    // Determinar tipo de rol seleccionado
     const selectedRole = roles.find(r => r.id === rolId);
     const isTecnicoGeneral = selectedRole?.nombre === 'TECNICO_GENERAL';
     const isTecnicoEspecialista = selectedRole?.nombre === 'TECNICO_ESPECIALISTA';

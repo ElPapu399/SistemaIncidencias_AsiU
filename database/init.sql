@@ -1,29 +1,20 @@
--- =====================================================
--- Script de inicialización de la base de datos
--- SistemaIncidencias_AsiU
--- =====================================================
-
 CREATE DATABASE IF NOT EXISTS campus_incidencias_db
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
 USE campus_incidencias_db;
 
-
--- 1. Tabla de Roles (ADMIN, ESTUDIANTE, TECNICO)
 CREATE TABLE IF NOT EXISTS roles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(20) NOT NULL UNIQUE
 ) ENGINE=InnoDB;
 
--- 2. Tabla de Especialidades Técnicas (Hardware, Redes, Software)
 CREATE TABLE IF NOT EXISTS especialidades (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL UNIQUE,
     descripcion VARCHAR(200) NULL
 ) ENGINE=InnoDB;
 
--- 3. Tabla de Usuarios del Campus
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -42,7 +33,6 @@ CREATE TABLE IF NOT EXISTS usuarios (
         REFERENCES especialidades(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- 4. Tabla de Prioridades y Tiempos de Atención
 CREATE TABLE IF NOT EXISTS prioridades (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nivel VARCHAR(20) NOT NULL UNIQUE, -- 'Alta', 'Media', 'Baja'
@@ -50,16 +40,14 @@ CREATE TABLE IF NOT EXISTS prioridades (
     descripcion VARCHAR(150) NULL
 ) ENGINE=InnoDB;
 
--- 5. Tabla de Ubicaciones Físicas (Aulas y Laboratorios)
 CREATE TABLE IF NOT EXISTS ubicaciones (
     id INT AUTO_INCREMENT PRIMARY KEY,
     pabellon VARCHAR(50) NOT NULL,
     aula_laboratorio VARCHAR(50) NOT NULL,
     piso INT NOT NULL,
-    tipo VARCHAR(30) NOT NULL -- 'Laboratorio', 'Aula', 'Auditorio'
+    tipo VARCHAR(30) NOT NULL
 ) ENGINE=InnoDB;
 
--- 6. Tabla de Categorías de Incidencias
 CREATE TABLE IF NOT EXISTS categorias (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -71,24 +59,21 @@ CREATE TABLE IF NOT EXISTS categorias (
         REFERENCES prioridades(id) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
--- 7. Tabla de Equipos (catálogo de equipos físicos)
 CREATE TABLE IF NOT EXISTS equipos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    codigo VARCHAR(50) NOT NULL UNIQUE,  -- Ej: PC-LAB-A-05
-    tipo VARCHAR(50) NOT NULL,           -- 'PC', 'Impresora', 'Proyector', 'Switch', etc.
+    codigo VARCHAR(50) NOT NULL UNIQUE,
+    tipo VARCHAR(50) NOT NULL,
     marca VARCHAR(100) NULL,
     modelo VARCHAR(100) NULL,
     ubicacion_id INT NULL,
-    estado VARCHAR(20) NOT NULL DEFAULT 'Operativo', -- 'Operativo', 'En reparación', 'Dado de baja'
+    estado VARCHAR(20) NOT NULL DEFAULT 'Operativo',
     CONSTRAINT fk_equipo_ubicacion FOREIGN KEY (ubicacion_id)
         REFERENCES ubicaciones(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- 8. Tabla de Tickets / Incidencias
--- ESTADOS: 'Pendiente', 'Asignada', 'En atención', 'Resuelta', 'Cerrada'
 CREATE TABLE IF NOT EXISTS incidencias (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    codigo_ticket VARCHAR(20) NOT NULL UNIQUE, -- Ej: INC-2026-0001
+    codigo_ticket VARCHAR(20) NOT NULL UNIQUE,
     titulo VARCHAR(150) NOT NULL,
     descripcion TEXT NOT NULL,
     estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
@@ -116,7 +101,6 @@ CREATE TABLE IF NOT EXISTS incidencias (
         REFERENCES equipos(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- 9. Tabla de Fotos y Evidencias Adjuntas
 CREATE TABLE IF NOT EXISTS archivos_adjuntos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     incidencia_id INT NOT NULL,
@@ -132,8 +116,6 @@ CREATE TABLE IF NOT EXISTS archivos_adjuntos (
         REFERENCES usuarios(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- 10. Tabla de Auditoría e Historial de Estados
--- tipo_accion: 'CREACION', 'CAMBIO_ESTADO', 'ASIGNACION', 'REASIGNACION', 'SOLICITUD_REASIGNACION'
 CREATE TABLE IF NOT EXISTS historial_estados (
     id INT AUTO_INCREMENT PRIMARY KEY,
     incidencia_id INT NOT NULL,
@@ -155,8 +137,6 @@ CREATE TABLE IF NOT EXISTS historial_estados (
         REFERENCES usuarios(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- 11. Tabla de Solicitudes de Reasignación (técnico solicita ser reasignado)
--- estado: 'PENDIENTE', 'APROBADA', 'RECHAZADA'
 CREATE TABLE IF NOT EXISTS solicitudes_reasignacion (
     id INT AUTO_INCREMENT PRIMARY KEY,
     incidencia_id INT NOT NULL,
@@ -177,11 +157,6 @@ CREATE TABLE IF NOT EXISTS solicitudes_reasignacion (
     CONSTRAINT fk_solicitud_tecnico_nuevo FOREIGN KEY (tecnico_nuevo_id)
         REFERENCES usuarios(id) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB;
-
-
--- =====================================================
--- DATOS INICIALES (seed data)
--- =====================================================
 
 INSERT IGNORE INTO roles (nombre) VALUES
     ('ADMIN'),
@@ -231,7 +206,6 @@ INSERT IGNORE INTO categorias (nombre, especialidad_id, prioridad_defecto_id) VA
     ('Cable de red con conector roto', 2, 2),
     ('Base de datos local bloqueada', 3, 1);
 
--- Equipos de ejemplo (catálogo)
 INSERT IGNORE INTO equipos (codigo, tipo, marca, modelo, ubicacion_id, estado) VALUES
     ('PC-LAB-A-01', 'PC', 'HP', 'ProDesk 400 G7', 1, 'Operativo'),
     ('PC-LAB-A-02', 'PC', 'HP', 'ProDesk 400 G7', 1, 'Operativo'),
@@ -254,7 +228,6 @@ INSERT IGNORE INTO equipos (codigo, tipo, marca, modelo, ubicacion_id, estado) V
     ('PC-LAB-B-20', 'PC', 'Dell', 'OptiPlex 5090', 2, 'Operativo'),
     ('PC-LAB-D-15', 'PC', 'HP', 'ProDesk 400 G7', 4, 'Operativo');
 
--- Incidencias de ejemplo con nuevos estados y equipos
 INSERT IGNORE INTO incidencias
     (codigo_ticket, titulo, descripcion, estado, estudiante_id, tecnico_id,
      categoria_id, prioridad_id, ubicacion_id, equipo_id, solucion_tecnica)
@@ -283,42 +256,32 @@ VALUES
 INSERT IGNORE INTO historial_estados
     (incidencia_id, estado_anterior, estado_nuevo, tipo_accion, usuario_id, comentario, tecnico_anterior_id, tecnico_nuevo_id)
 VALUES
-    -- INC-001: Pendiente → Asignada → En atención
     (1, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
     (1, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Carlos Mendoza', NULL, 2),
     (1, 'Asignada', 'En atención', 'CAMBIO_ESTADO', 2, 'Carlos Mendoza inició atención en Laboratorio A', NULL, NULL),
-    -- INC-002: Pendiente
     (2, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
-    -- INC-003: Pendiente → Asignada → En atención → Resuelta
     (3, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
     (3, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Carlos Mendoza', NULL, 2),
     (3, 'Asignada', 'En atención', 'CAMBIO_ESTADO', 2, 'Se inició revisión de la conectividad', NULL, NULL),
     (3, 'En atención', 'Resuelta', 'CAMBIO_ESTADO', 2, 'Se reconfiguró IP y se reinició el punto de acceso', NULL, NULL),
-    -- INC-004: Completa hasta Cerrada
     (4, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
     (4, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Carlos Mendoza', NULL, 2),
     (4, 'Asignada', 'En atención', 'CAMBIO_ESTADO', 2, 'Se inició revisión del monitor', NULL, NULL),
     (4, 'En atención', 'Resuelta', 'CAMBIO_ESTADO', 2, 'Cable HDMI reemplazado, firmware actualizado', NULL, NULL),
     (4, 'Resuelta', 'Cerrada', 'CAMBIO_ESTADO', 1, 'Incidencia cerrada por el administrador', NULL, NULL),
-    -- INC-005: Pendiente → Asignada
     (5, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
     (5, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Diego Vargas', NULL, 4),
-    -- INC-006: Completa hasta Cerrada
     (6, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
     (6, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Carlos Mendoza', NULL, 2),
     (6, 'Asignada', 'En atención', 'CAMBIO_ESTADO', 2, 'Se revisó el teclado', NULL, NULL),
     (6, 'En atención', 'Resuelta', 'CAMBIO_ESTADO', 2, 'Teclado reemplazado', NULL, NULL),
     (6, 'Resuelta', 'Cerrada', 'CAMBIO_ESTADO', 1, 'Incidencia cerrada', NULL, NULL),
-    -- INC-007: Pendiente → Asignada → En atención
     (7, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
     (7, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Diego Vargas', NULL, 4),
     (7, 'Asignada', 'En atención', 'CAMBIO_ESTADO', 4, 'Diego Vargas inició revisión del kernel', NULL, NULL),
-    -- INC-008: Pendiente → Asignada
     (8, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
     (8, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Carlos Mendoza', NULL, 2),
-    -- INC-009: Pendiente
     (9, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
-    -- INC-010: Completa hasta Resuelta
     (10, 'Nuevo', 'Pendiente', 'CREACION', 3, 'Ticket registrado', NULL, NULL),
     (10, 'Pendiente', 'Asignada', 'ASIGNACION', 1, 'Técnico asignado: Carlos Mendoza', NULL, 2),
     (10, 'Asignada', 'En atención', 'CAMBIO_ESTADO', 2, 'Se revisó el sistema de audio', NULL, NULL),

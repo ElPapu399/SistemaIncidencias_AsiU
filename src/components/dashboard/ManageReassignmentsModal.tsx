@@ -37,7 +37,6 @@ export default function ManageReassignmentsModal({
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  // Acción activa por solicitud: id de la solicitud y si está en modo 'aprobar' o 'rechazar'
   const [activeAction, setActiveAction] = useState<{
     solicitudId: number;
     type: 'APROBAR' | 'RECHAZAR';
@@ -76,7 +75,6 @@ export default function ManageReassignmentsModal({
   const handleStartAprobar = (solicitud: SolicitudReasignacion) => {
     setActiveAction({ solicitudId: solicitud.id, type: 'APROBAR' });
     setComentario('');
-    // Sugerir un técnico diferente al que solicita
     const candidatos = tecnicos.filter((t) => t.id !== solicitud.tecnicoSolicitanteId);
     setSelectedTecnicoId(candidatos.length > 0 ? candidatos[0].id : null);
     setError('');
@@ -131,7 +129,6 @@ export default function ManageReassignmentsModal({
       setComentario('');
       setSelectedTecnicoId(null);
 
-      // Recargar solicitudes y notificar al padre
       await cargarDatos();
       onProcessed();
 

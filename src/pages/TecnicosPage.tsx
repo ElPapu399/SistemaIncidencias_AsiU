@@ -26,7 +26,6 @@ export default function TecnicosPage({ title, description }: TecnicosPageProps) 
         setLoading(true);
         setError('');
         try {
-            // Filtrar directamente desde el backend por rol TECNICO
             const response = await fetchWithAuth('/usuarios?rol=TECNICO');
             if (response.ok) {
                 const data = await response.json();

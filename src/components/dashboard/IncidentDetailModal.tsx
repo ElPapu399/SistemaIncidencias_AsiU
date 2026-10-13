@@ -4,7 +4,7 @@ import { obtenerAdjuntos, getAttachmentUrl } from '../../services/incidenciasSer
 import { StatusBadge, PriorityBadge, CategoryLabel, formatDate } from './IncidentBadges';
 import {
   Eye, X, History, RefreshCw, Clock, User, MapPin, Laptop,
-  Image as ImageIcon, CheckCircle2, ExternalLink, ArrowRightLeft,
+  Image as ImageIcon, CheckCircle2, ExternalLink, ArrowRightLeft, Star,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -12,12 +12,13 @@ interface IncidentDetailModalProps {
   isOpen: boolean;
   incident: Incident | null;
   currentUserRole?: string;
+  currentUserId?: number;
   onClose: () => void;
   onOpenTraceability?: (incident: Incident) => void;
   onOpenChangeStatus?: (incident: Incident) => void;
+  onRate?: (incident: Incident) => void;
 }
 
-/** Tarjeta reutilizable del grid de información */
 function InfoCard({ icon: Icon, label, children }: { icon: LucideIcon; label: string; children: ReactNode }) {
   return (
     <div className="bg-slate-50 border border-slate-200/70 rounded-2xl p-3.5 flex items-start gap-2.5">
@@ -31,7 +32,7 @@ function InfoCard({ icon: Icon, label, children }: { icon: LucideIcon; label: st
 }
 
 export default function IncidentDetailModal({
-  isOpen, incident, currentUserRole, onClose, onOpenTraceability, onOpenChangeStatus,
+  isOpen, incident, currentUserRole, currentUserId, onClose, onOpenTraceability, onOpenChangeStatus, onRate,
 }: IncidentDetailModalProps) {
   const [adjuntos, setAdjuntos] = useState<ArchivoAdjunto[]>([]);
   const [loadingAdjuntos, setLoadingAdjuntos] = useState(false);
@@ -176,6 +177,60 @@ export default function IncidentDetailModal({
               </div>
             )}
 
+            {/* Calificación del estudiante */}
+            {incident.calificacion && (
+              <div className={`p-4 rounded-2xl border ${
+                incident.calificacion <= 2
+                  ? 'bg-red-50/70 border-red-200'
+                  : 'bg-amber-50/70 border-amber-200'
+              }`}>
+                <h4 className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 mb-2 ${
+                  incident.calificacion <= 2 ? 'text-red-800' : 'text-amber-800'
+                }`}>
+                  <Star className={`w-4 h-4 ${incident.calificacion <= 2 ? 'text-red-500 fill-red-500' : 'text-amber-500'}`} />
+                  Calificación del Estudiante
+                </h4>
+                <div className="flex items-center gap-1 mb-2">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-5 h-5 ${
+                        i < incident.calificacion!
+                          ? incident.calificacion! <= 2
+                            ? 'fill-red-400 text-red-400'
+                            : 'fill-amber-400 text-amber-400'
+                          : 'fill-transparent text-slate-300'
+                      }`}
+                    />
+                  ))}
+                  <span className={`ml-2 text-sm font-bold ${
+                    incident.calificacion <= 2 ? 'text-red-700' : 'text-amber-700'
+                  }`}>
+                    {incident.calificacion}/5
+                  </span>
+                </div>
+                {incident.motivoCalificacion && (
+                  <div className="mb-2">
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border ${
+                      incident.calificacion <= 2
+                        ? 'bg-red-100 text-red-800 border-red-200'
+                        : 'bg-amber-100 text-amber-900 border-amber-200'
+                    }`}>
+                      <span className="font-bold opacity-75">Motivo:</span>
+                      <span>{incident.motivoCalificacion}</span>
+                    </span>
+                  </div>
+                )}
+                {incident.comentarioCalificacion && (
+                  <p className={`text-xs italic ${
+                    incident.calificacion <= 2 ? 'text-red-900/90' : 'text-amber-900/80'
+                  }`}>
+                    "{incident.comentarioCalificacion}"
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Evidencias */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
@@ -215,6 +270,12 @@ export default function IncidentDetailModal({
               </button>
             )}
             <div className="flex items-center gap-2 ml-auto">
+              {onRate && currentUserRole === 'ESTUDIANTE' && incident.status === 'Resuelta' && !incident.calificacion && (
+                <button type="button" onClick={openAndClose(onRate)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 bg-amber-100 hover:bg-amber-200 border border-amber-300 transition-all cursor-pointer shadow-xs">
+                  <Star className="w-3.5 h-3.5" />
+                  <span>Calificar Atención</span>
+                </button>
+              )}
               {canChangeStatus && onOpenChangeStatus && (
                 <button type="button" onClick={openAndClose(onOpenChangeStatus)} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 transition-all cursor-pointer shadow-xs">
                   <RefreshCw className="w-3.5 h-3.5" />

@@ -30,13 +30,11 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
         [usuarios]
     );
 
-    // Extraer especialidades únicas para el filtro
     const especialidades = useMemo(
         () => [...new Set(tecnicos.map(u => u.especialidad).filter(Boolean))] as string[],
         [tecnicos]
     );
 
-    // Filtrado memoizado para rendimiento
     const filtered = useMemo(() => {
         const query = search.toLowerCase().trim();
         return tecnicos.filter(u => {

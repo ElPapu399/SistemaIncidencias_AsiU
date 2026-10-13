@@ -47,7 +47,7 @@ export default function IncidentTraceabilityModal({
   const [historial, setHistorial] = useState<HistorialItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sortAsc, setSortAsc] = useState(false); // false = más reciente primero
+  const [sortAsc, setSortAsc] = useState(false);
 
   const cargarHistorial = useCallback(async () => {
     if (!incident?.numericId) return;

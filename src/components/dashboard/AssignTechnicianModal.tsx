@@ -37,7 +37,6 @@ export default function AssignTechnicianModal({
       .then((data) => {
         setTecnicos(data);
         if (!incident.assigneeId && data.length > 0) {
-          // Preselect matching specialty if available
           const matching = data.find((t) => t.especialidad === incident.especialidad);
           if (matching) {
             setSelectedTecnicoId(matching.id);

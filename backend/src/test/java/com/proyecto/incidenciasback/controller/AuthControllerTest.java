@@ -30,157 +30,159 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Pruebas del flujo de autenticación (login).
  */
 @WebMvcTest(AuthController.class)
-@Import({SecurityConfig.class, JwtAuthFilter.class, JwtUtil.class, JwtConfig.class})
+@Import({ SecurityConfig.class, JwtAuthFilter.class, JwtUtil.class, JwtConfig.class })
 class AuthControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+        @Autowired
+        private ObjectMapper objectMapper;
 
-    @MockBean
-    private AuthService authService;
+        @MockBean
+        private AuthService authService;
 
-    @Test
-    @DisplayName("Acceso correcto: credenciales válidas devuelve 200 y datos de usuario")
-    void loginConCredencialesValidas_deberiaRetornar200() throws Exception {
-        LoginRequest request = new LoginRequest();
-        request.setCorreo("admin@universidad.edu.pe");
-        request.setPassword("admin123");
+        @Test
+        @DisplayName("Acceso correcto: credenciales válidas devuelve 200 y datos de usuario")
+        void loginConCredencialesValidas_deberiaRetornar200() throws Exception {
+                LoginRequest request = new LoginRequest();
+                request.setCorreo("admin@universidad.edu.pe");
+                request.setPassword("admin123");
 
-        LoginResponse response = new LoginResponse(1, "Admin", "Sistema", "admin@universidad.edu.pe", "ADMIN", "mock-jwt-token");
-        when(authService.login(any(LoginRequest.class))).thenReturn(response);
+                LoginResponse response = new LoginResponse(1, "Admin", "Sistema", "admin@universidad.edu.pe", "ADMIN",
+                                "mock-jwt-token");
+                when(authService.login(any(LoginRequest.class))).thenReturn(response);
 
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.correo").value("admin@universidad.edu.pe"))
-                .andExpect(jsonPath("$.rol").value("ADMIN"))
-                .andExpect(jsonPath("$.token").isNotEmpty());
-    }
+                mockMvc.perform(post("/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.correo").value("admin@universidad.edu.pe"))
+                                .andExpect(jsonPath("$.rol").value("ADMIN"))
+                                .andExpect(jsonPath("$.token").isNotEmpty());
+        }
 
-    @Test
-    @DisplayName("Credenciales inválidas: password incorrecto devuelve 401")
-    void loginConPasswordIncorrecto_deberiaRetornar401() throws Exception {
-        LoginRequest request = new LoginRequest();
-        request.setCorreo("admin@universidad.edu.pe");
-        request.setPassword("password-incorrecto");
+        @Test
+        @DisplayName("Credenciales inválidas: password incorrecto devuelve 401")
+        void loginConPasswordIncorrecto_deberiaRetornar401() throws Exception {
+                LoginRequest request = new LoginRequest();
+                request.setCorreo("admin@universidad.edu.pe");
+                request.setPassword("password-incorrecto");
 
-        when(authService.login(any(LoginRequest.class)))
-                .thenThrow(new AuthenticationException("Correo o contraseña incorrectos"));
+                when(authService.login(any(LoginRequest.class)))
+                                .thenThrow(new AuthenticationException("Correo o contraseña incorrectos"));
 
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error").value("Correo o contraseña incorrectos"));
-    }
+                mockMvc.perform(post("/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isUnauthorized())
+                                .andExpect(jsonPath("$.error").value("Correo o contraseña incorrectos"));
+        }
 
-    @Test
-    @DisplayName("Credenciales inválidas: correo inexistente devuelve 401")
-    void loginConCorreoInexistente_deberiaRetornar401() throws Exception {
-        LoginRequest request = new LoginRequest();
-        request.setCorreo("no-existe@universidad.edu.pe");
-        request.setPassword("cualquiera123");
+        @Test
+        @DisplayName("Credenciales inválidas: correo inexistente devuelve 401")
+        void loginConCorreoInexistente_deberiaRetornar401() throws Exception {
+                LoginRequest request = new LoginRequest();
+                request.setCorreo("no-existe@universidad.edu.pe");
+                request.setPassword("cualquiera123");
 
-        when(authService.login(any(LoginRequest.class)))
-                .thenThrow(new AuthenticationException("Correo o contraseña incorrectos"));
+                when(authService.login(any(LoginRequest.class)))
+                                .thenThrow(new AuthenticationException("Correo o contraseña incorrectos"));
 
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error").value("Correo o contraseña incorrectos"));
-    }
+                mockMvc.perform(post("/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isUnauthorized())
+                                .andExpect(jsonPath("$.error").value("Correo o contraseña incorrectos"));
+        }
 
-    @Test
-    @DisplayName("Validación: correo vacío devuelve 400")
-    void loginConCorreoVacio_deberiaRetornar400() throws Exception {
-        LoginRequest request = new LoginRequest();
-        request.setCorreo("");
-        request.setPassword("admin123");
+        @Test
+        @DisplayName("Validación: correo vacío devuelve 400")
+        void loginConCorreoVacio_deberiaRetornar400() throws Exception {
+                LoginRequest request = new LoginRequest();
+                request.setCorreo("");
+                request.setPassword("admin123");
 
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
-    }
+                mockMvc.perform(post("/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest());
+        }
 
-    @Test
-    @DisplayName("Validación: formato de correo inválido devuelve 400")
-    void loginConCorreoFormatoInvalido_deberiaRetornar400() throws Exception {
-        LoginRequest request = new LoginRequest();
-        request.setCorreo("no-es-un-correo");
-        request.setPassword("admin123");
+        @Test
+        @DisplayName("Validación: formato de correo inválido devuelve 400")
+        void loginConCorreoFormatoInvalido_deberiaRetornar400() throws Exception {
+                LoginRequest request = new LoginRequest();
+                request.setCorreo("no-es-un-correo");
+                request.setPassword("admin123");
 
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
-    }
+                mockMvc.perform(post("/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest());
+        }
 
-    @Test
-    @DisplayName("Validación: password vacío devuelve 400")
-    void loginConPasswordVacio_deberiaRetornar400() throws Exception {
-        LoginRequest request = new LoginRequest();
-        request.setCorreo("admin@universidad.edu.pe");
-        request.setPassword("");
+        @Test
+        @DisplayName("Validación: password vacío devuelve 400")
+        void loginConPasswordVacio_deberiaRetornar400() throws Exception {
+                LoginRequest request = new LoginRequest();
+                request.setCorreo("admin@universidad.edu.pe");
+                request.setPassword("");
 
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
-    }
+                mockMvc.perform(post("/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest());
+        }
 
-    @Test
-    @DisplayName("Recuperación: correo válido devuelve 200 y mensaje")
-    void recuperarConCorreoValido_deberiaRetornar200() throws Exception {
-        RecuperarPasswordRequest request = new RecuperarPasswordRequest();
-        request.setCorreo("admin@universidad.edu.pe");
+        @Test
+        @DisplayName("Recuperación: correo válido devuelve 200 y mensaje")
+        void recuperarConCorreoValido_deberiaRetornar200() throws Exception {
+                RecuperarPasswordRequest request = new RecuperarPasswordRequest();
+                request.setCorreo("admin@universidad.edu.pe");
 
-        when(authService.solicitarRecuperacion(any(RecuperarPasswordRequest.class)))
-                .thenReturn(new RecuperarPasswordResponse("Te hemos enviado un código de verificación a tu correo.", null));
+                when(authService.solicitarRecuperacion(any(RecuperarPasswordRequest.class)))
+                                .thenReturn(new RecuperarPasswordResponse(
+                                                "Te hemos enviado un código de verificación a tu correo.", null));
 
-        mockMvc.perform(post("/api/auth/recuperar")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.mensaje").isNotEmpty());
-    }
+                mockMvc.perform(post("/api/auth/recuperar")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.mensaje").isNotEmpty());
+        }
 
-    @Test
-    @DisplayName("Recuperación: correo no registrado devuelve 400")
-    void recuperarConCorreoNoRegistrado_deberiaRetornar400() throws Exception {
-        RecuperarPasswordRequest request = new RecuperarPasswordRequest();
-        request.setCorreo("no-existe@universidad.edu.pe");
+        @Test
+        @DisplayName("Recuperación: correo no registrado devuelve 400")
+        void recuperarConCorreoNoRegistrado_deberiaRetornar400() throws Exception {
+                RecuperarPasswordRequest request = new RecuperarPasswordRequest();
+                request.setCorreo("no-existe@universidad.edu.pe");
 
-        when(authService.solicitarRecuperacion(any(RecuperarPasswordRequest.class)))
-                .thenThrow(new RuntimeException("El correo no está registrado en el sistema"));
+                when(authService.solicitarRecuperacion(any(RecuperarPasswordRequest.class)))
+                                .thenThrow(new RuntimeException("El correo no está registrado en el sistema"));
 
-        mockMvc.perform(post("/api/auth/recuperar")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("El correo no está registrado en el sistema"));
-    }
+                mockMvc.perform(post("/api/auth/recuperar")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.error").value("El correo no está registrado en el sistema"));
+        }
 
-    @Test
-    @DisplayName("Restablecer: código inválido devuelve 400")
-    void restablecerConCodigoInvalido_deberiaRetornar400() throws Exception {
-        RestablecerPasswordRequest request = new RestablecerPasswordRequest();
-        request.setCorreo("admin@universidad.edu.pe");
-        request.setCodigo("000000");
-        request.setNuevaPassword("nueva123");
+        @Test
+        @DisplayName("Restablecer: código inválido devuelve 400")
+        void restablecerConCodigoInvalido_deberiaRetornar400() throws Exception {
+                RestablecerPasswordRequest request = new RestablecerPasswordRequest();
+                request.setCorreo("admin@universidad.edu.pe");
+                request.setCodigo("000000");
+                request.setNuevaPassword("nueva123");
 
-        when(authService.restablecerPassword(any(RestablecerPasswordRequest.class)))
-                .thenThrow(new RuntimeException("El código es inválido o ha expirado"));
+                when(authService.restablecerPassword(any(RestablecerPasswordRequest.class)))
+                                .thenThrow(new RuntimeException("El código es inválido o ha expirado"));
 
-        mockMvc.perform(post("/api/auth/restablecer")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("El código es inválido o ha expirado"));
-    }
+                mockMvc.perform(post("/api/auth/restablecer")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.error").value("El código es inválido o ha expirado"));
+        }
 }

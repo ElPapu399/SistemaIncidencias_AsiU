@@ -26,7 +26,6 @@ export default function EstudiantesPage({ title, description }: EstudiantesPageP
         setLoading(true);
         setError('');
         try {
-            // Filtrar directamente desde el backend por rol ESTUDIANTE
             const response = await fetchWithAuth('/usuarios?rol=ESTUDIANTE');
             if (response.ok) {
                 const data = await response.json();
