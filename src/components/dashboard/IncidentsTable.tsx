@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { Incident } from '../../types/incident';
 import { StatusBadge, PriorityBadge, CategoryLabel, formatDate } from './IncidentBadges';
 import SearchBar from '../dashboard/SearchBar';
@@ -11,6 +11,37 @@ const STATUS_SYNONYMS: Record<string, string[]> = {
   'En atención': ['En Proceso'], 'En Proceso': ['En atención'],
   'Resuelta': ['Resuelto'], 'Resuelto': ['Resuelta'],
   'Cerrada': ['Cancelado'], 'Cancelado': ['Cerrada'],
+};
+
+const STANDARD_STATUSES = ['Pendiente', 'Asignada', 'En atención', 'Resuelta', 'Cerrada'];
+const ALL_PRIORITIES = ['Alta', 'Media', 'Baja'];
+
+const matchTerm = (i: Incident, term: string) => {
+  if (!term) return true;
+  return [i.title, i.id, i.reporter ?? '', i.assignee ?? '', i.tecnicoAnteriorNombre ?? '', i.location ?? '']
+    .some((f) => f.toLowerCase().includes(term));
+};
+
+const matchStatus = (status: string, targetFilter: string) => {
+  if (targetFilter === 'all') return true;
+  if (targetFilter === 'activas') return !CLOSED_STATUSES.includes(status);
+  if (targetFilter === 'cerradas') return CLOSED_STATUSES.includes(status);
+  return status === targetFilter || Boolean(STATUS_SYNONYMS[targetFilter]?.includes(status));
+};
+
+const matchPriority = (priority: string, targetPriority: string) => {
+  if (targetPriority === 'all') return true;
+  return priority === targetPriority;
+};
+
+const matchCategory = (category: string, targetCategory: string) => {
+  if (targetCategory === 'all') return true;
+  return category === targetCategory;
+};
+
+const matchReassigned = (fueReasignada: boolean | undefined, reassignedOnly: boolean) => {
+  if (!reassignedOnly) return true;
+  return Boolean(fueReasignada);
 };
 
 interface IncidentsTableProps {
@@ -42,25 +73,121 @@ export default function IncidentsTable({
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterReassignedOnly, setFilterReassignedOnly] = useState(false);
 
-  const uniqueCategories = useMemo(() =>
-    [...new Set(incidents.map((i) => i.category).filter(Boolean))].sort(),
-    [incidents]
+  const term = search.toLowerCase().trim();
+
+  // Opciones disponibles para Categoría (dependientes de los demás filtros)
+  const matchingForCategory = useMemo(() => {
+    return incidents.filter((i) =>
+      matchTerm(i, term) &&
+      matchStatus(i.status, filterStatus) &&
+      matchPriority(i.priority, filterPriority) &&
+      matchReassigned(i.fueReasignada, filterReassignedOnly)
+    );
+  }, [incidents, term, filterStatus, filterPriority, filterReassignedOnly]);
+
+  const availableCategories = useMemo(() => {
+    return [...new Set(matchingForCategory.map((i) => i.category).filter(Boolean))].sort();
+  }, [matchingForCategory]);
+
+  // Opciones disponibles para Prioridad (dependientes de los demás filtros)
+  const matchingForPriority = useMemo(() => {
+    return incidents.filter((i) =>
+      matchTerm(i, term) &&
+      matchStatus(i.status, filterStatus) &&
+      matchCategory(i.category, filterCategory) &&
+      matchReassigned(i.fueReasignada, filterReassignedOnly)
+    );
+  }, [incidents, term, filterStatus, filterCategory, filterReassignedOnly]);
+
+  const availablePriorities = useMemo(() => {
+    const existing = new Set(matchingForPriority.map((i) => i.priority).filter(Boolean));
+    const standard = ALL_PRIORITIES.filter((p) => existing.has(p as any));
+    const others = [...existing].filter((p) => !ALL_PRIORITIES.includes(p));
+    return [...standard, ...others];
+  }, [matchingForPriority]);
+
+  // Opciones disponibles para Estado (dependientes de los demás filtros)
+  const matchingForStatus = useMemo(() => {
+    return incidents.filter((i) =>
+      matchTerm(i, term) &&
+      matchPriority(i.priority, filterPriority) &&
+      matchCategory(i.category, filterCategory) &&
+      matchReassigned(i.fueReasignada, filterReassignedOnly)
+    );
+  }, [incidents, term, filterPriority, filterCategory, filterReassignedOnly]);
+
+  const hasActiveStatus = useMemo(
+    () => matchingForStatus.some((i) => !CLOSED_STATUSES.includes(i.status)),
+    [matchingForStatus]
   );
 
-  const reassignedCount = useMemo(() => incidents.filter((i) => i.fueReasignada).length, [incidents]);
+  const hasClosedStatus = useMemo(
+    () => matchingForStatus.some((i) => CLOSED_STATUSES.includes(i.status)),
+    [matchingForStatus]
+  );
 
+  const availableStatuses = useMemo(() => {
+    const standard = STANDARD_STATUSES.filter((s) =>
+      matchingForStatus.some((i) => i.status === s || STATUS_SYNONYMS[s]?.includes(i.status))
+    );
+    const others = [...new Set(matchingForStatus.map((i) => i.status).filter(Boolean))]
+      .filter((s) => !STANDARD_STATUSES.includes(s) && !Object.values(STATUS_SYNONYMS).flat().includes(s));
+    return [...standard, ...others];
+  }, [matchingForStatus]);
+
+  const reassignedCount = useMemo(() => {
+    return incidents.filter((i) =>
+      i.fueReasignada &&
+      matchTerm(i, term) &&
+      matchStatus(i.status, filterStatus) &&
+      matchPriority(i.priority, filterPriority) &&
+      matchCategory(i.category, filterCategory)
+    ).length;
+  }, [incidents, term, filterStatus, filterPriority, filterCategory]);
+
+  // Incidencias filtradas finales
   const filtered = useMemo(() => {
-    const term = search.toLowerCase().trim();
-    return incidents.filter((i) => {
-      if (filterStatus !== 'all' && i.status !== filterStatus && !(STATUS_SYNONYMS[filterStatus]?.includes(i.status))) return false;
-      if (filterPriority !== 'all' && i.priority !== filterPriority) return false;
-      if (filterCategory !== 'all' && i.category !== filterCategory) return false;
-      if (filterReassignedOnly && !i.fueReasignada) return false;
-      if (term && ![i.title, i.id, i.reporter ?? '', i.assignee ?? '', i.tecnicoAnteriorNombre ?? '', i.location ?? '']
-        .some((f) => f.toLowerCase().includes(term))) return false;
-      return true;
-    });
-  }, [incidents, search, filterStatus, filterPriority, filterCategory, filterReassignedOnly]);
+    return incidents.filter((i) =>
+      matchTerm(i, term) &&
+      matchStatus(i.status, filterStatus) &&
+      matchPriority(i.priority, filterPriority) &&
+      matchCategory(i.category, filterCategory) &&
+      matchReassigned(i.fueReasignada, filterReassignedOnly)
+    );
+  }, [incidents, term, filterStatus, filterPriority, filterCategory, filterReassignedOnly]);
+
+  // Autolimpieza cuando un valor seleccionado deja de existir tras cambiar otro filtro
+  useEffect(() => {
+    if (filterCategory !== 'all' && !availableCategories.includes(filterCategory)) {
+      setFilterCategory('all');
+    }
+  }, [availableCategories, filterCategory]);
+
+  useEffect(() => {
+    if (filterPriority !== 'all' && !availablePriorities.includes(filterPriority)) {
+      setFilterPriority('all');
+    }
+  }, [availablePriorities, filterPriority]);
+
+  useEffect(() => {
+    if (filterStatus === 'all') return;
+    if (filterStatus === 'activas') {
+      if (!hasActiveStatus) setFilterStatus('all');
+    } else if (filterStatus === 'cerradas') {
+      if (!hasClosedStatus) setFilterStatus('all');
+    } else {
+      const isAvailable = availableStatuses.some(
+        (s) => s === filterStatus || STATUS_SYNONYMS[s]?.includes(filterStatus)
+      );
+      if (!isAvailable) setFilterStatus('all');
+    }
+  }, [availableStatuses, filterStatus, hasActiveStatus, hasClosedStatus]);
+
+  useEffect(() => {
+    if (filterReassignedOnly && reassignedCount === 0) {
+      setFilterReassignedOnly(false);
+    }
+  }, [filterReassignedOnly, reassignedCount]);
 
   const hasFilters = search || filterStatus !== 'all' || filterPriority !== 'all' || filterCategory !== 'all' || filterReassignedOnly;
 
@@ -80,17 +207,19 @@ export default function IncidentsTable({
 
         <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={selectClass}>
           <option value="all">Todos los Estados</option>
-          {['Pendiente', 'Asignada', 'En atención', 'Resuelta', 'Cerrada'].map((s) => <option key={s} value={s}>{s}</option>)}
+          {hasActiveStatus && <option value="activas">Solo Activas</option>}
+          {hasClosedStatus && <option value="cerradas">Solo Cerradas</option>}
+          {availableStatuses.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
 
         <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className={selectClass}>
           <option value="all">Todas las Prioridades</option>
-          {['Alta', 'Media', 'Baja'].map((p) => <option key={p} value={p}>{p}</option>)}
+          {availablePriorities.map((p) => <option key={p} value={p}>{p}</option>)}
         </select>
 
         <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className={`${selectClass} max-w-[180px] truncate`}>
           <option value="all">Todas las Categorías</option>
-          {uniqueCategories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
+          {availableCategories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
         </select>
 
         {isPrivileged && reassignedCount > 0 && (

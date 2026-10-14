@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import SearchBar from "./dashboard/SearchBar";
@@ -13,6 +13,25 @@ interface StudentTableProps {
 const ESTADO_BADGES: Record<string, { bg: string; dot: string }> = {
     Activo: { bg: 'bg-emerald-50 text-emerald-700 border-emerald-300', dot: 'bg-emerald-500' },
     Inactivo: { bg: 'bg-slate-100 text-slate-500 border-slate-300', dot: 'bg-slate-400' },
+};
+
+const matchSearch = (u: User, query: string) => {
+    if (!query) return true;
+    return (
+        u.nombre.toLowerCase().includes(query) ||
+        u.apellido.toLowerCase().includes(query) ||
+        u.correo.toLowerCase().includes(query)
+    );
+};
+
+const matchCarrera = (u: User, carrera: string) => {
+    if (!carrera) return true;
+    return u.carrera === carrera;
+};
+
+const matchEstado = (u: User, estado: string) => {
+    if (!estado) return true;
+    return (u.estado || 'Activo') === estado;
 };
 
 export default function StudentTable({ usuarios, onEdit }: StudentTableProps) {
@@ -31,24 +50,45 @@ export default function StudentTable({ usuarios, onEdit }: StudentTableProps) {
         [usuarios]
     );
 
-    const carreras = useMemo(
-        () => [...new Set(estudiantes.map(u => u.carrera).filter(Boolean))] as string[],
-        [estudiantes]
+    const query = search.toLowerCase().trim();
+
+    const matchingForCarrera = useMemo(() => {
+        return estudiantes.filter(u => matchSearch(u, query) && matchEstado(u, filterEstado));
+    }, [estudiantes, query, filterEstado]);
+
+    const availableCarreras = useMemo(
+        () => [...new Set(matchingForCarrera.map(u => u.carrera).filter(Boolean))] as string[],
+        [matchingForCarrera]
     );
 
+    const matchingForEstado = useMemo(() => {
+        return estudiantes.filter(u => matchSearch(u, query) && matchCarrera(u, filterCarrera));
+    }, [estudiantes, query, filterCarrera]);
+
+    const hasActivo = useMemo(() => matchingForEstado.some(u => (u.estado || 'Activo') === 'Activo'), [matchingForEstado]);
+    const hasInactivo = useMemo(() => matchingForEstado.some(u => u.estado === 'Inactivo'), [matchingForEstado]);
+
     const filtered = useMemo(() => {
-        const query = search.toLowerCase().trim();
-        return estudiantes.filter(u => {
-            const matchSearch = !query ||
-                u.nombre.toLowerCase().includes(query) ||
-                u.apellido.toLowerCase().includes(query) ||
-                u.correo.toLowerCase().includes(query);
-            const matchCarrera = !filterCarrera || u.carrera === filterCarrera;
-            const userEstado = u.estado || 'Activo';
-            const matchEstado = !filterEstado || userEstado === filterEstado;
-            return matchSearch && matchCarrera && matchEstado;
-        });
-    }, [estudiantes, search, filterCarrera, filterEstado]);
+        return estudiantes.filter(u =>
+            matchSearch(u, query) &&
+            matchCarrera(u, filterCarrera) &&
+            matchEstado(u, filterEstado)
+        );
+    }, [estudiantes, query, filterCarrera, filterEstado]);
+
+    useEffect(() => {
+        if (filterCarrera && !availableCarreras.includes(filterCarrera)) {
+            setFilterCarrera('');
+        }
+    }, [availableCarreras, filterCarrera]);
+
+    useEffect(() => {
+        if (filterEstado === 'Activo' && !hasActivo) {
+            setFilterEstado('');
+        } else if (filterEstado === 'Inactivo' && !hasInactivo) {
+            setFilterEstado('');
+        }
+    }, [filterEstado, hasActivo, hasInactivo]);
 
     const totalEstudiantes = estudiantes.length;
     const hasActiveFilters = search !== '' || filterCarrera !== '' || filterEstado !== '';
@@ -70,7 +110,7 @@ export default function StudentTable({ usuarios, onEdit }: StudentTableProps) {
                     className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
                 >
                     <option value="">Todas las carreras</option>
-                    {carreras.map(c => (
+                    {availableCarreras.map(c => (
                         <option key={c} value={c}>{c}</option>
                     ))}
                 </select>
@@ -81,8 +121,8 @@ export default function StudentTable({ usuarios, onEdit }: StudentTableProps) {
                     className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
                 >
                     <option value="">Todos los estados</option>
-                    <option value="Activo">Activos</option>
-                    <option value="Inactivo">Inactivos</option>
+                    {hasActivo && <option value="Activo">Activos</option>}
+                    {hasInactivo && <option value="Inactivo">Inactivos</option>}
                 </select>
 
                 {hasActiveFilters && (

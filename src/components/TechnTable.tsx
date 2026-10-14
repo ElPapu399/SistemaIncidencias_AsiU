@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import SearchBar from "./dashboard/SearchBar";
@@ -12,6 +12,25 @@ interface TechnTableProps {
 const ESTADO_BADGES: Record<string, { bg: string; dot: string }> = {
     Activo: { bg: 'bg-emerald-50 text-emerald-700 border-emerald-300', dot: 'bg-emerald-500' },
     Inactivo: { bg: 'bg-slate-100 text-slate-500 border-slate-300', dot: 'bg-slate-400' },
+};
+
+const matchSearch = (u: User, query: string) => {
+    if (!query) return true;
+    return (
+        u.nombre.toLowerCase().includes(query) ||
+        u.apellido.toLowerCase().includes(query) ||
+        u.correo.toLowerCase().includes(query)
+    );
+};
+
+const matchEstado = (u: User, estado: string) => {
+    if (!estado) return true;
+    return (u.estado || 'Activo') === estado;
+};
+
+const matchEspecialidad = (u: User, esp: string) => {
+    if (!esp) return true;
+    return u.especialidad === esp;
 };
 
 export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
@@ -30,24 +49,45 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
         [usuarios]
     );
 
-    const especialidades = useMemo(
-        () => [...new Set(tecnicos.map(u => u.especialidad).filter(Boolean))] as string[],
-        [tecnicos]
+    const query = search.toLowerCase().trim();
+
+    const matchingForEspecialidad = useMemo(() => {
+        return tecnicos.filter(u => matchSearch(u, query) && matchEstado(u, filterEstado));
+    }, [tecnicos, query, filterEstado]);
+
+    const availableEspecialidades = useMemo(
+        () => [...new Set(matchingForEspecialidad.map(u => u.especialidad).filter(Boolean))] as string[],
+        [matchingForEspecialidad]
     );
 
-    const filtered = useMemo(() => {
-        const query = search.toLowerCase().trim();
-        return tecnicos.filter(u => {
-            const matchSearch = !query ||
-                u.nombre.toLowerCase().includes(query) ||
-                u.apellido.toLowerCase().includes(query) ||
-                u.correo.toLowerCase().includes(query);
-            const matchEstado = !filterEstado || u.estado === filterEstado;
-            const matchEspecialidad = !filterEspecialidad || u.especialidad === filterEspecialidad;
+    const matchingForEstado = useMemo(() => {
+        return tecnicos.filter(u => matchSearch(u, query) && matchEspecialidad(u, filterEspecialidad));
+    }, [tecnicos, query, filterEspecialidad]);
 
-            return matchSearch && matchEstado && matchEspecialidad;
-        });
-    }, [tecnicos, search, filterEstado, filterEspecialidad]);
+    const hasActivo = useMemo(() => matchingForEstado.some(u => (u.estado || 'Activo') === 'Activo'), [matchingForEstado]);
+    const hasInactivo = useMemo(() => matchingForEstado.some(u => u.estado === 'Inactivo'), [matchingForEstado]);
+
+    const filtered = useMemo(() => {
+        return tecnicos.filter(u =>
+            matchSearch(u, query) &&
+            matchEstado(u, filterEstado) &&
+            matchEspecialidad(u, filterEspecialidad)
+        );
+    }, [tecnicos, query, filterEstado, filterEspecialidad]);
+
+    useEffect(() => {
+        if (filterEspecialidad && !availableEspecialidades.includes(filterEspecialidad)) {
+            setFilterEspecialidad('');
+        }
+    }, [availableEspecialidades, filterEspecialidad]);
+
+    useEffect(() => {
+        if (filterEstado === 'Activo' && !hasActivo) {
+            setFilterEstado('');
+        } else if (filterEstado === 'Inactivo' && !hasInactivo) {
+            setFilterEstado('');
+        }
+    }, [filterEstado, hasActivo, hasInactivo]);
 
     const totalTecnicos = tecnicos.length;
     const hasActiveFilters = search !== '' || filterEstado !== '' || filterEspecialidad !== '';
@@ -69,8 +109,8 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                     className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
                 >
                     <option value="">Todos los estados</option>
-                    <option value="Activo">Activo</option>
-                    <option value="Inactivo">Inactivo</option>
+                    {hasActivo && <option value="Activo">Activo</option>}
+                    {hasInactivo && <option value="Inactivo">Inactivo</option>}
                 </select>
 
                 <select
@@ -79,7 +119,7 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                     className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
                 >
                     <option value="">Todas las especialidades</option>
-                    {especialidades.map(e => (
+                    {availableEspecialidades.map(e => (
                         <option key={e} value={e}>{e}</option>
                     ))}
                 </select>
