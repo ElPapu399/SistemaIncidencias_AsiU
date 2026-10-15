@@ -3,6 +3,7 @@ package com.proyecto.incidenciasback.repository;
 import com.proyecto.incidenciasback.model.Incidencia;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -26,4 +27,14 @@ public interface IncidenciaRepository extends JpaRepository<Incidencia, Integer>
     boolean existsByCodigoTicket(String codigoTicket);
 
     long countByTecnicoIdAndEstadoIn(Integer tecnicoId, List<String> estados);
+
+    interface ConteoCategoria {
+        Integer getCategoriaId();
+        long getTotal();
+    }
+
+    @Query("select i.categoria.id as categoriaId, count(i) as total from Incidencia i group by i.categoria.id")
+    List<ConteoCategoria> contarPorCategoria();
+
+    long countByCategoriaId(Integer categoriaId);
 }

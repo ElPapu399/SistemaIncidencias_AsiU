@@ -62,7 +62,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
         roles: ['ESTUDIANTE', ...ALL_TECNICOS],
       },
       { to: '/dashboard/configuracion', label: 'Configuración', icon: faGear, roles: ['ADMIN'] },
-      { to: '/dashboard/perfil', label: 'Perfil', icon: faUser, roles: ['ESTUDIANTE', ...ALL_TECNICOS] },
+      { to: '/dashboard/perfil', label: 'Perfil', icon: faUser, roles: ['ADMIN', 'ESTUDIANTE', ...ALL_TECNICOS] },
     ];
 
     const handleLogout = () => {
@@ -73,7 +73,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
     const visibleNavItems = navItems.filter(item => currentUserRole ? item.roles.includes(currentUserRole) : false);
 
     return (
-      <div className="w-64 bg-blue-900/50 border-r border-slate-800 flex flex-col relative overflow-hidden">
+      <div className="w-64 shrink-0 bg-blue-900/50 border-r border-slate-800 flex flex-col relative overflow-hidden">
         <div className="flex items-center gap-3 px-5 py-5 border-b border-sidebar-border shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-linear-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
@@ -110,24 +110,19 @@ import { NavLink, useNavigate } from 'react-router-dom';
               </NavLink>
             );
           })}
-        </nav>
-
-        <div className="p-5 border-t border-slate-800">
-          <div className="bg-slate-900/60 rounded-xl p-4 text-left">
-            <div className="mb-4">
-              <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Periodo</p>
-              <p className="text-sm text-slate-200 mt-1 font-medium">2026 - Semestre II</p>
-            </div>
-            <div className="p-2 border-t border-sidebar-border shrink-0">
-              <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white bg-red-500/40 hover:bg-red-600 hover:font-bold transition-all">
-                <FontAwesomeIcon icon={faRightFromBracket}/>
-                Cerrar Sesión
-              </button>
+          <button type="button" onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-medium text-slate-400 hover:text-white hover:bg-red-800/20 transition-all duration-200 cursor-pointer">
+            <FontAwesomeIcon icon={faRightFromBracket} className="w-4 h-4"/>
+            Cerrar Sesión
+          </button>
+          <div className="pt-3">
+            <div className="bg-slate-900/80 rounded-xl py-5 text-center flex flex-col gap-0.5">
+              <p className="text-[14px] text-slate-500 uppercase tracking-wider font-semibold leading-none">Periodo</p>
+              <p className="text-[17px] text-slate-200 font-medium">2026 - Semestre II</p>
             </div>
           </div>
-        </div>
-        <div className="absolute bottom-48 left-10 w-90 h-90 bg-blue-300/10 rounded-full pointer-events-none" />
-        <div className="absolute top-24 -left-18 w-62 h-62 bg-blue-300/10 rounded-full pointer-events-none" />
+          <div className="absolute bottom-48 left-10 w-90 h-90 bg-blue-300/10 rounded-full pointer-events-none" />
+          <div className="absolute top-24 -left-18 w-62 h-62 bg-blue-300/10 rounded-full pointer-events-none" />
+        </nav>
       </div>
     );
   }

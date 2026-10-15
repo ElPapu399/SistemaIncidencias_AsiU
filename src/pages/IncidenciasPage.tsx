@@ -230,7 +230,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
 
         {/* Banner reasignaciones */}
         {isSupportOrAdmin && solicitudesPendientes.length > 0 && (
-          <div className="bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-xs">
+          <div className="bg-linear-to-r from-violet-50 to-purple-50 border border-violet-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-xs">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-violet-100 border border-violet-200 flex items-center justify-center text-violet-700 shrink-0">
                 <ArrowRightLeft className="w-5 h-5" />

@@ -5,6 +5,7 @@ import { getCurrentUser } from '../../utils/auth';
 interface HeaderProps {
   title: string;
   subtitle?: string;
+  nombreUsuario?: string;
 }
 
 const ROLE_NAMES: Record<string, string> = {
@@ -15,7 +16,7 @@ const ROLE_NAMES: Record<string, string> = {
   TECNICO_ESPECIALISTA: 'Técnico Especialista',
 };
 
-export default function Header({ title, subtitle }: HeaderProps) {
+export default function Header({ title, subtitle, nombreUsuario }: HeaderProps) {
 
   const usuario = getCurrentUser();
   const currentUserRole = usuario?.rol;
@@ -45,7 +46,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
             <FontAwesomeIcon icon={faUser} className="text-white text-sm" />
           </div>
           <div className="hidden md:block text-left">
-            <p className="text-sm font-semibold text-slate-800">{usuario?.nombre ?? 'Usuario'}</p>
+            <p className="text-sm font-semibold text-slate-800">{nombreUsuario ?? usuario?.nombre ?? 'Usuario'}</p>
             <p className="text-xs text-slate-500">{roleDisplay}</p>
           </div>
         </div>

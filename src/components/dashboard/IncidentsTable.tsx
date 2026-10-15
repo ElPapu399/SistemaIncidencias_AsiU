@@ -201,7 +201,7 @@ export default function IncidentsTable({
     <div className="bg-white border border-slate-300 rounded-2xl overflow-hidden shadow-sm">
       {/* Filter Bar */}
       <div className="px-5 py-4 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center gap-3">
-        <div className="flex-1 min-w-[200px]">
+        <div className="flex-1 min-w-50">
           <SearchBar value={search} onSearch={setSearch} placeholder="Buscar por ID, título, usuario o técnico..." />
         </div>
 
@@ -217,7 +217,7 @@ export default function IncidentsTable({
           {availablePriorities.map((p) => <option key={p} value={p}>{p}</option>)}
         </select>
 
-        <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className={`${selectClass} max-w-[180px] truncate`}>
+        <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className={`${selectClass} max-w-45 truncate`}>
           <option value="all">Todas las Categorías</option>
           {availableCategories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
         </select>
@@ -240,7 +240,7 @@ export default function IncidentsTable({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto overflow-y-auto max-h-[520px]">
+      <div className="overflow-x-auto overflow-y-auto max-h-130">
         <table className="w-full text-left">
           <thead className="sticky top-0 bg-slate-100/70 z-10">
             <tr className="border-b border-slate-200 bg-slate-100/70 text-slate-600 text-xs font-semibold uppercase tracking-wider">
@@ -311,7 +311,7 @@ function AssigneeCell({ incident, isPrivileged }: { incident: Incident; isPrivil
 
   if (isPrivileged && incident.fueReasignada) {
     return (
-      <div className="flex flex-col gap-1 items-start min-w-[150px]">
+      <div className="flex flex-col gap-1 items-start min-w-37.5">
         {incident.tecnicoAnteriorNombre && incident.tecnicoAnteriorNombre !== incident.assignee ? (
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-slate-400 line-through text-[11px] font-medium" title={`Original: ${incident.tecnicoAnteriorNombre}`}>{incident.tecnicoAnteriorNombre}</span>
@@ -324,7 +324,7 @@ function AssigneeCell({ incident, isPrivileged }: { incident: Incident; isPrivil
         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-violet-50 text-violet-700 border border-violet-200 cursor-help"
           title={incident.motivoReasignacion ? `Trazabilidad: ${incident.motivoReasignacion}` : `Reasignado por ${incident.reasignadoPorNombre || 'Soporte'}`}>
           <ArrowRightLeft className="w-2.5 h-2.5 text-violet-600 shrink-0" />
-          <span className="truncate max-w-[160px]">{incident.reasignadoPorNombre ? `Por: ${incident.reasignadoPorNombre}` : 'Reasignado'}</span>
+          <span className="truncate max-w-40">{incident.reasignadoPorNombre ? `Por: ${incident.reasignadoPorNombre}` : 'Reasignado'}</span>
         </span>
       </div>
     );

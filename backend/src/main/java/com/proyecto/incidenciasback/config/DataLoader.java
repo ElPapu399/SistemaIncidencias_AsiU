@@ -58,10 +58,14 @@ public class DataLoader implements CommandLineRunner {
         obtenerOCrearRol("TECNICO_GENERAL");
         obtenerOCrearRol("TECNICO_ESPECIALISTA");
 
-        crearEspecialidadSiNoExiste("Hardware", "Problemas físicos: equipos, periféricos, impresoras");
-        crearEspecialidadSiNoExiste("Redes", "Conectividad, Wi-Fi, switches, puntos de acceso");
-        crearEspecialidadSiNoExiste("Software", "Sistemas operativos, aplicaciones, licencias");
-        crearEspecialidadSiNoExiste("Audiovisual", "Proyectores, pantallas, audio");
+        // Solo inicializar catálogos vacíos: no recrear los nombres que el administrador renombró.
+        boolean inicializarCatalogos = especialidadRepository.count() == 0 && categoriaRepository.count() == 0;
+        if (inicializarCatalogos) {
+            crearEspecialidadSiNoExiste("Hardware", "Problemas físicos: equipos, periféricos, impresoras");
+            crearEspecialidadSiNoExiste("Redes", "Conectividad, Wi-Fi, switches, puntos de acceso");
+            crearEspecialidadSiNoExiste("Software", "Sistemas operativos, aplicaciones, licencias");
+            crearEspecialidadSiNoExiste("Audiovisual", "Proyectores, pantallas, audio");
+        }
 
         crearPrioridadSiNoExiste("Alta", 4, "Afecta a múltiples usuarios o servicios críticos");
         crearPrioridadSiNoExiste("Media", 24, "Afecta a un usuario, tiene solución temporal");
@@ -76,24 +80,26 @@ public class DataLoader implements CommandLineRunner {
         crearUbicacionSiNoExiste("Pabellón D", "Aula 301", 3, "Aula");
         crearUbicacionSiNoExiste("Pabellón D", "Auditorio", 1, "Auditorio");
 
-        crearCategoriaSiNoExiste("Computadora no enciende", "Hardware", "Alta");
-        crearCategoriaSiNoExiste("Problema con teclado o mouse", "Hardware", "Baja");
-        crearCategoriaSiNoExiste("Problema con monitor", "Hardware", "Media");
-        crearCategoriaSiNoExiste("Problema con impresora", "Hardware", "Media");
-        crearCategoriaSiNoExiste("Sin conexión a Internet", "Redes", "Alta");
-        crearCategoriaSiNoExiste("Problema con Wi-Fi", "Redes", "Alta");
-        crearCategoriaSiNoExiste("Problema de conexión de red", "Redes", "Media");
-        crearCategoriaSiNoExiste("Conexión lenta", "Redes", "Baja");
-        crearCategoriaSiNoExiste("Error de aplicación", "Software", "Media");
-        crearCategoriaSiNoExiste("Problema con sistema operativo", "Software", "Alta");
-        crearCategoriaSiNoExiste("Problema de instalación", "Software", "Media");
-        crearCategoriaSiNoExiste("Problema con licencia de software", "Software", "Baja");
-        crearCategoriaSiNoExiste("Proyector sin señal HDMI", "Audiovisual", "Media");
-        crearCategoriaSiNoExiste("Ruido estático en altavoces", "Audiovisual", "Baja");
-        crearCategoriaSiNoExiste("Teclado con teclas bloqueadas", "Hardware", "Baja");
-        crearCategoriaSiNoExiste("Kernel de Python no inicia", "Software", "Media");
-        crearCategoriaSiNoExiste("Cable de red con conector roto", "Redes", "Media");
-        crearCategoriaSiNoExiste("Base de datos local bloqueada", "Software", "Alta");
+        if (inicializarCatalogos) {
+            crearCategoriaSiNoExiste("Computadora no enciende", "Hardware", "Alta");
+            crearCategoriaSiNoExiste("Problema con teclado o mouse", "Hardware", "Baja");
+            crearCategoriaSiNoExiste("Problema con monitor", "Hardware", "Media");
+            crearCategoriaSiNoExiste("Problema con impresora", "Hardware", "Media");
+            crearCategoriaSiNoExiste("Sin conexión a Internet", "Redes", "Alta");
+            crearCategoriaSiNoExiste("Problema con Wi-Fi", "Redes", "Alta");
+            crearCategoriaSiNoExiste("Problema de conexión de red", "Redes", "Media");
+            crearCategoriaSiNoExiste("Conexión lenta", "Redes", "Baja");
+            crearCategoriaSiNoExiste("Error de aplicación", "Software", "Media");
+            crearCategoriaSiNoExiste("Problema con sistema operativo", "Software", "Alta");
+            crearCategoriaSiNoExiste("Problema de instalación", "Software", "Media");
+            crearCategoriaSiNoExiste("Problema con licencia de software", "Software", "Baja");
+            crearCategoriaSiNoExiste("Proyector sin señal HDMI", "Audiovisual", "Media");
+            crearCategoriaSiNoExiste("Ruido estático en altavoces", "Audiovisual", "Baja");
+            crearCategoriaSiNoExiste("Teclado con teclas bloqueadas", "Hardware", "Baja");
+            crearCategoriaSiNoExiste("Kernel de Python no inicia", "Software", "Media");
+            crearCategoriaSiNoExiste("Cable de red con conector roto", "Redes", "Media");
+            crearCategoriaSiNoExiste("Base de datos local bloqueada", "Software", "Alta");
+        }
 
         crearUsuarioSiNoExiste("Ana", "Rodríguez", "admin@universidad.edu.pe", "admin123", "ADMIN", null, "987-000-000", null, "Activo");
 

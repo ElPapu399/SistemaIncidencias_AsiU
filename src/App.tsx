@@ -3,11 +3,15 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import DashboardLayout from './layouts/DashboardLayout';
 
-import PlaceholderPage from './pages/PlaceholderPage';
 import IncidenciasPage from './pages/IncidenciasPage';
 import EstudiantesPage from './pages/EstudiantesPage';
 import TecnicosPage from './pages/TecnicosPage';
 import NuevaIncidenciaPage from './pages/NuevaIncidenciaPage';
+import LaboratoriosPage from './pages/LaboratoriosPage';
+import Configuracion from './pages/Configuracion';
+import Perfil from './pages/Perfil';
+import HistorialPage from './pages/HistorialPage';
+import ReportesPage from './pages/ReportesPage';
 
 function App() {
   return (
@@ -55,7 +59,7 @@ function App() {
         <Route
           path="laboratorios"
           element={
-            <PlaceholderPage
+            <LaboratoriosPage
               title="Laboratorios"
               description="Gestión de los laboratorios de la universidad."
             />
@@ -67,39 +71,24 @@ function App() {
         />
         <Route
           path="reportes"
-          element={
-            <PlaceholderPage
-              title="Reportes"
-              description="Estadísticas y reportes detallados del sistema de incidencias."
-            />
-          }
+          element={<ReportesPage />}
         />
         <Route
           path="configuracion"
-          element={
-            <PlaceholderPage
-              title="Configuración"
-              description="Ajustes del sistema, usuarios, categorías y permisos."
-            />
-          }
+          element={<Configuracion />}
         />
         <Route
           path="historial"
           element={
-            <PlaceholderPage
+            <HistorialPage
               title="Historial"
-              description="Historial de las incidencias según el Rol."
+              description="Consulta las incidencias resueltas o cerradas del campus."
             />
           }
         />
         <Route
           path="perfil"
-          element={
-            <PlaceholderPage
-              title="Perfil"
-              description="Ajustes del perfil del usuario."
-            />
-          }
+          element={<Perfil/>}
         />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -26,13 +26,13 @@ export async function fetchWithAuth(
     headers,
   });
 
-  // Si el backend rechaza las credenciales, limpiar sesión y forzar login
-  if (response.status === 401 || response.status === 403) {
+  // Solo 401 invalida la autenticación. Un 403 no debe borrar una sesión válida.
+  if (response.status === 401) {
     logout();
     if (window.location.pathname !== '/') {
       window.location.href = '/';
     }
-    throw new Error('Sesión expirada o no autorizada. Redirigiendo al login...');
+    throw new Error('Sesión expirada o credenciales inválidas. Redirigiendo al login...');
   }
 
   return response;

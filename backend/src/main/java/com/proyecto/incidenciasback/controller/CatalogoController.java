@@ -10,6 +10,7 @@ import com.proyecto.incidenciasback.repository.EspecialidadRepository;
 import com.proyecto.incidenciasback.repository.PrioridadRepository;
 import com.proyecto.incidenciasback.repository.RolRepository;
 import com.proyecto.incidenciasback.repository.UbicacionRepository;
+import com.proyecto.incidenciasback.service.IncidenciaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,5 +66,10 @@ public class CatalogoController {
     @GetMapping("/prioridades")
     public ResponseEntity<List<Prioridad>> listarPrioridades() {
         return ResponseEntity.ok(prioridadRepository.findAll());
+    }
+
+    @GetMapping("/estados")
+    public List<String> listarEstados() {
+        return IncidenciaService.obtenerEstadosValidos();
     }
 }

@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "test:auth": "node --experimental-vm-modules --test tests/fetchWithAuth.test.mjs",
+    "test:reportes": "node --experimental-strip-types --test tests/reportesMetrics.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -20,6 +20,10 @@ public class IncidenciaService {
     private static final List<String> ESTADOS_VALIDOS =
             List.of("Pendiente", "Asignada", "En atención", "Resuelta", "Cerrada");
 
+    public static List<String> obtenerEstadosValidos() {
+        return ESTADOS_VALIDOS;
+    }
+
     private final IncidenciaRepository incidenciaRepository;
     private final UsuarioRepository usuarioRepository;
     private final CategoriaRepository categoriaRepository;
