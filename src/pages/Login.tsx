@@ -223,235 +223,238 @@ const Login = () => {
         <p className="relative text-blue-200/70 text-xs">© {new Date().getFullYear()} Universidad Tecnológica del Perú · ASIU v1.0</p>
       </div>
 
-      <div className="flex flex-1 items-center justify-center bg-white">
-        <div className="w-full max-w-md">
-          <div className="lg:hidden flex items-center gap-3 mb-8">
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20 mb-4">
-              <FontAwesomeIcon icon={faGraduationCap} className="text-slate-950 text-xl" />
-            </div>
-            <div>
-              <div className="font-extrabold text-xl text-foreground">ASIU</div>
-              <p className="text-xs text-slate-400">
-                Sistema de Incidencias Universitarias
-              </p>
-            </div>
+      <div className="flex flex-1 flex-col lg:items-center lg:justify-center bg-white px-5 lg:px-0 pt-8 pb-8 lg:py-0">
+        <div className="lg:hidden flex items-center gap-3 mb-8">
+          <div className="w-14 h-14 rounded-xl bg-linear-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20 mb-4">
+            <FontAwesomeIcon icon={faGraduationCap} className="text-slate-950 text-xl" />
           </div>
-
-          <div className="mb-8">
-            <div className="text-2xl font-bold text-black">{titles[view].heading}</div>
-            <p className="text-black">{titles[view].subtitle}</p>
+          <div>
+            <div className="font-extrabold text-xl text-foreground">ASIU</div>
+            <p className="text-xs text-slate-400">
+              Sistema de Incidencias Universitarias
+            </p>
           </div>
+        </div>
 
-          <div className="bg-gray-900/70 backdrop-blur-xl border border-slate-700/50 p-9 rounded-3xl w-full relative">
-            {view === 'login' && (
-              <form className="space-y-5" onSubmit={handleSubmit}>
-                <div className="relative w-full">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">
-                    Correo Electrónico
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
-                      <FontAwesomeIcon icon={faUser} />
-                    </span>
-                    <InputBox
-                      name="correo"
-                      type="email"
-                      placeholder="Ingrese su correo"
-                      value={correo}
-                      onChange={(e) => setCorreo(e.target.value)}
+        <div className="flex flex-1 lg:flex-none items-center justify-center w-full">
+          <div className="w-full max-w-md">
+            <div className="mb-8">
+              <div className="text-2xl font-bold text-black">{titles[view].heading}</div>
+              <p className="text-black">{titles[view].subtitle}</p>
+            </div>
+
+            <div className="bg-gray-900/70 backdrop-blur-xl border border-slate-700/50 p-9 rounded-3xl w-full relative">
+              {view === 'login' && (
+                <form className="space-y-5" onSubmit={handleSubmit}>
+                  <div className="relative w-full">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">
+                      Correo Electrónico
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
+                        <FontAwesomeIcon icon={faUser} />
+                      </span>
+                      <InputBox
+                        name="correo"
+                        type="email"
+                        placeholder="Ingrese su correo"
+                        value={correo}
+                        onChange={(e) => setCorreo(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="relative w-full">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">
+                      Contraseña
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
+                        <FontAwesomeIcon icon={faLock} />
+                      </span>
+                      <InputBox
+                        name="password"
+                        type="password"
+                        placeholder="Ingrese contraseña"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end -mt-2">
+                    <button
+                      type="button"
+                      onClick={goToRecuperar}
+                      className="text-sm text-yellow-400 hover:text-yellow-300 font-semibold cursor-pointer"
+                    >
+                      ¿Olvidaste tu contraseña?
+                    </button>
+                  </div>
+
+                  {error && (
+                    <div className="text-red-400 text-sm bg-red-950/40 border border-red-800/50 rounded-xl px-4 py-3">
+                      {error}
+                    </div>
+                  )}
+
+                  {success && (
+                    <div className="text-emerald-300 text-sm bg-emerald-950/40 border border-emerald-800/50 rounded-xl px-4 py-3">
+                      {success}
+                    </div>
+                  )}
+
+                  <div>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      text={loading ? '' : 'Ingresar'}
+                      disabled={loading}
+                      icon={loading ? <FontAwesomeIcon icon={faSpinner} spin /> : undefined}
                     />
                   </div>
-                </div>
-                <div className="relative w-full">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">
-                    Contraseña
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
-                      <FontAwesomeIcon icon={faLock} />
-                    </span>
-                    <InputBox
-                      name="password"
-                      type="password"
-                      placeholder="Ingrese contraseña"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                </form>
+              )}
+
+              {view === 'recuperar' && (
+                <form className="space-y-5" onSubmit={handleRecuperar}>
+                  <div className="relative w-full">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">
+                      Correo institucional
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
+                        <FontAwesomeIcon icon={faEnvelope} />
+                      </span>
+                      <InputBox
+                        name="correo-recuperar"
+                        type="email"
+                        placeholder="Ingrese su correo"
+                        value={correo}
+                        onChange={(e) => setCorreo(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div className="text-red-400 text-sm bg-red-950/40 border border-red-800/50 rounded-xl px-4 py-3">
+                      {error}
+                    </div>
+                  )}
+
+                  <div>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      text={loading ? '' : 'Enviar código'}
+                      disabled={loading}
+                      icon={loading ? <FontAwesomeIcon icon={faSpinner} spin /> : undefined}
                     />
                   </div>
-                </div>
 
-                <div className="flex justify-end -mt-2">
                   <button
                     type="button"
-                    onClick={goToRecuperar}
-                    className="text-sm text-yellow-400 hover:text-yellow-300 font-semibold cursor-pointer"
+                    onClick={goToLogin}
+                    className="w-full text-sm text-slate-300 hover:text-white font-medium cursor-pointer"
                   >
-                    ¿Olvidaste tu contraseña?
+                    Volver al inicio de sesión
                   </button>
-                </div>
+                </form>
+              )}
 
-                {error && (
-                  <div className="text-red-400 text-sm bg-red-950/40 border border-red-800/50 rounded-xl px-4 py-3">
-                    {error}
+              {view === 'restablecer' && (
+                <form className="space-y-5" onSubmit={handleRestablecer}>
+                  <div className="text-blue-200 text-sm bg-blue-950/40 border border-blue-700/50 rounded-xl px-4 py-3">
+                    📧 Revisa tu bandeja de entrada en <span className="font-semibold">{correo}</span> para obtener el código de verificación.
                   </div>
-                )}
 
-                {success && (
-                  <div className="text-emerald-300 text-sm bg-emerald-950/40 border border-emerald-800/50 rounded-xl px-4 py-3">
-                    {success}
+                  <div className="relative w-full">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">
+                      Código de verificación
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
+                        <FontAwesomeIcon icon={faKey} />
+                      </span>
+                      <InputBox
+                        name="codigo"
+                        type="text"
+                        placeholder="Ingrese el código de 6 dígitos"
+                        value={codigo}
+                        onChange={(e) => setCodigo(e.target.value)}
+                      />
+                    </div>
                   </div>
-                )}
 
-                <div>
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    text={loading ? '' : 'Ingresar'}
-                    disabled={loading}
-                    icon={loading ? <FontAwesomeIcon icon={faSpinner} spin /> : undefined}
-                  />
-                </div>
-              </form>
-            )}
+                  <div className="relative w-full">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">
+                      Nueva contraseña
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
+                        <FontAwesomeIcon icon={faLock} />
+                      </span>
+                      <InputBox
+                        name="nueva-password"
+                        type="password"
+                        placeholder="Mínimo 6 caracteres"
+                        value={nuevaPassword}
+                        onChange={(e) => setNuevaPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
 
-            {view === 'recuperar' && (
-              <form className="space-y-5" onSubmit={handleRecuperar}>
-                <div className="relative w-full">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">
-                    Correo institucional
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
-                      <FontAwesomeIcon icon={faEnvelope} />
-                    </span>
-                    <InputBox
-                      name="correo-recuperar"
-                      type="email"
-                      placeholder="Ingrese su correo"
-                      value={correo}
-                      onChange={(e) => setCorreo(e.target.value)}
+                  <div className="relative w-full">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">
+                      Confirmar contraseña
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
+                        <FontAwesomeIcon icon={faLock} />
+                      </span>
+                      <InputBox
+                        name="confirmar-password"
+                        type="password"
+                        placeholder="Repita la nueva contraseña"
+                        value={confirmarPassword}
+                        onChange={(e) => setConfirmarPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div className="text-red-400 text-sm bg-red-950/40 border border-red-800/50 rounded-xl px-4 py-3">
+                      {error}
+                    </div>
+                  )}
+
+                  {success && (
+                    <div className="text-emerald-300 text-sm bg-emerald-950/40 border border-emerald-800/50 rounded-xl px-4 py-3">
+                      {success}
+                    </div>
+                  )}
+
+                  <div>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      text={loading ? '' : 'Restablecer contraseña'}
+                      disabled={loading}
+                      icon={loading ? <FontAwesomeIcon icon={faSpinner} spin /> : undefined}
                     />
                   </div>
-                </div>
 
-                {error && (
-                  <div className="text-red-400 text-sm bg-red-950/40 border border-red-800/50 rounded-xl px-4 py-3">
-                    {error}
-                  </div>
-                )}
-
-                <div>
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    text={loading ? '' : 'Enviar código'}
-                    disabled={loading}
-                    icon={loading ? <FontAwesomeIcon icon={faSpinner} spin /> : undefined}
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={goToLogin}
-                  className="w-full text-sm text-slate-300 hover:text-white font-medium cursor-pointer"
-                >
-                  Volver al inicio de sesión
-                </button>
-              </form>
-            )}
-
-            {view === 'restablecer' && (
-              <form className="space-y-5" onSubmit={handleRestablecer}>
-                <div className="text-blue-200 text-sm bg-blue-950/40 border border-blue-700/50 rounded-xl px-4 py-3">
-                  📧 Revisa tu bandeja de entrada en <span className="font-semibold">{correo}</span> para obtener el código de verificación.
-                </div>
-
-                <div className="relative w-full">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">
-                    Código de verificación
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
-                      <FontAwesomeIcon icon={faKey} />
-                    </span>
-                    <InputBox
-                      name="codigo"
-                      type="text"
-                      placeholder="Ingrese el código de 6 dígitos"
-                      value={codigo}
-                      onChange={(e) => setCodigo(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="relative w-full">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">
-                    Nueva contraseña
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
-                      <FontAwesomeIcon icon={faLock} />
-                    </span>
-                    <InputBox
-                      name="nueva-password"
-                      type="password"
-                      placeholder="Mínimo 6 caracteres"
-                      value={nuevaPassword}
-                      onChange={(e) => setNuevaPassword(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="relative w-full">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">
-                    Confirmar contraseña
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10">
-                      <FontAwesomeIcon icon={faLock} />
-                    </span>
-                    <InputBox
-                      name="confirmar-password"
-                      type="password"
-                      placeholder="Repita la nueva contraseña"
-                      value={confirmarPassword}
-                      onChange={(e) => setConfirmarPassword(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                {error && (
-                  <div className="text-red-400 text-sm bg-red-950/40 border border-red-800/50 rounded-xl px-4 py-3">
-                    {error}
-                  </div>
-                )}
-
-                {success && (
-                  <div className="text-emerald-300 text-sm bg-emerald-950/40 border border-emerald-800/50 rounded-xl px-4 py-3">
-                    {success}
-                  </div>
-                )}
-
-                <div>
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    text={loading ? '' : 'Restablecer contraseña'}
-                    disabled={loading}
-                    icon={loading ? <FontAwesomeIcon icon={faSpinner} spin /> : undefined}
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={goToLogin}
-                  className="w-full text-sm text-slate-300 hover:text-white font-medium cursor-pointer"
-                >
-                  Volver al inicio de sesión
-                </button>
-              </form>
-            )}
+                  <button
+                    type="button"
+                    onClick={goToLogin}
+                    className="w-full text-sm text-slate-300 hover:text-white font-medium cursor-pointer"
+                  >
+                    Volver al inicio de sesión
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
+          
         </div>
       </div>
     </div>

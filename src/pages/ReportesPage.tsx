@@ -74,7 +74,7 @@ export default function ReportesPage() {
           </div>
         ) : (
           <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
             <ReportMetricCard title="Tasa de resolución" value={`${metricas.tasaResolucion}%`} description={`${metricas.resueltas} de ${incidents.length} incidencias resueltas o cerradas`} icon={CheckCircle2} accent="bg-emerald-500" />
             <ReportMetricCard title="Tiempo promedio" value={metricas.tiempoPromedioHoras === null ? '—' : `${decimal.format(metricas.tiempoPromedioHoras)} h`} description={metricas.incidenciasConTiempo > 0 ? 'Desde el registro hasta la resolución o cierre' : 'Sin fechas válidas para calcular el promedio'} icon={Clock3} accent="bg-blue-500" />
             <ReportMetricCard title="Alta prioridad" value={metricas.altaPrioridad} description="Incidencias activas de prioridad alta" icon={TriangleAlert} accent="bg-red-500" />

@@ -19,7 +19,7 @@ export default function ReportMetricCard({ title, value, suffix, description, ic
         <div className="min-w-0">
           <p className="text-2xl font-bold leading-tight text-slate-900">{value}{suffix && <span className="ml-1 text-sm font-normal text-slate-500">{suffix}</span>}</p>
           <h3 className="mt-1 text-sm font-semibold text-slate-700">{title}</h3>
-          <p className="mt-1 text-xs leading-relaxed text-slate-500">{description}</p>
+          <p className="hidden lg:block mt-1 text-xs leading-relaxed text-slate-500">{description}</p>
         </div>
       </div>
     </section>
