@@ -72,4 +72,9 @@ public class IncidenciaController {
                                                                    @Valid @RequestBody CalificacionRequest request) {
         return ResponseEntity.ok(incidenciaService.calificarIncidencia(id, request));
     }
+
+    @GetMapping("/calificaciones-tecnicos")
+    public ResponseEntity<List<TecnicoCalificacionResponse>> obtenerCalificacionesTecnicos() {
+        return ResponseEntity.ok(incidenciaService.obtenerCalificacionesTecnicos());
+    }
 }

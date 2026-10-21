@@ -6,8 +6,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 @Component
 public class DataLoader implements CommandLineRunner {
 
@@ -18,25 +16,16 @@ public class DataLoader implements CommandLineRunner {
     private final UbicacionRepository ubicacionRepository;
     private final CategoriaRepository categoriaRepository;
     private final EquipoRepository equipoRepository;
-    private final IncidenciaRepository incidenciaRepository;
-    private final HistorialEstadoRepository historialEstadoRepository;
-    private final ArchivoAdjuntoRepository archivoAdjuntoRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    @org.springframework.beans.factory.annotation.Value("${app.upload-dir:./uploads}")
-    private String uploadPath;
-
     public DataLoader(UsuarioRepository usuarioRepository,
-                      RolRepository rolRepository,
-                      EspecialidadRepository especialidadRepository,
-                      PrioridadRepository prioridadRepository,
-                      UbicacionRepository ubicacionRepository,
-                      CategoriaRepository categoriaRepository,
-                      EquipoRepository equipoRepository,
-                      IncidenciaRepository incidenciaRepository,
-                      HistorialEstadoRepository historialEstadoRepository,
-                      ArchivoAdjuntoRepository archivoAdjuntoRepository,
-                      BCryptPasswordEncoder passwordEncoder) {
+            RolRepository rolRepository,
+            EspecialidadRepository especialidadRepository,
+            PrioridadRepository prioridadRepository,
+            UbicacionRepository ubicacionRepository,
+            CategoriaRepository categoriaRepository,
+            EquipoRepository equipoRepository,
+            BCryptPasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
         this.especialidadRepository = especialidadRepository;
@@ -44,9 +33,6 @@ public class DataLoader implements CommandLineRunner {
         this.ubicacionRepository = ubicacionRepository;
         this.categoriaRepository = categoriaRepository;
         this.equipoRepository = equipoRepository;
-        this.incidenciaRepository = incidenciaRepository;
-        this.historialEstadoRepository = historialEstadoRepository;
-        this.archivoAdjuntoRepository = archivoAdjuntoRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -58,7 +44,6 @@ public class DataLoader implements CommandLineRunner {
         obtenerOCrearRol("TECNICO_GENERAL");
         obtenerOCrearRol("TECNICO_ESPECIALISTA");
 
-        // Solo inicializar catálogos vacíos: no recrear los nombres que el administrador renombró.
         boolean inicializarCatalogos = especialidadRepository.count() == 0 && categoriaRepository.count() == 0;
         if (inicializarCatalogos) {
             crearEspecialidadSiNoExiste("Hardware", "Problemas físicos: equipos, periféricos, impresoras");
@@ -101,29 +86,45 @@ public class DataLoader implements CommandLineRunner {
             crearCategoriaSiNoExiste("Base de datos local bloqueada", "Software", "Alta");
         }
 
-        crearUsuarioSiNoExiste("Ana", "Rodríguez", "admin@universidad.edu.pe", "admin123", "ADMIN", null, "987-000-000", null, "Activo");
+        crearUsuarioSiNoExiste("Ana", "Rodríguez", "admin@utp.edu.pe", "admin123", "ADMIN", null, "987-000-000", null,
+                "Activo");
 
-        crearUsuarioSiNoExiste("Rosa", "Flores", "r.flores@utp.edu.pe", "tecnico123", "TECNICO_GENERAL", null, "987-666-321", null, "Activo");
-        crearUsuarioSiNoExiste("Jorge", "Herrera", "j.herrera@utp.edu.pe", "tecnico123", "TECNICO_GENERAL", null, "987-777-888", null, "Activo");
+        crearUsuarioSiNoExiste("Rosa", "Flores", "r.flores@utp.edu.pe", "tecnico123", "TECNICO_GENERAL", null,
+                "987-666-321", null, "Activo");
+        crearUsuarioSiNoExiste("Jorge", "Herrera", "j.herrera@utp.edu.pe", "tecnico123", "TECNICO_GENERAL", null,
+                "987-777-888", null, "Activo");
 
-        crearUsuarioSiNoExiste("Carlos", "Mendoza", "c.mendoza@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA", "Hardware", "987-111-222", null, "Activo");
-        crearUsuarioSiNoExiste("Pedro", "Sánchez", "p.sanchez@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA", "Redes", "987-333-789", null, "Activo");
-        crearUsuarioSiNoExiste("Lucía", "Ramos", "l.ramos@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA", "Software", "987-444-100", null, "Activo");
-        crearUsuarioSiNoExiste("Marcos", "Vega", "m.vega@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA", "Audiovisual", "987-555-200", null, "Activo");
+        crearUsuarioSiNoExiste("Carlos", "Mendoza", "c.mendoza@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA",
+                "Hardware", "987-111-222", null, "Activo");
+        crearUsuarioSiNoExiste("Pedro", "Sánchez", "p.sanchez@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA",
+                "Redes", "987-333-789", null, "Activo");
+        crearUsuarioSiNoExiste("Lucía", "Ramos", "l.ramos@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA", "Software",
+                "987-444-100", null, "Activo");
+        crearUsuarioSiNoExiste("Marcos", "Vega", "m.vega@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA",
+                "Audiovisual", "987-555-200", null, "Activo");
 
-        crearUsuarioSiNoExiste("María", "García", "m.garcia@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-654-321", "Ingeniería de Sistemas", "Activo");
-        crearUsuarioSiNoExiste("Luis", "Torres", "l.torres@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-555-123", "Ciencias de la Computación", "Activo");
-        crearUsuarioSiNoExiste("Sofía", "Quispe", "s.quispe@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-444-789", "Ingeniería de Sistemas", "Activo");
-        crearUsuarioSiNoExiste("Diego", "Vargas", "d.vargas@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-222-456", "Ing. de Software", "Activo");
-        crearUsuarioSiNoExiste("Patricia", "Luna", "p.luna@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-777-321", "Ciencias de la Computación", "Activo");
-        crearUsuarioSiNoExiste("Andrés", "Huanca", "a.huanca@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-888-112", "Ing. de Software", "Activo");
-        crearUsuarioSiNoExiste("Camila", "Vásquez", "c.vasquez@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-121-313", "Ingeniería de Sistemas", "Activo");
-        crearUsuarioSiNoExiste("Mateo", "Morales", "m.morales@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-333-214", "Ing. de Software", "Activo");
-        crearUsuarioSiNoExiste("Valeria", "Rojas", "v.rojas@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-441-890", "Ciencias de la Computación", "Activo");
-        crearUsuarioSiNoExiste("Rodrigo", "Castillo", "r.castillo@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-990-112", "Ingeniería de Sistemas", "Activo");
+        crearUsuarioSiNoExiste("María", "García", "m.garcia@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-654-321",
+                "Ingeniería de Sistemas", "Activo");
+        crearUsuarioSiNoExiste("Luis", "Torres", "l.torres@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-555-123",
+                "Ciencias de la Computación", "Activo");
+        crearUsuarioSiNoExiste("Sofía", "Quispe", "s.quispe@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-444-789",
+                "Ingeniería de Sistemas", "Activo");
+        crearUsuarioSiNoExiste("Diego", "Vargas", "d.vargas@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-222-456",
+                "Ing. de Software", "Activo");
+        crearUsuarioSiNoExiste("Patricia", "Luna", "p.luna@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-777-321",
+                "Ciencias de la Computación", "Activo");
+        crearUsuarioSiNoExiste("Andrés", "Huanca", "a.huanca@utp.edu.pe", "alumno123", "ESTUDIANTE", null,
+                "987-888-112", "Ing. de Software", "Activo");
+        crearUsuarioSiNoExiste("Camila", "Vásquez", "c.vasquez@utp.edu.pe", "alumno123", "ESTUDIANTE", null,
+                "987-121-313", "Ingeniería de Sistemas", "Activo");
+        crearUsuarioSiNoExiste("Mateo", "Morales", "m.morales@utp.edu.pe", "alumno123", "ESTUDIANTE", null,
+                "987-333-214", "Ing. de Software", "Activo");
+        crearUsuarioSiNoExiste("Valeria", "Rojas", "v.rojas@utp.edu.pe", "alumno123", "ESTUDIANTE", null, "987-441-890",
+                "Ciencias de la Computación", "Activo");
+        crearUsuarioSiNoExiste("Rodrigo", "Castillo", "r.castillo@utp.edu.pe", "alumno123", "ESTUDIANTE", null,
+                "987-990-112", "Ingeniería de Sistemas", "Activo");
 
         crearEquiposSiVacio();
-        crearIncidenciasSiVacio();
     }
 
     private Rol obtenerOCrearRol(String nombreRol) {
@@ -188,8 +189,8 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void crearUsuarioSiNoExiste(String nombre, String apellido, String correo,
-                                        String password, String nombreRol, String nombreEspecialidad,
-                                        String telefono, String carrera, String estado) {
+            String password, String nombreRol, String nombreEspecialidad,
+            String telefono, String carrera, String estado) {
         var existenteOpt = usuarioRepository.findByCorreo(correo);
         if (existenteOpt.isPresent()) {
             Usuario existente = existenteOpt.get();
@@ -230,16 +231,17 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void crearEquiposSiVacio() {
-        if (equipoRepository.count() > 0) return;
+        if (equipoRepository.count() > 0)
+            return;
 
         var ubicaciones = ubicacionRepository.findAll();
-        if (ubicaciones.isEmpty()) return;
+        if (ubicaciones.isEmpty())
+            return;
 
-        java.util.function.Function<String, Ubicacion> findUbicacion = (aula) ->
-                ubicaciones.stream()
-                        .filter(u -> u.getAulaLaboratorio().equals(aula))
-                        .findFirst()
-                        .orElse(null);
+        java.util.function.Function<String, Ubicacion> findUbicacion = (aula) -> ubicaciones.stream()
+                .filter(u -> u.getAulaLaboratorio().equals(aula))
+                .findFirst()
+                .orElse(null);
 
         crearEquipo("PC-LAB-A-01", "PC", "HP", "ProDesk 400 G7", findUbicacion.apply("Laboratorio A"), "Operativo");
         crearEquipo("PC-LAB-A-02", "PC", "HP", "ProDesk 400 G7", findUbicacion.apply("Laboratorio A"), "Operativo");
@@ -248,25 +250,33 @@ public class DataLoader implements CommandLineRunner {
         crearEquipo("PC-LAB-A-05", "PC", "HP", "ProDesk 400 G7", findUbicacion.apply("Laboratorio A"), "En reparación");
         crearEquipo("PC-LAB-B-01", "PC", "Dell", "OptiPlex 5090", findUbicacion.apply("Laboratorio B"), "Operativo");
         crearEquipo("PC-LAB-B-02", "PC", "Dell", "OptiPlex 5090", findUbicacion.apply("Laboratorio B"), "Operativo");
-        crearEquipo("PC-LAB-C-01", "PC", "Lenovo", "ThinkCentre M70q", findUbicacion.apply("Laboratorio C"), "Operativo");
-        crearEquipo("PC-LAB-C-02", "PC", "Lenovo", "ThinkCentre M70q", findUbicacion.apply("Laboratorio C"), "Operativo");
+        crearEquipo("PC-LAB-C-01", "PC", "Lenovo", "ThinkCentre M70q", findUbicacion.apply("Laboratorio C"),
+                "Operativo");
+        crearEquipo("PC-LAB-C-02", "PC", "Lenovo", "ThinkCentre M70q", findUbicacion.apply("Laboratorio C"),
+                "Operativo");
         crearEquipo("PC-LAB-D-01", "PC", "HP", "ProDesk 400 G7", findUbicacion.apply("Laboratorio D"), "Operativo");
-        crearEquipo("IMP-LAB-A-01", "Impresora", "HP", "LaserJet Pro M404dn", findUbicacion.apply("Laboratorio A"), "Operativo");
-        crearEquipo("PROY-LAB-B-01", "Proyector", "Epson", "PowerLite E20", findUbicacion.apply("Laboratorio B"), "Operativo");
-        crearEquipo("SW-LAB-A-01", "Switch", "Cisco", "Catalyst 2960", findUbicacion.apply("Laboratorio A"), "Operativo");
+        crearEquipo("IMP-LAB-A-01", "Impresora", "HP", "LaserJet Pro M404dn", findUbicacion.apply("Laboratorio A"),
+                "Operativo");
+        crearEquipo("PROY-LAB-B-01", "Proyector", "Epson", "PowerLite E20", findUbicacion.apply("Laboratorio B"),
+                "Operativo");
+        crearEquipo("SW-LAB-A-01", "Switch", "Cisco", "Catalyst 2960", findUbicacion.apply("Laboratorio A"),
+                "Operativo");
         crearEquipo("PC-LAB-E-01", "PC", "HP", "ProDesk 400 G7", findUbicacion.apply("Laboratorio E"), "Operativo");
         crearEquipo("PC-LAB-F-01", "PC", "Dell", "OptiPlex 5090", findUbicacion.apply("Laboratorio F"), "Operativo");
         crearEquipo("MON-LAB-A-05", "Monitor", "Samsung", "S24R350", findUbicacion.apply("Laboratorio A"), "Operativo");
         crearEquipo("TEC-LAB-A-18", "Teclado", "Logitech", "K120", findUbicacion.apply("Laboratorio A"), "Operativo");
-        crearEquipo("PC-LAB-C-04", "PC", "Lenovo", "ThinkCentre M70q", findUbicacion.apply("Laboratorio C"), "Operativo");
+        crearEquipo("PC-LAB-C-04", "PC", "Lenovo", "ThinkCentre M70q", findUbicacion.apply("Laboratorio C"),
+                "Operativo");
         crearEquipo("PC-LAB-B-20", "PC", "Dell", "OptiPlex 5090", findUbicacion.apply("Laboratorio B"), "Operativo");
         crearEquipo("PC-LAB-D-15", "PC", "HP", "ProDesk 400 G7", findUbicacion.apply("Laboratorio D"), "Operativo");
 
         System.out.println("✅ Equipos de ejemplo cargados");
     }
 
-    private void crearEquipo(String codigo, String tipo, String marca, String modelo, Ubicacion ubicacion, String estado) {
-        if (equipoRepository.findByCodigo(codigo).isPresent()) return;
+    private void crearEquipo(String codigo, String tipo, String marca, String modelo, Ubicacion ubicacion,
+            String estado) {
+        if (equipoRepository.findByCodigo(codigo).isPresent())
+            return;
         Equipo e = new Equipo();
         e.setCodigo(codigo);
         e.setTipo(tipo);
@@ -275,238 +285,5 @@ public class DataLoader implements CommandLineRunner {
         e.setUbicacion(ubicacion);
         e.setEstado(estado);
         equipoRepository.save(e);
-    }
-
-    private void crearIncidenciasSiVacio() {
-        if (incidenciaRepository.count() > 0) return;
-
-        var categorias = categoriaRepository.findAll();
-        var prioridades = prioridadRepository.findAll();
-        var ubicaciones = ubicacionRepository.findAll();
-        var equipos = equipoRepository.findAll();
-        java.util.function.Function<String, Categoria> findCat = (nombre) ->
-                categorias.stream().filter(c -> c.getNombre().equals(nombre)).findFirst().orElse(null);
-        java.util.function.Function<String, Prioridad> findPri = (nivel) ->
-                prioridades.stream().filter(p -> p.getNivel().equals(nivel)).findFirst().orElse(null);
-        java.util.function.Function<String, Ubicacion> findUbi = (aula) ->
-                ubicaciones.stream().filter(u -> u.getAulaLaboratorio().equals(aula)).findFirst().orElse(null);
-        java.util.function.Function<String, Equipo> findEq = (codigo) ->
-                equipos.stream().filter(e -> e.getCodigo().equals(codigo)).findFirst().orElse(null);
-
-        Usuario estudiante = usuarioRepository.findByCorreo("m.garcia@utp.edu.pe").orElse(null);
-        Usuario tecHardware = usuarioRepository.findByCorreo("c.mendoza@utp.edu.pe").orElse(null);
-        Usuario tecSoftware = usuarioRepository.findByCorreo("l.ramos@utp.edu.pe").orElse(null);
-        Usuario admin = usuarioRepository.findByCorreo("admin@universidad.edu.pe").orElse(null);
-
-        if (estudiante == null || tecHardware == null) {
-            System.out.println("⚠️ No se crearon incidencias de ejemplo (faltan usuarios)");
-            return;
-        }
-
-        LocalDateTime now = LocalDateTime.now();
-
-        crearIncidencia("INC-001", "Computadora no enciende – Puesto #5",
-                "La computadora en el puesto #5 no responde al intentar encenderla. Se escucha un pitido corto al presionar el botón de encendido.",
-                "En atención", estudiante, tecHardware,
-                findCat.apply("Computadora no enciende"), findPri.apply("Alta"),
-                findUbi.apply("Laboratorio A"), findEq.apply("PC-LAB-A-05"), null,
-                now.minusDays(3), now.minusDays(2), null);
-
-        crearIncidencia("INC-002", "Proyector sin señal HDMI – Lab B",
-                "El proyector del laboratorio B no recibe señal HDMI desde ninguna computadora. Se probó con diferentes cables.",
-                "Pendiente", estudiante, null,
-                findCat.apply("Proyector sin señal HDMI"), findPri.apply("Media"),
-                findUbi.apply("Laboratorio B"), findEq.apply("PROY-LAB-B-01"), null,
-                now.minusDays(2), null, null);
-
-        crearIncidencia("INC-003", "Sin salida a internet local – Puesto #12",
-                "El equipo no tiene acceso a Internet desde el laboratorio. Otros equipos funcionan correctamente.",
-                "Resuelta", estudiante, tecHardware,
-                findCat.apply("Sin conexión a Internet"), findPri.apply("Alta"),
-                findUbi.apply("Laboratorio A"), null,
-                "Se reconfiguró la dirección IP estática y se reinició el punto de acceso.",
-                now.minusDays(5), now.minusDays(4), now.minusDays(3));
-
-        crearIncidencia("INC-004", "Monitor parpadea al compilar – Puesto #02",
-                "El monitor presenta parpadeo intermitente cuando se ejecutan compilaciones pesadas.",
-                "Cerrada", estudiante, tecHardware,
-                findCat.apply("Problema con monitor"), findPri.apply("Baja"),
-                findUbi.apply("Laboratorio D"), findEq.apply("PC-LAB-D-01"),
-                "Se reemplazó el cable HDMI defectuoso y se actualizó el firmware del monitor.",
-                now.minusDays(10), now.minusDays(9), now.minusDays(7));
-
-        crearIncidencia("INC-005", "Error de licencia en IDE IntelliJ – Lab C",
-                "IntelliJ IDEA muestra error de licencia expirada. No se puede activar con la cuenta institucional.",
-                "Asignada", estudiante, tecSoftware,
-                findCat.apply("Problema con licencia de software"), findPri.apply("Media"),
-                findUbi.apply("Laboratorio C"), findEq.apply("PC-LAB-C-01"), null,
-                now.minusDays(1), null, null);
-
-        crearIncidencia("INC-006", "Teclado con teclas bloqueadas – Puesto #18",
-                "Las teclas F1-F5 del teclado no responden. Se limpió con aire comprimido pero no mejoró.",
-                "Cerrada", estudiante, tecHardware,
-                findCat.apply("Teclado con teclas bloqueadas"), findPri.apply("Baja"),
-                findUbi.apply("Laboratorio A"), findEq.apply("TEC-LAB-A-18"),
-                "Se reemplazó el teclado por uno nuevo del inventario.",
-                now.minusDays(8), now.minusDays(7), now.minusDays(6));
-
-        crearIncidencia("INC-007", "Kernel de Python no inicia – Puesto #04",
-                "Jupyter Notebook no puede iniciar el kernel de Python. Muestra error de conexión.",
-                "En atención", estudiante, tecSoftware,
-                findCat.apply("Kernel de Python no inicia"), findPri.apply("Media"),
-                findUbi.apply("Laboratorio F"), findEq.apply("PC-LAB-F-01"), null,
-                now.minusDays(2), now.minusDays(1), null);
-
-        crearIncidencia("INC-008", "Cable de red con conector roto – Puesto #20",
-                "El cable de red del puesto #20 tiene el conector RJ-45 roto. No se puede conectar al switch.",
-                "Asignada", estudiante, tecHardware,
-                findCat.apply("Cable de red con conector roto"), findPri.apply("Media"),
-                findUbi.apply("Laboratorio B"), null, null,
-                now.minusDays(1), null, null);
-
-        crearIncidencia("INC-009", "Base de datos local bloqueada – Puesto #15",
-                "MySQL Workbench no puede conectarse a la instancia local. Muestra error \"too many connections\".",
-                "Pendiente", estudiante, null,
-                findCat.apply("Base de datos local bloqueada"), findPri.apply("Alta"),
-                findUbi.apply("Laboratorio D"), findEq.apply("PC-LAB-D-01"), null,
-                now.minusHours(6), null, null);
-
-        crearIncidencia("INC-010", "Ruido estático en altavoces – Puesto #11",
-                "Los altavoces del aula producen ruido estático constante incluso sin entrada de audio.",
-                "Resuelta", estudiante, tecHardware,
-                findCat.apply("Ruido estático en altavoces"), findPri.apply("Baja"),
-                findUbi.apply("Laboratorio C"), null,
-                "Se reemplazó el cable de audio y se actualizó el driver de sonido.",
-                now.minusDays(6), now.minusDays(5), now.minusDays(4));
-
-        System.out.println("✅ Incidencias de ejemplo cargadas");
-
-        cargarAdjuntosDePrueba(estudiante);
-    }
-
-    private void cargarAdjuntosDePrueba(Usuario estudiante) {
-        if (archivoAdjuntoRepository.count() > 0) return;
-
-        try {
-            java.nio.file.Path baseUploadDir = java.nio.file.Paths.get(uploadPath).toAbsolutePath().normalize();
-
-            incidenciaRepository.findAll().stream()
-                    .filter(i -> "INC-001".equals(i.getCodigoTicket()))
-                    .findFirst()
-                    .ifPresent(inc -> {
-                        String filename = "evidencia_monitor_inc001.svg";
-                        String svgContent = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 600 400\" width=\"600\" height=\"400\">"
-                                + "<rect width=\"600\" height=\"400\" fill=\"#0f172a\" rx=\"12\"/>"
-                                + "<rect x=\"50\" y=\"40\" width=\"500\" height=\"260\" rx=\"8\" fill=\"#1e293b\" stroke=\"#ef4444\" stroke-width=\"3\"/>"
-                                + "<rect x=\"70\" y=\"60\" width=\"460\" height=\"220\" rx=\"4\" fill=\"#090d16\"/>"
-                                + "<path d=\"M260 300 L240 350 L360 350 L340 300 Z\" fill=\"#334155\"/>"
-                                + "<rect x=\"220\" y=\"350\" width=\"160\" height=\"12\" rx=\"4\" fill=\"#475569\"/>"
-                                + "<circle cx=\"300\" cy=\"145\" r=\"32\" fill=\"#ef4444\" opacity=\"0.2\"/>"
-                                + "<text x=\"300\" y=\"155\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#ef4444\" text-anchor=\"middle\">✕</text>"
-                                + "<text x=\"300\" y=\"210\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#f87171\" text-anchor=\"middle\">SIN SEÑAL DE VÍDEO</text>"
-                                + "<text x=\"300\" y=\"235\" font-family=\"sans-serif\" font-size=\"13\" fill=\"#94a3b8\" text-anchor=\"middle\">Monitor Lab A - Puesto #05 (No enciende)</text>"
-                                + "<rect x=\"400\" y=\"50\" width=\"140\" height=\"24\" rx=\"12\" fill=\"#dc2626\"/>"
-                                + "<text x=\"470\" y=\"66\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">EVIDENCIA TICKET</text>"
-                                + "</svg>";
-                        guardarAdjuntoSemilla(inc, estudiante, baseUploadDir, filename, "Falla_Monitor_Puesto05.svg", svgContent);
-                    });
-
-            incidenciaRepository.findAll().stream()
-                    .filter(i -> "INC-006".equals(i.getCodigoTicket()))
-                    .findFirst()
-                    .ifPresent(inc -> {
-                        String filename = "evidencia_teclado_inc006.svg";
-                        String svgContent = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 600 400\" width=\"600\" height=\"400\">"
-                                + "<rect width=\"600\" height=\"400\" fill=\"#0f172a\" rx=\"12\"/>"
-                                + "<rect x=\"60\" y=\"80\" width=\"480\" height=\"220\" rx=\"16\" fill=\"#1e293b\" stroke=\"#f59e0b\" stroke-width=\"3\"/>"
-                                + "<rect x=\"80\" y=\"100\" width=\"440\" height=\"40\" rx=\"6\" fill=\"#334155\"/>"
-                                + "<rect x=\"85\" y=\"105\" width=\"40\" height=\"30\" rx=\"4\" fill=\"#ef4444\"/>"
-                                + "<text x=\"105\" y=\"125\" font-family=\"monospace\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">F1</text>"
-                                + "<rect x=\"130\" y=\"105\" width=\"40\" height=\"30\" rx=\"4\" fill=\"#ef4444\"/>"
-                                + "<text x=\"150\" y=\"125\" font-family=\"monospace\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">F2</text>"
-                                + "<rect x=\"175\" y=\"105\" width=\"40\" height=\"30\" rx=\"4\" fill=\"#ef4444\"/>"
-                                + "<text x=\"195\" y=\"125\" font-family=\"monospace\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">F3</text>"
-                                + "<rect x=\"220\" y=\"105\" width=\"40\" height=\"30\" rx=\"4\" fill=\"#ef4444\"/>"
-                                + "<text x=\"240\" y=\"125\" font-family=\"monospace\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">F4</text>"
-                                + "<rect x=\"265\" y=\"105\" width=\"40\" height=\"30\" rx=\"4\" fill=\"#ef4444\"/>"
-                                + "<text x=\"285\" y=\"125\" font-family=\"monospace\" font-size=\"12\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">F5</text>"
-                                + "<text x=\"300\" y=\"200\" font-family=\"sans-serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#fbbf24\" text-anchor=\"middle\">TECLAS BLOQUEADAS</text>"
-                                + "<text x=\"300\" y=\"230\" font-family=\"sans-serif\" font-size=\"13\" fill=\"#94a3b8\" text-anchor=\"middle\">Teclado Lab A - Puesto #18 (Fila funciones rota)</text>"
-                                + "<rect x=\"400\" y=\"90\" width=\"130\" height=\"24\" rx=\"12\" fill=\"#d97706\"/>"
-                                + "<text x=\"465\" y=\"106\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">EVIDENCIA TÉCNICA</text>"
-                                + "</svg>";
-                        guardarAdjuntoSemilla(inc, estudiante, baseUploadDir, filename, "Teclas_Danadas_Puesto18.svg", svgContent);
-                    });
-
-            incidenciaRepository.findAll().stream()
-                    .filter(i -> "INC-008".equals(i.getCodigoTicket()))
-                    .findFirst()
-                    .ifPresent(inc -> {
-                        String filename = "evidencia_cable_inc008.svg";
-                        String svgContent = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 600 400\" width=\"600\" height=\"400\">"
-                                + "<rect width=\"600\" height=\"400\" fill=\"#0f172a\" rx=\"12\"/>"
-                                + "<circle cx=\"300\" cy=\"150\" r=\"60\" fill=\"#3b82f6\" opacity=\"0.15\" stroke=\"#3b82f6\" stroke-width=\"2\"/>"
-                                + "<path d=\"M270 180 L330 120\" stroke=\"#ef4444\" stroke-width=\"6\" stroke-linecap=\"round\"/>"
-                                + "<circle cx=\"300\" cy=\"150\" r=\"30\" fill=\"none\" stroke=\"#ef4444\" stroke-width=\"4\"/>"
-                                + "<text x=\"300\" y=\"245\" font-family=\"sans-serif\" font-size=\"20\" font-weight=\"bold\" fill=\"#60a5fa\" text-anchor=\"middle\">CONECTOR RJ-45 ROTO</text>"
-                                + "<text x=\"300\" y=\"275\" font-family=\"sans-serif\" font-size=\"13\" fill=\"#94a3b8\" text-anchor=\"middle\">Cable UTP Cat 6 - Lab B Puesto #20</text>"
-                                + "<rect x=\"410\" y=\"30\" width=\"150\" height=\"26\" rx=\"13\" fill=\"#2563eb\"/>"
-                                + "<text x=\"485\" y=\"47\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">FOTO EVIDENCIA</text>"
-                                + "</svg>";
-                        guardarAdjuntoSemilla(inc, estudiante, baseUploadDir, filename, "Cable_RJ45_Roto.svg", svgContent);
-                    });
-
-            System.out.println("✅ Archivos adjuntos de ejemplo cargados");
-        } catch (Exception e) {
-            System.err.println("⚠️ No se pudieron crear los adjuntos de ejemplo: " + e.getMessage());
-        }
-    }
-
-    private void guardarAdjuntoSemilla(Incidencia inc, Usuario estudiante, java.nio.file.Path baseDir,
-                                       String filename, String nombreOriginal, String content) {
-        try {
-            java.nio.file.Path incDir = baseDir.resolve("incidencias").resolve(String.valueOf(inc.getId()));
-            java.nio.file.Files.createDirectories(incDir);
-            java.nio.file.Path targetFile = incDir.resolve(filename);
-            java.nio.file.Files.writeString(targetFile, content, java.nio.charset.StandardCharsets.UTF_8);
-
-            ArchivoAdjunto adjunto = new ArchivoAdjunto();
-            adjunto.setIncidencia(inc);
-            adjunto.setUrlArchivo("/api/adjuntos/" + inc.getId() + "/" + filename);
-            adjunto.setNombreOriginal(nombreOriginal);
-            adjunto.setTipoArchivo("image/svg+xml");
-            adjunto.setTamanioByte((long) content.getBytes(java.nio.charset.StandardCharsets.UTF_8).length);
-            adjunto.setSubidoPor(estudiante);
-            adjunto.setFechaSubida(LocalDateTime.now().minusDays(1));
-            archivoAdjuntoRepository.save(adjunto);
-        } catch (Exception e) {
-            System.err.println("Error al guardar archivo semilla: " + e.getMessage());
-        }
-    }
-
-    private void crearIncidencia(String codigoTicket, String titulo, String descripcion,
-                                  String estado, Usuario estudiante, Usuario tecnico,
-                                  Categoria categoria, Prioridad prioridad,
-                                  Ubicacion ubicacion, Equipo equipo, String solucionTecnica,
-                                  LocalDateTime fechaCreacion, LocalDateTime fechaInicio, LocalDateTime fechaCierre) {
-        if (incidenciaRepository.existsByCodigoTicket(codigoTicket)) return;
-        if (categoria == null || prioridad == null || ubicacion == null) return;
-
-        Incidencia inc = new Incidencia();
-        inc.setCodigoTicket(codigoTicket);
-        inc.setTitulo(titulo);
-        inc.setDescripcion(descripcion);
-        inc.setEstado(estado);
-        inc.setEstudiante(estudiante);
-        inc.setTecnico(tecnico);
-        inc.setCategoria(categoria);
-        inc.setPrioridad(prioridad);
-        inc.setUbicacion(ubicacion);
-        inc.setEquipo(equipo);
-        inc.setSolucionTecnica(solucionTecnica);
-        inc.setFechaCreacion(fechaCreacion);
-        inc.setFechaInicioAtencion(fechaInicio);
-        inc.setFechaCierre(fechaCierre);
-        incidenciaRepository.save(inc);
     }
 }

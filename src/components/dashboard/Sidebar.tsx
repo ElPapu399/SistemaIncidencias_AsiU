@@ -14,6 +14,7 @@ import {
   faDesktop,
   faClockRotateLeft,
   faRightFromBracket,
+  faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { getCurrentUser, logout } from "../../utils/auth";
 
@@ -84,6 +85,12 @@ export default function Sidebar({ onClose }: SidebarProps) {
       label: "Reportes",
       icon: faChartBar,
       roles: ["ADMIN"],
+    },
+    {
+      to: "/dashboard/calificaciones-tecnicos",
+      label: "Calificaciones",
+      icon: faStar,
+      roles: ["ADMIN", "TECNICO_GENERAL"],
     },
     {
       to: "/dashboard/historial",

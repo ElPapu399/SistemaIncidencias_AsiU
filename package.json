@@ -9,10 +9,13 @@
     "lint": "eslint .",
     "test:auth": "node --experimental-vm-modules --test tests/fetchWithAuth.test.mjs",
     "test:reportes": "node --experimental-strip-types --test tests/reportesMetrics.test.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "db:export": "docker exec incidencias_db mysqldump -u root -proot campus_incidencias_db > database/init.sql",
+    "db:sync": "docker compose down -v && docker compose up -d"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.3.1",
+    "@fortawesome/free-regular-svg-icons": "^7.3.1",
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
     "@fortawesome/react-fontawesome": "^3.5.0",
     "@tailwindcss/vite": "^4.3.3",

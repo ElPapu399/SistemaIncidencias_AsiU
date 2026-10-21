@@ -37,4 +37,7 @@ public interface IncidenciaRepository extends JpaRepository<Incidencia, Integer>
     List<ConteoCategoria> contarPorCategoria();
 
     long countByCategoriaId(Integer categoriaId);
+
+    @EntityGraph(attributePaths = {"estudiante", "tecnico", "categoria", "categoria.especialidad", "prioridad", "ubicacion", "equipo"})
+    List<Incidencia> findByCalificacionIsNotNullAndTecnicoIsNotNull();
 }

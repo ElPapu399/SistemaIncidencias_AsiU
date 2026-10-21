@@ -26,7 +26,7 @@ import Button from '../components/Button';
 
 const CLOSED_STATUSES = ['Resuelta', 'Resuelto', 'Cerrada', 'Cancelado'];
 
-type ModalKey = 'form' | 'detail' | 'traceability' | 'assign' | 'status' | 'reassign' | 'manageReassign' | 'rate' | null;
+type ModalKey = 'form' | 'detail' | 'traceability' | 'assign' | 'status' | 'reassign' | 'manageReassign' | 'rate' | 'selfAssign' | null;
 
 interface IncidenciasPageProps {
   title?: string;
@@ -40,6 +40,8 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
+  const [errorToast, setErrorToast] = useState<string | null>(null);
+  const [selfAssigning, setSelfAssigning] = useState(false);
 
   const [tecnicoFilter, setTecnicoFilter] = useState<'all' | 'mine' | 'available'>(
     soloMisIncidencias ? 'mine' : 'all'
@@ -154,18 +156,29 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
     return incidents;
   }, [incidents, soloMisIncidencias, isTecnicoEspecialista, tecnicoFilter, isAssignedToMe, isAvailable]);
 
-  const handleSelfAssign = useCallback(async (incident: Incident) => {
+  const handleSelfAssign = useCallback((incident: Incident) => {
     if (!incident.numericId || !usuario?.id) return;
-    if (!window.confirm(`¿Deseas autoasignarte la incidencia "${incident.id} - ${incident.title}"?`)) return;
+    setSelectedIncident(incident);
+    setActiveModal('selfAssign');
+  }, [usuario?.id]);
+
+  const confirmSelfAssign = useCallback(async () => {
+    if (!selectedIncident?.numericId || !usuario?.id) return;
+    setSelfAssigning(true);
     try {
-      await asignarTecnico(incident.numericId, usuario.id);
-      setSuccessToast(`¡Te has autoasignado la incidencia ${incident.id} correctamente!`);
+      await asignarTecnico(selectedIncident.numericId, usuario.id);
+      setSuccessToast(`¡Te has autoasignado la incidencia ${selectedIncident.id} correctamente!`);
       setTimeout(() => setSuccessToast(null), 4000);
+      closeModal();
       recargar();
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : 'Error al autoasignarse la incidencia');
+      setErrorToast(err instanceof Error ? err.message : 'Error al autoasignarse la incidencia');
+      setTimeout(() => setErrorToast(null), 5000);
+      closeModal();
+    } finally {
+      setSelfAssigning(false);
     }
-  }, [usuario?.id, recargar]);
+  }, [selectedIncident, usuario?.id, recargar, closeModal]);
 
   const pageTitle = isEstudiante ? 'Mis Incidencias'
     : soloMisIncidencias ? 'Mis Incidencias Asignadas'
@@ -320,6 +333,63 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
       <RequestReassignModal isOpen={activeModal === 'reassign'} incident={selectedIncident} onClose={closeModal} onRequested={recargar} />
       <ManageReassignmentsModal isOpen={activeModal === 'manageReassign'} onClose={closeModal} onProcessed={recargar} />
       <RateIncidentModal isOpen={activeModal === 'rate'} incident={selectedIncident} onClose={closeModal} onRated={recargar} />
+
+      {/* Self-assign confirmation modal */}
+      {activeModal === 'selfAssign' && selectedIncident && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={closeModal} />
+          <div className="relative bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md z-10 overflow-hidden">
+            <div className="px-6 py-5 border-b border-slate-200 bg-gradient-to-r from-emerald-50 to-teal-50">
+              <h3 className="text-base font-bold text-slate-900">Autoasignar incidencia</h3>
+              <p className="text-xs text-slate-500 mt-0.5">Confirma que deseas tomar esta incidencia</p>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="bg-slate-50 border border-slate-200/70 rounded-xl p-3">
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Incidencia</p>
+                <p className="text-sm text-slate-800 font-medium mt-0.5">
+                  <span className="font-mono text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-lg border border-emerald-200 mr-2">{selectedIncident.id}</span>
+                  {selectedIncident.title}
+                </p>
+              </div>
+              <p className="text-sm text-slate-600">
+                Al autoasignarte, esta incidencia quedará bajo tu responsabilidad y pasará a estado <span className="font-semibold text-slate-800">"Asignada"</span>.
+              </p>
+            </div>
+            <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={closeModal}
+                disabled={selfAssigning}
+                className="px-4 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={confirmSelfAssign}
+                disabled={selfAssigning}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-300 text-white transition-all shadow-sm cursor-pointer disabled:cursor-not-allowed"
+              >
+                {selfAssigning ? (
+                  <FontAwesomeIcon icon={faSpinner} spin className="text-xs" />
+                ) : (
+                  <FontAwesomeIcon icon={faCheck} className="text-xs" />
+                )}
+                <span>{selfAssigning ? 'Asignando...' : 'Sí, tomar incidencia'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error toast */}
+      {errorToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-red-600 text-white px-5 py-3 rounded-xl shadow-xl text-sm font-medium flex items-center gap-2 animate-[slideUp_0.3s_ease-out]">
+          <span>⚠️</span>
+          <span>{errorToast}</span>
+          <button type="button" onClick={() => setErrorToast(null)} className="ml-2 text-white/70 hover:text-white cursor-pointer">✕</button>
+        </div>
+      )}
     </>
   );
 }

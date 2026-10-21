@@ -12,6 +12,7 @@ import Configuracion from './pages/Configuracion';
 import Perfil from './pages/Perfil';
 import HistorialPage from './pages/HistorialPage';
 import ReportesPage from './pages/ReportesPage';
+import CalificacionesTecnicosPage from './pages/CalificacionesTecnicosPage';
 
 function App() {
   return (
@@ -83,6 +84,15 @@ function App() {
             <HistorialPage
               title="Historial"
               description="Consulta las incidencias resueltas o cerradas del campus."
+            />
+          }
+        />
+        <Route
+          path="calificaciones-tecnicos"
+          element={
+            <CalificacionesTecnicosPage
+              title="Calificaciones de Técnicos"
+              description="Consulta el desempeño y los comentarios de los técnicos de soporte."
             />
           }
         />

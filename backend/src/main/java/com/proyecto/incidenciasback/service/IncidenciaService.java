@@ -524,4 +524,45 @@ public class IncidenciaService {
                 a.getFechaSubida()
         );
     }
+
+    public List<TecnicoCalificacionResponse> obtenerCalificacionesTecnicos() {
+        List<Incidencia> calificadas = incidenciaRepository.findByCalificacionIsNotNullAndTecnicoIsNotNull();
+
+        Map<Integer, List<Incidencia>> porTecnico = calificadas.stream()
+                .collect(Collectors.groupingBy(i -> i.getTecnico().getId()));
+
+        return porTecnico.entrySet().stream().map(entry -> {
+            List<Incidencia> incidencias = entry.getValue();
+            Usuario tecnico = incidencias.get(0).getTecnico();
+
+            double promedio = incidencias.stream()
+                    .mapToInt(Incidencia::getCalificacion)
+                    .average()
+                    .orElse(0.0);
+
+            List<TecnicoCalificacionResponse.ComentarioCalificacion> comentarios = incidencias.stream()
+                    .map(i -> new TecnicoCalificacionResponse.ComentarioCalificacion(
+                            i.getId(),
+                            i.getCodigoTicket(),
+                            i.getTitulo(),
+                            i.getCalificacion(),
+                            i.getMotivoCalificacion(),
+                            i.getComentarioCalificacion(),
+                            i.getEstudiante().getNombre() + " " + i.getEstudiante().getApellido(),
+                            i.getFechaCierre()
+                    ))
+                    .collect(Collectors.toList());
+
+            return new TecnicoCalificacionResponse(
+                    tecnico.getId(),
+                    tecnico.getNombre(),
+                    tecnico.getApellido(),
+                    tecnico.getEspecialidad() != null ? tecnico.getEspecialidad().getNombre() : null,
+                    Math.round(promedio * 10.0) / 10.0,
+                    incidencias.size(),
+                    comentarios
+            );
+        }).collect(Collectors.toList());
+    }
 }
+

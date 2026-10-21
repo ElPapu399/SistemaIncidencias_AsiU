@@ -303,3 +303,30 @@ export async function responderSolicitud(
 
   return response.json();
 }
+
+export interface ComentarioCalificacion {
+  incidenciaId: number;
+  codigoTicket: string;
+  tituloIncidencia: string;
+  calificacion: number;
+  motivo: string | null;
+  comentario: string | null;
+  estudianteNombre: string;
+  fechaCierre: string | null;
+}
+
+export interface TecnicoCalificacion {
+  tecnicoId: number;
+  tecnicoNombre: string;
+  tecnicoApellido: string;
+  especialidad: string | null;
+  promedioCalificacion: number;
+  totalCalificaciones: number;
+  comentarios: ComentarioCalificacion[];
+}
+
+export async function obtenerCalificacionesTecnicos(): Promise<TecnicoCalificacion[]> {
+  const response = await fetchWithAuth('/incidencias/calificaciones-tecnicos');
+  if (!response.ok) throw new Error('Error al obtener calificaciones de técnicos');
+  return response.json();
+}
