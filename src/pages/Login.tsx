@@ -185,12 +185,12 @@ const Login = () => {
   return (
     <div className="flex min-h-screen">
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative bg-blue-700 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/70 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-br from-blue-900/70 to-transparent" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-300/20 rounded-full" />
         <div className="absolute top-24 -left-20 w-64 h-64 bg-blue-500/20 rounded-full" />
         <div className="relative">
           <div className="flex items-center gap-3 mb-16">
-            <div className="w-15 h-15 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20 mb-4">
+            <div className="w-15 h-15 rounded-xl bg-linear-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20 mb-4">
               <FontAwesomeIcon icon={faGraduationCap} className="text-slate-950 text-2xl" />
             </div>
             <div>
