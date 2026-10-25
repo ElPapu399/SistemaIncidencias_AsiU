@@ -21,8 +21,6 @@ RUN mkdir -p /app/uploads
 # Copiar el JAR construido
 COPY --from=build /app/target/*.jar app.jar
 
-# Railway inyecta PORT como variable de entorno
-ENV SERVER_PORT=8080
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
