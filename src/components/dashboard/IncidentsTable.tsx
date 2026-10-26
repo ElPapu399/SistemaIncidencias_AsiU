@@ -2,8 +2,16 @@ import { useState, useMemo, useEffect } from 'react';
 import type { Incident } from '../../types/incident';
 import { StatusBadge, PriorityBadge, CategoryLabel, formatDate } from './IncidentBadges';
 import SearchBar from '../dashboard/SearchBar';
+import SortableHeader from '../common/SortableHeader';
 import { UserCheck, Eye, RefreshCw, ArrowRightLeft, UserPlus, History, Star } from 'lucide-react';
 import { getCurrentUser, type UsuarioSession } from '../../utils/auth';
+import {
+  type SortDirection,
+  comparePriorities,
+  compareDates,
+  compareStrings,
+  getNextDirection,
+} from '../../utils/tableSorting';
 
 const CLOSED_STATUSES = ['Resuelta', 'Resuelto', 'Cerrada', 'Cancelado'];
 
@@ -195,7 +203,37 @@ export default function IncidentsTable({
     setSearch(''); setFilterStatus('all'); setFilterPriority('all'); setFilterCategory('all'); setFilterReassignedOnly(false);
   };
 
-  const headers = ['Ticket', 'Título & Ubicación', 'Categoría', 'Prioridad', 'Estado', 'Asignado', 'Fecha'];
+  const [sortField, setSortField] = useState<string>('createdAt');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+
+  const handleSort = (field: string) => {
+    const defaultDir: SortDirection = field === 'createdAt' || field === 'priority' ? 'desc' : 'asc';
+    setSortDirection((prevDir) => getNextDirection(sortField, field, prevDir, defaultDir));
+    setSortField(field);
+  };
+
+  const sorted = useMemo(() => {
+    return [...filtered].sort((a, b) => {
+      switch (sortField) {
+        case 'id':
+          return compareStrings(a.id, b.id, sortDirection);
+        case 'title':
+          return compareStrings(a.title, b.title, sortDirection);
+        case 'category':
+          return compareStrings(a.category, b.category, sortDirection);
+        case 'priority':
+          return comparePriorities(a.priority, b.priority, sortDirection);
+        case 'status':
+          return compareStrings(a.status, b.status, sortDirection);
+        case 'assignee':
+          return compareStrings(a.assignee, b.assignee, sortDirection);
+        case 'createdAt':
+          return compareDates(a.createdAt, b.createdAt, sortDirection);
+        default:
+          return 0;
+      }
+    });
+  }, [filtered, sortField, sortDirection]);
 
   return (
     <div className="bg-white border border-slate-300 rounded-2xl overflow-hidden shadow-sm">
@@ -242,16 +280,22 @@ export default function IncidentsTable({
       {/* Table */}
       <div className="overflow-x-auto overflow-y-auto max-h-130">
         <table className="w-full text-left">
-          <thead className="sticky top-0 bg-slate-100/70 z-10">
-            <tr className="border-b border-slate-200 bg-slate-100/70 text-slate-600 text-xs font-semibold uppercase tracking-wider">
-              {headers.map((h) => <th key={h} className="px-5 py-3.5">{h}</th>)}
-              <th className="px-5 py-3.5 text-center">Acciones</th>
+          <thead className="sticky top-0 bg-slate-100/95 backdrop-blur-sm z-10">
+            <tr className="border-b border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider">
+              <SortableHeader label="Ticket" field="id" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-3.5" activeColorClass="text-amber-600" />
+              <SortableHeader label="Título & Ubicación" field="title" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-3.5" activeColorClass="text-amber-600" />
+              <SortableHeader label="Categoría" field="category" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-3.5" activeColorClass="text-amber-600" />
+              <SortableHeader label="Prioridad" field="priority" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-3.5" activeColorClass="text-amber-600" />
+              <SortableHeader label="Estado" field="status" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-3.5" activeColorClass="text-amber-600" />
+              <SortableHeader label="Asignado" field="assignee" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-3.5" activeColorClass="text-amber-600" />
+              <SortableHeader label="Fecha" field="createdAt" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-3.5" activeColorClass="text-amber-600" />
+              <th className="px-5 py-3.5 text-center font-semibold text-xs uppercase tracking-wider text-slate-600">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-xs">
-            {filtered.length === 0 ? (
+            {sorted.length === 0 ? (
               <tr><td colSpan={8} className="px-6 py-12 text-center text-slate-500">No se encontraron incidencias que coincidan con los filtros.</td></tr>
-            ) : filtered.map((incident) => {
+            ) : sorted.map((incident) => {
               const isPendingReassign = pendingIncidentIds?.has(incident.numericId || 0);
               return (
                 <tr key={incident.id} className="hover:bg-slate-50/80 transition-colors">
@@ -300,7 +344,7 @@ export default function IncidentsTable({
       </div>
 
       <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
-        <span>Mostrando {filtered.length} de {incidents.length} incidencias</span>
+        <span>Mostrando {sorted.length} de {incidents.length} incidencias</span>
       </div>
     </div>
   );

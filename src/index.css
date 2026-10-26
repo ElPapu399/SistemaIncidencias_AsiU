@@ -78,3 +78,51 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* ── Guided Tour Arrows ── */
+.tour-arrow-top::before,
+.tour-arrow-bottom::after,
+.tour-arrow-left::before,
+.tour-arrow-right::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  transform: rotate(45deg);
+}
+.tour-arrow-top::before {
+  top: -7px;
+  left: 50%;
+  margin-left: -6px;
+  border-right: none;
+  border-bottom: none;
+}
+.tour-arrow-bottom::after {
+  bottom: -7px;
+  left: 50%;
+  margin-left: -6px;
+  border-left: none;
+  border-top: none;
+}
+.tour-arrow-left::before {
+  left: -7px;
+  top: 50%;
+  margin-top: -6px;
+  border-top: none;
+  border-right: none;
+}
+.tour-arrow-right::after {
+  right: -7px;
+  top: 50%;
+  margin-top: -6px;
+  border-bottom: none;
+  border-left: none;
+}
+
+@keyframes tour-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); }
+}
+

@@ -21,7 +21,7 @@ const ROLE_NAMES: Record<string, string> = {
 
 export default function Header({ title, subtitle, nombreUsuario }: HeaderProps) {
 
-  const {menuAbierto, abrirMenu} = useOutletContext<MenuContext>();
+  const { menuAbierto, abrirMenu } = useOutletContext<MenuContext>();
   const usuario = getCurrentUser();
   const currentUserRole = usuario?.rol;
   const roleDisplay = currentUserRole
@@ -39,7 +39,7 @@ export default function Header({ title, subtitle, nombreUsuario }: HeaderProps) 
           aria-controls="sidebar"
           className="shrink-0 rounded-lg p-2 text-slate-700 hover:bg-slate-100 md:hidden"
         >
-          <Menu className="h-6 w-6" aria-hidden="true"/>
+          <Menu className="h-6 w-6" aria-hidden="true" />
         </button>
 
         <div className="min-w-0 text-left">
@@ -64,7 +64,7 @@ export default function Header({ title, subtitle, nombreUsuario }: HeaderProps) 
           <FontAwesomeIcon icon={faBell} />
         </button>
 
-        <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
+        <div data-tour="header-user-info" className="flex items-center gap-3 pl-4 border-l border-slate-200">
           <div className="w-9 h-9 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-sm">
             <FontAwesomeIcon icon={faUser} className="text-white text-sm" />
           </div>

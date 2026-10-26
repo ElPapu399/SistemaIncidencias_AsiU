@@ -2,6 +2,12 @@ import { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import SearchBar from "./dashboard/SearchBar";
+import SortableHeader from './common/SortableHeader';
+import {
+  type SortDirection,
+  compareStrings,
+  getNextDirection,
+} from '../utils/tableSorting';
 import type { User } from '../types/user';
 
 interface TechnTableProps {
@@ -92,6 +98,33 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
     const totalTecnicos = tecnicos.length;
     const hasActiveFilters = search !== '' || filterEstado !== '' || filterEspecialidad !== '';
 
+    const [sortField, setSortField] = useState<string>('nombre');
+    const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+
+    const handleSort = (field: string) => {
+        setSortDirection((prevDir) => getNextDirection(sortField, field, prevDir, 'asc'));
+        setSortField(field);
+    };
+
+    const sortedTecnicos = useMemo(() => {
+        return [...filtered].sort((a, b) => {
+            switch (sortField) {
+                case 'nombre':
+                    return compareStrings(`${a.nombre} ${a.apellido}`, `${b.nombre} ${b.apellido}`, sortDirection);
+                case 'correo':
+                    return compareStrings(a.correo, b.correo, sortDirection);
+                case 'especialidad':
+                    return compareStrings(a.especialidad, b.especialidad, sortDirection);
+                case 'estado':
+                    return compareStrings(a.estado, b.estado, sortDirection);
+                case 'telefono':
+                    return compareStrings(a.telefono, b.telefono, sortDirection);
+                default:
+                    return 0;
+            }
+        });
+    }, [filtered, sortField, sortDirection]);
+
     return (
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
             <div className="px-5 py-4 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center gap-3">
@@ -139,23 +172,23 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                 <table className="w-full text-left">
                     <thead className="sticky top-0 bg-slate-50 z-10">
                         <tr className="border-b border-slate-200 bg-slate-50">
-                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Usuario</th>
-                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Correo</th>
-                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Especialidad</th>
-                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Estado</th>
-                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Teléfono</th>
-                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">Acciones</th>
+                            <SortableHeader label="Usuario" field="nombre" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
+                            <SortableHeader label="Correo" field="correo" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
+                            <SortableHeader label="Especialidad" field="especialidad" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
+                            <SortableHeader label="Estado" field="estado" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
+                            <SortableHeader label="Teléfono" field="telefono" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
+                            <th scope="col" className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {filtered.length === 0 ? (
+                        {sortedTecnicos.length === 0 ? (
                             <tr>
                                 <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-500">
                                     No se encontraron técnicos con los filtros seleccionados.
                                 </td>
                             </tr>
                         ) : (
-                            filtered.map(user => {
+                            sortedTecnicos.map(user => {
                                 const badge = ESTADO_BADGES[user.estado] || { bg: 'bg-slate-100 text-slate-500 border-slate-300', dot: 'bg-slate-400' };
                                 return (
                                     <tr key={user.id} className="hover:bg-slate-50 transition-colors">
@@ -216,7 +249,7 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                 </table>
             </div>
             <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
-                <span>Mostrando {filtered.length} de {totalTecnicos} técnicos</span>
+                <span>Mostrando {sortedTecnicos.length} de {totalTecnicos} técnicos</span>
             </div>
         </div>
     );

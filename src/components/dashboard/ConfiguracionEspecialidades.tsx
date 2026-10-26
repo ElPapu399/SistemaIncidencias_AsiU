@@ -1,8 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Pencil, Plus } from 'lucide-react';
 import { guardarEspecialidad, obtenerEspecialidades } from '../../services/configuracionService';
 import type { EspecialidadCatalogo, EspecialidadFormulario } from '../../services/configuracionService';
 import EspecialidadForm from './EspecialidadForm';
+import SortableHeader from '../common/SortableHeader';
+import {
+  type SortDirection,
+  compareStrings,
+  getNextDirection,
+} from '../../utils/tableSorting';
 
 export default function ConfiguracionEspecialidades() {
   const [especialidades, setEspecialidades] = useState<EspecialidadCatalogo[]>([]);
@@ -12,6 +18,27 @@ export default function ConfiguracionEspecialidades() {
   const [intento, setIntento] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
   const [seleccionada, setSeleccionada] = useState<EspecialidadCatalogo | null>(null);
+
+  const [sortField, setSortField] = useState<string>('nombre');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+
+  const handleSort = (field: string) => {
+    setSortDirection((prevDir) => getNextDirection(sortField, field, prevDir, 'asc'));
+    setSortField(field);
+  };
+
+  const sortedEspecialidades = useMemo(() => {
+    return [...especialidades].sort((a, b) => {
+      switch (sortField) {
+        case 'nombre':
+          return compareStrings(a.nombre, b.nombre, sortDirection);
+        case 'descripcion':
+          return compareStrings(a.descripcion, b.descripcion, sortDirection);
+        default:
+          return 0;
+      }
+    });
+  }, [especialidades, sortField, sortDirection]);
 
   useEffect(() => {
     let ignore = false;
@@ -54,14 +81,18 @@ export default function ConfiguracionEspecialidades() {
           <table className="w-full min-w-125 text-left text-sm">
             <caption className="sr-only">Especialidades registradas y sus descripciones</caption>
             <thead className="sticky top-0 z-10 bg-slate-100 text-xs uppercase tracking-wide text-slate-500">
-              <tr>{['Nombre', 'Descripción', 'Acciones'].map((label) => <th key={label} scope="col" className="px-5 py-4 font-semibold">{label}</th>)}</tr>
+              <tr>
+                <SortableHeader label="Nombre" field="nombre" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-4" activeColorClass="text-blue-600" />
+                <SortableHeader label="Descripción" field="descripcion" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-4" activeColorClass="text-blue-600" />
+                <th scope="col" className="px-5 py-4 font-semibold text-center">Acciones</th>
+              </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
-              {especialidades.map((especialidad) => (
-                <tr key={especialidad.id}>
+              {sortedEspecialidades.map((especialidad) => (
+                <tr key={especialidad.id} className="hover:bg-slate-50 transition-colors">
                   <th scope="row" className="max-w-60 wrap-anywhere px-5 py-5 font-semibold text-slate-900">{especialidad.nombre}</th>
                   <td className="max-w-lg wrap-anywhere px-5 py-5 text-slate-500">{especialidad.descripcion || 'Sin descripción'}</td>
-                  <td className="px-5 py-5"><button type="button" onClick={() => { setSeleccionada(especialidad); setMensaje(''); setFormOpen(true); }} aria-label={`Editar especialidad ${especialidad.nombre}`} className="cursor-pointer rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600"><Pencil className="h-5 w-5" aria-hidden="true" /></button></td>
+                  <td className="px-5 py-5 text-center"><button type="button" onClick={() => { setSeleccionada(especialidad); setMensaje(''); setFormOpen(true); }} aria-label={`Editar especialidad ${especialidad.nombre}`} className="cursor-pointer rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600"><Pencil className="h-5 w-5" aria-hidden="true" /></button></td>
                 </tr>
               ))}
             </tbody>

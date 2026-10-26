@@ -13,6 +13,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 import Header from '../components/dashboard/Header';
+import SearchBar from '../components/dashboard/SearchBar';
 import type { TecnicoCalificacion, ComentarioCalificacion } from '../services/incidenciasService';
 import { obtenerCalificacionesTecnicos } from '../services/incidenciasService';
 
@@ -290,6 +291,7 @@ export default function CalificacionesTecnicosPage({
   const [tecnicos, setTecnicos] = useState<TecnicoCalificacion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<'rating' | 'count'>('rating');
   const [filterMotivo, setFilterMotivo] = useState<string>('');
   const [selectedTecnico, setSelectedTecnico] = useState<TecnicoCalificacion | null>(null);
@@ -327,24 +329,38 @@ export default function CalificacionesTecnicosPage({
     return ordered;
   }, [tecnicos]);
 
-  // Filter technicians: keep only those that have at least one comment with the selected motivo
+  // Filter technicians by search (name / specialty) and selected motivo
   const filtered = useMemo(() => {
-    if (!filterMotivo) return tecnicos;
-    return tecnicos
-      .map((t) => ({
-        ...t,
-        comentarios: t.comentarios.filter((c) => c.motivo === filterMotivo),
-      }))
-      .filter((t) => t.comentarios.length > 0)
-      .map((t) => ({
-        ...t,
-        totalCalificaciones: t.comentarios.length,
-        promedioCalificacion:
-          Math.round(
-            (t.comentarios.reduce((s, c) => s + c.calificacion, 0) / t.comentarios.length) * 10
-          ) / 10,
-      }));
-  }, [tecnicos, filterMotivo]);
+    const term = search.toLowerCase().trim();
+    let result = tecnicos;
+
+    if (term) {
+      result = result.filter((t) => {
+        const nombreCompleto = `${t.tecnicoNombre} ${t.tecnicoApellido}`.toLowerCase();
+        const esp = (t.especialidad ?? '').toLowerCase();
+        return nombreCompleto.includes(term) || esp.includes(term);
+      });
+    }
+
+    if (filterMotivo) {
+      result = result
+        .map((t) => ({
+          ...t,
+          comentarios: t.comentarios.filter((c) => c.motivo === filterMotivo),
+        }))
+        .filter((t) => t.comentarios.length > 0)
+        .map((t) => ({
+          ...t,
+          totalCalificaciones: t.comentarios.length,
+          promedioCalificacion:
+            Math.round(
+              (t.comentarios.reduce((s, c) => s + c.calificacion, 0) / t.comentarios.length) * 10
+            ) / 10,
+        }));
+    }
+
+    return result;
+  }, [tecnicos, search, filterMotivo]);
 
   const sorted = useMemo(
     () =>
@@ -396,9 +412,18 @@ export default function CalificacionesTecnicosPage({
         </div>
 
         {/* Filter + Sort controls */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center gap-3">
+          {/* Search bar */}
+          <div className="flex-1 min-w-[220px]">
+            <SearchBar
+              value={search}
+              onSearch={setSearch}
+              placeholder="Buscar técnico por nombre o especialidad..."
+            />
+          </div>
+
           {/* Motivo filter */}
-          <div className="flex items-center gap-2 flex-1 min-w-0">
+          <div className="flex items-center gap-2 min-w-[180px]">
             <FontAwesomeIcon icon={faFilter} className="text-slate-400 text-sm shrink-0" />
             <select
               value={filterMotivo}
@@ -417,7 +442,7 @@ export default function CalificacionesTecnicosPage({
                 type="button"
                 onClick={() => setFilterMotivo('')}
                 className="px-2 py-2 text-xs text-slate-500 hover:text-red-500 transition-colors cursor-pointer"
-                title="Limpiar filtro"
+                title="Limpiar motivo"
               >
                 <FontAwesomeIcon icon={faXmark} />
               </button>
@@ -450,24 +475,48 @@ export default function CalificacionesTecnicosPage({
               Más evaluaciones
             </button>
           </div>
+
+          {(search || filterMotivo) && (
+            <button
+              type="button"
+              onClick={() => { setSearch(''); setFilterMotivo(''); }}
+              className="px-3 py-2 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors cursor-pointer shrink-0"
+            >
+              Limpiar
+            </button>
+          )}
         </div>
 
         {/* Active filter indicator */}
-        {filterMotivo && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500">Filtrando por:</span>
-            <span
-              className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full border ${getMotivoBadgeStyle(filterMotivo)}`}
-            >
-              {filterMotivo}
-              <button
-                type="button"
-                onClick={() => setFilterMotivo('')}
-                className="hover:opacity-70 cursor-pointer"
+        {(search || filterMotivo) && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-slate-500">Filtros activos:</span>
+            {search && (
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full border bg-blue-50 text-blue-700 border-blue-200">
+                Técnico: &quot;{search}&quot;
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  className="hover:opacity-70 cursor-pointer"
+                >
+                  <FontAwesomeIcon icon={faXmark} className="text-[10px]" />
+                </button>
+              </span>
+            )}
+            {filterMotivo && (
+              <span
+                className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full border ${getMotivoBadgeStyle(filterMotivo)}`}
               >
-                <FontAwesomeIcon icon={faXmark} className="text-[10px]" />
-              </button>
-            </span>
+                Motivo: {filterMotivo}
+                <button
+                  type="button"
+                  onClick={() => setFilterMotivo('')}
+                  className="hover:opacity-70 cursor-pointer"
+                >
+                  <FontAwesomeIcon icon={faXmark} className="text-[10px]" />
+                </button>
+              </span>
+            )}
           </div>
         )}
 
@@ -482,25 +531,29 @@ export default function CalificacionesTecnicosPage({
             <FontAwesomeIcon icon={faSpinner} spin className="text-3xl text-slate-400" />
           </div>
         ) : sorted.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-300 flex items-center justify-center mb-4">
-              <FontAwesomeIcon icon={faStarSolid} className="text-2xl text-slate-500" />
+          <div className="flex flex-col items-center justify-center text-center py-20 px-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
+              <FontAwesomeIcon icon={faStarSolid} className="text-2xl text-slate-400" />
             </div>
-            <h4 className="text-lg font-semibold text-black">
-              {filterMotivo ? 'Sin resultados' : 'Sin calificaciones'}
+            <h4 className="text-lg font-semibold text-slate-900 text-center">
+              {search || filterMotivo ? 'Sin resultados' : 'Sin calificaciones'}
             </h4>
-            <p className="text-sm text-slate-500 mt-1">
-              {filterMotivo
+            <p className="text-sm text-slate-500 mt-2 max-w-md text-center">
+              {search && filterMotivo
+                ? `No se encontraron técnicos que coincidan con "${search}" y el motivo "${filterMotivo}".`
+                : search
+                ? `No se encontró ningún técnico con el nombre o especialidad "${search}".`
+                : filterMotivo
                 ? `No hay técnicos con el motivo "${filterMotivo}".`
                 : 'Aún no hay técnicos calificados. Las calificaciones aparecen al cerrar incidencias.'}
             </p>
-            {filterMotivo && (
+            {(search || filterMotivo) && (
               <button
                 type="button"
-                onClick={() => setFilterMotivo('')}
-                className="mt-3 text-sm text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
+                onClick={() => { setSearch(''); setFilterMotivo(''); }}
+                className="mt-4 px-4 py-2 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer"
               >
-                Limpiar filtro
+                Limpiar filtros
               </button>
             )}
           </div>

@@ -1,8 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Pencil, Plus, Tag } from 'lucide-react';
 import { guardarCategoria, obtenerCatalogoConfiguracion } from '../../services/configuracionService';
 import type { CategoriaConfiguracion, CategoriaFormulario } from '../../services/configuracionService';
 import CategoriaForm from './CategoriaForm';
+import SortableHeader from '../common/SortableHeader';
+import {
+  type SortDirection,
+  comparePriorities,
+  compareNumbers,
+  compareStrings,
+  getNextDirection,
+} from '../../utils/tableSorting';
 
 const prioridadClases: Record<string, string> = {
   Alta: 'border-red-200 bg-red-50 text-red-700',
@@ -18,6 +26,33 @@ export default function ConfiguracionCategorias() {
   const [intento, setIntento] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
   const [seleccionada, setSeleccionada] = useState<CategoriaConfiguracion | null>(null);
+
+  const [sortField, setSortField] = useState<string>('nombre');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+
+  const handleSort = (field: string) => {
+    const defaultDir: SortDirection = field === 'prioridad' || field === 'ticketsVinculados' ? 'desc' : 'asc';
+    setSortDirection((prevDir) => getNextDirection(sortField, field, prevDir, defaultDir));
+    setSortField(field);
+  };
+
+  const sortedCategorias = useMemo(() => {
+    if (!catalogo) return [];
+    return [...catalogo.categorias].sort((a, b) => {
+      switch (sortField) {
+        case 'nombre':
+          return compareStrings(a.nombre, b.nombre, sortDirection);
+        case 'especialidad':
+          return compareStrings(a.especialidad?.nombre, b.especialidad?.nombre, sortDirection);
+        case 'prioridad':
+          return comparePriorities(a.prioridadDefecto?.nivel, b.prioridadDefecto?.nivel, sortDirection);
+        case 'ticketsVinculados':
+          return compareNumbers(a.ticketsVinculados, b.ticketsVinculados, sortDirection);
+        default:
+          return 0;
+      }
+    });
+  }, [catalogo, sortField, sortDirection]);
 
   useEffect(() => {
     let ignore = false;
@@ -66,17 +101,21 @@ export default function ConfiguracionCategorias() {
             <caption className="sr-only">Categorías con su especialidad, prioridad base y total de incidencias vinculadas</caption>
             <thead className="sticky top-0 z-10 bg-slate-100 text-xs uppercase tracking-wide text-slate-500">
               <tr>
-                {['Nombre', 'Especialidad', 'Prioridad base', 'Tickets vinculados', 'Acciones'].map((label) => <th key={label} scope="col" className="px-5 py-4 font-semibold">{label}</th>)}
+                <SortableHeader label="Nombre" field="nombre" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-4" activeColorClass="text-blue-600" />
+                <SortableHeader label="Especialidad" field="especialidad" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-4" activeColorClass="text-blue-600" />
+                <SortableHeader label="Prioridad base" field="prioridad" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-4" activeColorClass="text-blue-600" />
+                <SortableHeader label="Tickets vinculados" field="ticketsVinculados" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-4" align="center" activeColorClass="text-blue-600" />
+                <th scope="col" className="px-5 py-4 font-semibold text-center">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
-              {catalogo.categorias.map((categoria) => (
-                <tr key={categoria.id}>
+              {sortedCategorias.map((categoria) => (
+                <tr key={categoria.id} className="hover:bg-slate-50 transition-colors">
                   <th scope="row" className="px-5 py-5 font-semibold text-slate-900"><span className="flex items-center gap-3"><Tag className="h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />{categoria.nombre}</span></th>
                   <td className="px-5 py-5 text-slate-500">{categoria.especialidad?.nombre ?? 'Sin especialidad'}</td>
                   <td className="px-5 py-5"><span className={`inline-flex whitespace-nowrap rounded border px-2 py-1 text-xs font-semibold ${prioridadClases[categoria.prioridadDefecto?.nivel ?? ''] ?? prioridadClases.Baja}`}>{categoria.prioridadDefecto?.nivel ?? 'Sin definir'}</span></td>
                   <td className="px-5 py-5 text-center font-semibold text-slate-900">{categoria.ticketsVinculados}</td>
-                  <td className="px-5 py-5"><button type="button" disabled={!canEdit} onClick={() => { setSeleccionada(categoria); setMensaje(''); setFormOpen(true); }} aria-label={`Editar categoría ${categoria.nombre}`} className="cursor-pointer rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50"><Pencil className="h-5 w-5" aria-hidden="true" /></button></td>
+                  <td className="px-5 py-5 text-center"><button type="button" disabled={!canEdit} onClick={() => { setSeleccionada(categoria); setMensaje(''); setFormOpen(true); }} aria-label={`Editar categoría ${categoria.nombre}`} className="cursor-pointer rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50"><Pencil className="h-5 w-5" aria-hidden="true" /></button></td>
                 </tr>
               ))}
             </tbody>

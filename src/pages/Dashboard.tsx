@@ -11,6 +11,9 @@ import CategoryBreakdown from '../components/dashboard/CategoryBreakdown';
 import { obtenerIncidencias } from '../services/incidenciasService';
 import type { Incident } from '../types/incident';
 import { getCurrentUser } from '../utils/auth';
+import GuidedTour from '../components/dashboard/GuidedTour';
+import { getTourSteps, getTourStorageKey } from '../data/tourSteps';
+import StudentWelcomeBanner from '../components/dashboard/StudentWelcomeBanner';
 
 const CATEGORY_COLORS = ['#8b5cf6', '#3b82f6', '#f59e0b', '#10b981', '#ef4444', '#06b6d4', '#ec4899'];
 
@@ -73,26 +76,37 @@ export default function Dashboard() {
           <div className="bg-red-100 text-red-700 p-4 rounded-lg">{error}</div>
         ) : (
           <>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="text-left">
-                <h3 className="text-2xl font-bold text-black">Bienvenido al ASIU</h3>
-                <p className="text-sm text-slate-500 mt-1">Sistema de Atención y Seguimiento de Incidencias Universitarias</p>
+            {isEstudiante ? (
+              <StudentWelcomeBanner nombre={usuario?.nombre} />
+            ) : (
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="text-left">
+                  <h3 className="text-2xl font-bold text-black">Bienvenido al ASIU</h3>
+                  <p className="text-sm text-slate-500 mt-1">Sistema de Atención y Seguimiento de Incidencias Universitarias</p>
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className={`grid grid-cols-2 ${isEstudiante ? 'xl:grid-cols-4' : 'xl:grid-cols-5'} gap-3 sm:gap-4`}>
+            <div data-tour="stat-cards" className={`grid grid-cols-2 ${isEstudiante ? 'xl:grid-cols-4' : 'xl:grid-cols-5'} gap-3 sm:gap-4`}>
               {statCards.map((card) => <StatCard key={card.title} {...card} />)}
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <div className={isEstudiante ? 'xl:col-span-3' : 'xl:col-span-2'}>
+              <div data-tour="recent-incidents" className={isEstudiante ? 'xl:col-span-3' : 'xl:col-span-2'}>
                 <RecentIncidentsTable incidents={incidencias} />
               </div>
-              {!isEstudiante && <CategoryBreakdown items={categoryBreakdown} total={categoryTotal} />}
+              {!isEstudiante && <div data-tour="category-breakdown"><CategoryBreakdown items={categoryBreakdown} total={categoryTotal} /></div>}
             </div>
           </>
         )}
       </main>
+
+      {usuario?.rol && (
+        <GuidedTour
+          steps={getTourSteps(usuario.rol)}
+          storageKey={getTourStorageKey(usuario.rol)}
+        />
+      )}
     </>
   );
 }

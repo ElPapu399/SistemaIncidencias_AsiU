@@ -36,18 +36,21 @@ export default function Sidebar({ onClose }: SidebarProps) {
       label: "Inicio",
       icon: faHome,
       end: true,
+      tourId: "sidebar-inicio",
       roles: ["ADMIN", "ESTUDIANTE", ...ALL_TECNICOS],
     },
     {
       to: "/dashboard/nueva",
       label: "Registrar incidencia",
       icon: faPlus,
+      tourId: "sidebar-nueva",
       roles: ["ESTUDIANTE"],
     },
     {
       to: "/dashboard/mis-incidencias",
       label: "Mis incidencias",
       icon: faClipboardCheck,
+      tourId: "sidebar-mis-incidencias",
       roles: ["TECNICO_ESPECIALISTA", "TECNICO"],
     },
     {
@@ -60,36 +63,42 @@ export default function Sidebar({ onClose }: SidebarProps) {
         TECNICO_ESPECIALISTA: "Todas las incidencias",
       } as Record<string, string>,
       icon: faClipboardList,
+      tourId: "sidebar-incidencias",
       roles: ["ADMIN", "ESTUDIANTE", ...ALL_TECNICOS],
     },
     {
       to: "/dashboard/usuarios",
       label: "Estudiantes",
       icon: faUserGroup,
+      tourId: "sidebar-usuarios",
       roles: ["ADMIN", "TECNICO"],
     },
     {
       to: "/dashboard/tecnicos",
       label: "Técnicos",
       icon: faScrewdriverWrench,
+      tourId: "sidebar-tecnicos",
       roles: ["ADMIN", "TECNICO_GENERAL"],
     },
     {
       to: "/dashboard/laboratorios",
       label: "Laboratorios",
       icon: faDesktop,
+      tourId: "sidebar-laboratorios",
       roles: ["ADMIN", "TECNICO_ESPECIALISTA"],
     },
     {
       to: "/dashboard/reportes",
       label: "Reportes",
       icon: faChartBar,
+      tourId: "sidebar-reportes",
       roles: ["ADMIN"],
     },
     {
       to: "/dashboard/calificaciones-tecnicos",
       label: "Calificaciones",
       icon: faStar,
+      tourId: "sidebar-calificaciones",
       roles: ["ADMIN", "TECNICO_GENERAL"],
     },
     {
@@ -101,21 +110,25 @@ export default function Sidebar({ onClose }: SidebarProps) {
         TECNICO_ESPECIALISTA: "Historial",
       } as Record<string, string>,
       icon: faClockRotateLeft,
+      tourId: "sidebar-historial",
       roles: ["ESTUDIANTE", ...ALL_TECNICOS],
     },
     {
       to: "/dashboard/configuracion",
       label: "Configuración",
       icon: faGear,
+      tourId: "sidebar-configuracion",
       roles: ["ADMIN"],
     },
     {
       to: "/dashboard/perfil",
       label: "Perfil",
       icon: faUser,
+      tourId: "sidebar-perfil",
       roles: ["ADMIN", "ESTUDIANTE", ...ALL_TECNICOS],
     },
   ];
+
 
   const handleLogout = () => {
     logout();
@@ -128,7 +141,7 @@ export default function Sidebar({ onClose }: SidebarProps) {
 
   return (
     <div className="w-64 shrink-0 bg-blue-900/50 border-r border-slate-800 flex flex-col relative overflow-hidden h-full">
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-sidebar-border shrink-0">
+      <div data-tour="sidebar-logo" className="flex items-center gap-3 px-5 py-5 border-b border-sidebar-border shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-linear-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
             <FontAwesomeIcon
@@ -163,8 +176,8 @@ export default function Sidebar({ onClose }: SidebarProps) {
         </button>
       </div>
 
-      <nav className="flex-1 min-h-0 overflow-y-auto p-4 space-y-0.5">
-        {visibleNavItems.map(({ to, label, icon, end }) => {
+      <nav data-tour="sidebar-nav" className="flex-1 min-h-0 overflow-y-auto p-4 space-y-0.5">
+        {visibleNavItems.map(({ to, label, icon, end, tourId }) => {
           const displayLabel =
             typeof label === "string"
               ? label
@@ -175,6 +188,7 @@ export default function Sidebar({ onClose }: SidebarProps) {
               to={to}
               end={end}
               onClick={onClose}
+              data-tour={tourId}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive

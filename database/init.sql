@@ -177,6 +177,31 @@ INSERT INTO `historial_estados` VALUES (1,2,'Pendiente','En Proceso',2,'El técn
 UNLOCK TABLES;
 
 --
+-- Table structure for table `notificaciones`
+--
+
+DROP TABLE IF EXISTS `notificaciones`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `notificaciones` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `usuario_id` int NOT NULL,
+  `tipo` varchar(50) NOT NULL,
+  `titulo` varchar(200) NOT NULL,
+  `mensaje` varchar(500) NOT NULL,
+  `incidencia_id` int DEFAULT NULL,
+  `leida` tinyint(1) NOT NULL DEFAULT '0',
+  `fecha_creacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_notif_usuario` (`usuario_id`),
+  KEY `idx_notif_leida` (`usuario_id`,`leida`),
+  KEY `fk_notif_incidencia` (`incidencia_id`),
+  CONSTRAINT `fk_notif_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_notif_incidencia` FOREIGN KEY (`incidencia_id`) REFERENCES `incidencias` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `incidencias`
 --
 

@@ -3,6 +3,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import SearchBar from "./dashboard/SearchBar";
 import { formatDate } from './dashboard/IncidentBadges';
+import SortableHeader from './common/SortableHeader';
+import {
+  type SortDirection,
+  compareDates,
+  compareStrings,
+  getNextDirection,
+} from '../utils/tableSorting';
 import type { User } from '../types/user';
 
 interface StudentTableProps {
@@ -93,6 +100,34 @@ export default function StudentTable({ usuarios, onEdit }: StudentTableProps) {
     const totalEstudiantes = estudiantes.length;
     const hasActiveFilters = search !== '' || filterCarrera !== '' || filterEstado !== '';
 
+    const [sortField, setSortField] = useState<string>('fechaCreacion');
+    const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+
+    const handleSort = (field: string) => {
+        const defaultDir: SortDirection = field === 'fechaCreacion' ? 'desc' : 'asc';
+        setSortDirection((prevDir) => getNextDirection(sortField, field, prevDir, defaultDir));
+        setSortField(field);
+    };
+
+    const sortedEstudiantes = useMemo(() => {
+        return [...filtered].sort((a, b) => {
+            switch (sortField) {
+                case 'nombre':
+                    return compareStrings(`${a.nombre} ${a.apellido}`, `${b.nombre} ${b.apellido}`, sortDirection);
+                case 'correo':
+                    return compareStrings(a.correo, b.correo, sortDirection);
+                case 'carrera':
+                    return compareStrings(a.carrera, b.carrera, sortDirection);
+                case 'estado':
+                    return compareStrings(a.estado, b.estado, sortDirection);
+                case 'fechaCreacion':
+                    return compareDates(a.fechaCreacion, b.fechaCreacion, sortDirection);
+                default:
+                    return 0;
+            }
+        });
+    }, [filtered, sortField, sortDirection]);
+
     return (
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
             <div className="px-5 py-4 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center gap-3">
@@ -140,23 +175,23 @@ export default function StudentTable({ usuarios, onEdit }: StudentTableProps) {
                 <table className="w-full text-left">
                     <thead className="sticky top-0 bg-slate-50 z-10">
                         <tr className="border-b border-slate-200 bg-slate-50">
-                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Usuario</th>
-                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Correo</th>
-                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Carrera</th>
-                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Estado</th>
-                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">Registro</th>
-                            <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">Acciones</th>
+                            <SortableHeader label="Usuario" field="nombre" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
+                            <SortableHeader label="Correo" field="correo" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
+                            <SortableHeader label="Carrera" field="carrera" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
+                            <SortableHeader label="Estado" field="estado" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
+                            <SortableHeader label="Registro" field="fechaCreacion" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
+                            <th scope="col" className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {filtered.length === 0 ? (
+                        {sortedEstudiantes.length === 0 ? (
                             <tr>
                                 <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-500">
                                     No se encontraron estudiantes con los filtros seleccionados.
                                 </td>
                             </tr>
                         ) : (
-                            filtered.map(user => {
+                            sortedEstudiantes.map(user => {
                                 const badge = ESTADO_BADGES[user.estado] || ESTADO_BADGES['Activo'];
                                 return (
                                     <tr key={user.id} className="hover:bg-slate-50 transition-colors">
@@ -205,7 +240,7 @@ export default function StudentTable({ usuarios, onEdit }: StudentTableProps) {
                 </table>
             </div>
             <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
-                <span>Mostrando {filtered.length} de {totalEstudiantes} estudiantes</span>
+                <span>Mostrando {sortedEstudiantes.length} de {totalEstudiantes} estudiantes</span>
             </div>
         </div>
     );
