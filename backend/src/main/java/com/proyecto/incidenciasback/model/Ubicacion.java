@@ -25,4 +25,14 @@ public class Ubicacion {
 
     @Column(nullable = false, length = 30)
     private String tipo;
+
+    private Integer capacidad;
+
+    @Column(length = 20)
+    private String estado;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "encargado_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private Usuario encargado;
 }

@@ -339,7 +339,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={closeModal} />
           <div className="relative bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md z-10 overflow-hidden">
-            <div className="px-6 py-5 border-b border-slate-200 bg-gradient-to-r from-emerald-50 to-teal-50">
+            <div className="px-6 py-5 border-b border-slate-200 bg-linear-to-r from-emerald-50 to-teal-50">
               <h3 className="text-base font-bold text-slate-900">Autoasignar incidencia</h3>
               <p className="text-xs text-slate-500 mt-0.5">Confirma que deseas tomar esta incidencia</p>
             </div>

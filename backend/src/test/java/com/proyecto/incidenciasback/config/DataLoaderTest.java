@@ -31,18 +31,19 @@ class DataLoaderTest {
     @InjectMocks DataLoader loader;
 
     @Test
-    void reiniciarNoRecreaEspecialidadesNiCategoriasRenombradas() {
+    void reiniciarNoRecreaCatalogosNiLaboratoriosRenombrados() {
         // Simula una base ya inicializada, con usuarios y catálogos administrados.
         when(especialidades.count()).thenReturn(4L);
+        when(ubicaciones.count()).thenReturn(8L);
         when(roles.findByNombre(anyString())).thenReturn(Optional.of(new Rol()));
         when(usuarios.findByCorreo(anyString())).thenReturn(Optional.of(new Usuario()));
         when(equipos.count()).thenReturn(1L);
-        when(incidencias.count()).thenReturn(1L);
 
         loader.run();
 
         verify(especialidades, never()).findByNombre(anyString());
         verify(especialidades, never()).save(any());
         verify(categorias, never()).save(any());
+        verify(ubicaciones, never()).save(any());
     }
 }

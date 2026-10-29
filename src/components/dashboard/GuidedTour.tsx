@@ -144,9 +144,9 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
         type="button"
         onClick={() => { setStepIndex(0); setActive(true); }}
         className="
-          fixed bottom-6 right-6 z-[9999]
-          w-12 h-12 rounded-full
-          bg-gradient-to-br from-violet-500 to-indigo-600
+          fixed bottom-6 right-6 z-9999
+          w-10 h-12 rounded-full
+          bg-linear-to-br from-violet-500 to-indigo-600
           text-white shadow-lg shadow-violet-500/30
           flex items-center justify-center
           hover:scale-110 hover:shadow-xl hover:shadow-violet-500/40
@@ -165,14 +165,14 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 z-[9990] transition-opacity duration-300"
+        className="fixed inset-0 z-9990 transition-opacity duration-300"
         style={{ background: 'rgba(0,0,0,0.55)' }}
         onClick={closeTour}
       />
 
       {/* Highlight cutout */}
       <div
-        className="fixed z-[9991] pointer-events-none transition-all duration-400 ease-out"
+        className="fixed z-9991 pointer-events-none transition-all duration-400 ease-out"
         style={{
           ...highlightStyle,
           boxShadow: '0 0 0 9999px rgba(0,0,0,0.55), 0 0 20px 4px rgba(139,92,246,0.35)',
@@ -183,7 +183,7 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
       <div
         ref={tooltipRef}
         className={`
-          fixed z-[9995] w-[360px] max-w-[calc(100vw-24px)]
+          fixed z-9995 w-90 max-w-[calc(100vw-24px)]
           bg-white rounded-2xl shadow-2xl shadow-black/20
           border border-slate-200
           transition-all duration-300 ease-out
@@ -193,11 +193,16 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
         style={tooltipStyle}
       >
         {/* Progress bar */}
-        <div className="h-1 bg-slate-100 rounded-t-2xl overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
-          />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl"
+        >
+          <div className="h-1 bg-slate-100">
+            <div
+              className="h-full bg-linear-to-r from-violet-500 to-indigo-500 transition-all duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
 
         {/* Header */}
@@ -241,7 +246,7 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
               onChange={(e) => setNoShowAgain(e.target.checked)}
               className="w-3.5 h-3.5 rounded accent-violet-500"
             />
-            <span className="text-[11px] text-slate-400">No mostrar de nuevo</span>
+            <span className="text-[11px] text-slate-400">No mostrar</span>
           </label>
 
           <div className="flex items-center gap-2">
@@ -262,8 +267,8 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
                 h-8 px-4 rounded-lg text-xs font-semibold text-white
                 flex items-center gap-1.5 cursor-pointer transition-all duration-200
                 ${isLastStep
-                  ? 'bg-gradient-to-r from-emerald-500 to-green-500 hover:shadow-lg hover:shadow-emerald-500/30'
-                  : 'bg-gradient-to-r from-violet-500 to-indigo-600 hover:shadow-lg hover:shadow-violet-500/30'
+                  ? 'bg-linear-to-r from-emerald-500 to-green-500 hover:shadow-lg hover:shadow-emerald-500/30'
+                  : 'bg-linear-to-r from-violet-500 to-indigo-600 hover:shadow-lg hover:shadow-violet-500/30'
                 }
               `}
             >

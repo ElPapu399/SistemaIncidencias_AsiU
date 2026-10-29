@@ -8,6 +8,7 @@ import EstudiantesPage from './pages/EstudiantesPage';
 import TecnicosPage from './pages/TecnicosPage';
 import NuevaIncidenciaPage from './pages/NuevaIncidenciaPage';
 import LaboratoriosPage from './pages/LaboratoriosPage';
+import LaboratorioDetallePage from './pages/LaboratorioDetallePage';
 import Configuracion from './pages/Configuracion';
 import Perfil from './pages/Perfil';
 import HistorialPage from './pages/HistorialPage';
@@ -65,6 +66,10 @@ function App() {
               description="Gestión de los laboratorios de la universidad."
             />
           }
+        />
+        <Route
+          path="laboratorios/:laboratorioId"
+          element={<LaboratorioDetallePage />}
         />
         <Route
           path="nueva"

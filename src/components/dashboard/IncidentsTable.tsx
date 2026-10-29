@@ -239,26 +239,29 @@ export default function IncidentsTable({
     <div className="bg-white border border-slate-300 rounded-2xl overflow-hidden shadow-sm">
       {/* Filter Bar */}
       <div className="px-5 py-4 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center gap-3">
-        <div className="flex-1 min-w-50">
+        <div className="w-full min-w-0 flex-none lg:w-auto lg:flex-1 lg:min-w-50">
           <SearchBar value={search} onSearch={setSearch} placeholder="Buscar por ID, título, usuario o técnico..." />
         </div>
 
-        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={selectClass}>
-          <option value="all">Todos los Estados</option>
-          {hasActiveStatus && <option value="activas">Solo Activas</option>}
-          {hasClosedStatus && <option value="cerradas">Solo Cerradas</option>}
-          {availableStatuses.map((s) => <option key={s} value={s}>{s}</option>)}
-        </select>
+        <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto overscroll-x-contain pb-2 lg:contents">
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={`${selectClass} shrink-0`}>
+            <option value="all">Todos los Estados</option>
+            {hasActiveStatus && <option value="activas">Solo Activas</option>}
+            {hasClosedStatus && <option value="cerradas">Solo Cerradas</option>}
+            {availableStatuses.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
 
-        <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className={selectClass}>
-          <option value="all">Todas las Prioridades</option>
-          {availablePriorities.map((p) => <option key={p} value={p}>{p}</option>)}
-        </select>
+          <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className={`${selectClass} shrink-0`}>
+            <option value="all">Todas las Prioridades</option>
+            {availablePriorities.map((p) => <option key={p} value={p}>{p}</option>)}
+          </select>
 
-        <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className={`${selectClass} max-w-45 truncate`}>
-          <option value="all">Todas las Categorías</option>
-          {availableCategories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
-        </select>
+          <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className={`${selectClass} shrink-0 max-w-45 truncate`}>
+            <option value="all">Todas las Categorías</option>
+            {availableCategories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
+          </select>
+        </div>
+
 
         {isPrivileged && reassignedCount > 0 && (
           <button type="button" onClick={() => setFilterReassignedOnly((p) => !p)}

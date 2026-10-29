@@ -1,9 +1,10 @@
-import { Building2, EllipsisVertical, MapPin } from "lucide-react";
+import { Building2, ChevronRight, EllipsisVertical, MapPin } from "lucide-react";
+import { Link } from 'react-router-dom';
 import type { Laboratorio } from "../../types/laboratorio";
 
 interface LaboratorioCardProps {
     laboratorio: Laboratorio;
-    onEdit: (laboratorio: Laboratorio) => void;
+    onEdit?: (laboratorio: Laboratorio) => void;
 }
 
 export default function LaboratorioCard({
@@ -13,7 +14,7 @@ export default function LaboratorioCard({
     const estadoClasses =
         laboratorio.estado === "Operativo"
         ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-        : "bg-amber-50 text-amber-700 border-amber-200";
+        : laboratorio.estado === 'Mantenimiento' ? "bg-amber-50 text-amber-700 border-amber-200" : 'bg-slate-50 text-slate-600 border-slate-200';
 
     return (
         <article className="flex h-full min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-6 text-left">
@@ -27,7 +28,7 @@ export default function LaboratorioCard({
             >
                 {laboratorio.estado}
             </span>
-            <details className="relative">
+            {onEdit && <details className="relative">
                 <summary
                 aria-label={`Acciones de ${laboratorio.nombre}`}
                 className="flex h-8 w-8 cursor-pointer list-none items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-blue-600 [&::-webkit-details-marker]:hidden"
@@ -48,7 +49,7 @@ export default function LaboratorioCard({
                     Editar laboratorio
                 </button>
                 </div>
-            </details>
+            </details>}
             </div>
         </div>
 
@@ -64,7 +65,7 @@ export default function LaboratorioCard({
 
         <dl className="mt-auto grid grid-cols-3 gap-2 pt-5 text-center">
             {[
-            { label: "Capacidad", value: laboratorio.capacidad },
+            { label: "Capacidad", value: laboratorio.capacidad ?? '—' },
             { label: "PCs", value: laboratorio.cantidadPCs },
             { label: "Encargado", value: laboratorio.encargado },
             ].map(({ label, value }) => (
@@ -78,10 +79,10 @@ export default function LaboratorioCard({
             </div>
             ))}
         </dl>
-        <p className="pt-4 text-sm text-slate-500">
-            {laboratorio.cantidadEquipos} equipo
-            {laboratorio.cantidadEquipos !== 1 ? "s" : ""}
-        </p>
+        <Link to={`/dashboard/laboratorios/${laboratorio.id}`} aria-label={`Ver equipos de ${laboratorio.nombre}`} className="mt-3 flex items-center justify-between rounded-lg py-2 text-sm text-slate-500 transition-colors hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600">
+            <span>{laboratorio.cantidadEquipos} equipo{laboratorio.cantidadEquipos !== 1 ? "s" : ""}</span>
+            <ChevronRight className="h-5 w-5" aria-hidden="true" />
+        </Link>
         </article>
     );
 }

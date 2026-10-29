@@ -11,7 +11,7 @@ interface StatCardProps {
 
 export default function StatCard({ title, value, icon, trend, accent }: StatCardProps) {
   return (
-    <div className="bg-white backdrop-blur-xl border border-slate-700/50 rounded-2xl p-5 flex flex-col gap-4">
+    <div className="bg-white backdrop-blur-xl border border-slate-200 rounded-2xl overflow-hidden shadow-sm p-5 flex flex-col gap-4">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-600">{title}</p>

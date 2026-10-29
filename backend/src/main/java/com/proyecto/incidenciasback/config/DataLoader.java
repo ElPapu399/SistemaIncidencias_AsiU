@@ -56,14 +56,17 @@ public class DataLoader implements CommandLineRunner {
         crearPrioridadSiNoExiste("Media", 24, "Afecta a un usuario, tiene solución temporal");
         crearPrioridadSiNoExiste("Baja", 72, "Inconveniente menor, no bloquea el trabajo");
 
-        crearUbicacionSiNoExiste("Pabellón A", "Laboratorio A", 1, "Laboratorio");
-        crearUbicacionSiNoExiste("Pabellón A", "Laboratorio B", 1, "Laboratorio");
-        crearUbicacionSiNoExiste("Pabellón B", "Laboratorio C", 1, "Laboratorio");
-        crearUbicacionSiNoExiste("Pabellón B", "Laboratorio D", 2, "Laboratorio");
-        crearUbicacionSiNoExiste("Pabellón C", "Laboratorio E", 1, "Laboratorio");
-        crearUbicacionSiNoExiste("Pabellón C", "Laboratorio F", 2, "Laboratorio");
-        crearUbicacionSiNoExiste("Pabellón D", "Aula 301", 3, "Aula");
-        crearUbicacionSiNoExiste("Pabellón D", "Auditorio", 1, "Auditorio");
+        // No volver a crear nombres de ejemplo cuando se edita un laboratorio existente.
+        if (ubicacionRepository.count() == 0) {
+            crearUbicacionSiNoExiste("Pabellón A", "Laboratorio A", 1, "Laboratorio");
+            crearUbicacionSiNoExiste("Pabellón A", "Laboratorio B", 1, "Laboratorio");
+            crearUbicacionSiNoExiste("Pabellón B", "Laboratorio C", 1, "Laboratorio");
+            crearUbicacionSiNoExiste("Pabellón B", "Laboratorio D", 2, "Laboratorio");
+            crearUbicacionSiNoExiste("Pabellón C", "Laboratorio E", 1, "Laboratorio");
+            crearUbicacionSiNoExiste("Pabellón C", "Laboratorio F", 2, "Laboratorio");
+            crearUbicacionSiNoExiste("Pabellón D", "Aula 301", 3, "Aula");
+            crearUbicacionSiNoExiste("Pabellón D", "Auditorio", 1, "Auditorio");
+        }
 
         if (inicializarCatalogos) {
             crearCategoriaSiNoExiste("Computadora no enciende", "Hardware", "Alta");

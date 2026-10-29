@@ -96,7 +96,7 @@ export default function RecentIncidentsTable({ incidents }: RecentIncidentsTable
                 </td>
               </tr>
             ) : (
-              sortedIncidents.slice(0, 6).map((incident) => (
+              sortedIncidents.slice(0, 4).map((incident) => (
                 <tr
                   key={incident.id}
                   className="hover:bg-slate-50/80 transition-colors"

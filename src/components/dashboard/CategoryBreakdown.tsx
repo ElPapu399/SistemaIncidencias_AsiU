@@ -5,13 +5,13 @@ interface CategoryBreakdownProps {
 
 export default function CategoryBreakdown({ items, total }: CategoryBreakdownProps) {
   return (
-    <div className="bg-white backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6">
+    <div className="bg-white backdrop-blur-xl border border-slate-200 rounded-2xl overflow-hidden shadow-sm p-6">
       <div className="text-left mb-5">
         <h3 className="text-base font-semibold text-dark">Por categoría</h3>
         <p className="text-xs text-slate-500 mt-0.5">Distribución de incidencias activas</p>
       </div>
 
-      <div className="space-y-4 overflow-x-auto overflow-y-auto max-h-85">
+      <div className="space-y-4 overflow-x-auto overflow-y-auto max-h-83">
         {items.map((item) => {
           const percentage = Math.round((item.count / total) * 100);
           return (

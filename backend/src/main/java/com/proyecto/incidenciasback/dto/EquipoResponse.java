@@ -2,6 +2,7 @@ package com.proyecto.incidenciasback.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
@@ -14,4 +15,6 @@ public class EquipoResponse {
     private Integer ubicacionId;
     private String ubicacionTexto;
     private String estado;
+    private String numeroSerie;
+    private LocalDate fechaAdquisicion;
 }
