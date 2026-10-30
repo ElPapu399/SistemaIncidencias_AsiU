@@ -80,14 +80,6 @@ public class IncidenciaService {
         }
 
         @Transactional(readOnly = true)
-        public IncidenciaResponse obtenerPorId(Integer id) {
-                Incidencia incidencia = incidenciaRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException("Incidencia no encontrada con id: " + id));
-                List<IncidenciaResponse> res = mapearListaConTrazabilidad(List.of(incidencia));
-                return res.isEmpty() ? toResponse(incidencia) : res.get(0);
-        }
-
-        @Transactional(readOnly = true)
         public List<IncidenciaResponse> listarPorEstudiante(Integer estudianteId) {
                 return mapearListaConTrazabilidad(incidenciaRepository.findByEstudianteId(estudianteId));
         }

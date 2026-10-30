@@ -11,12 +11,16 @@ import java.util.Optional;
 public interface EquipoRepository extends JpaRepository<Equipo, Integer> {
 
     Optional<Equipo> findByCodigo(String codigo);
+
     Optional<Equipo> findByCodigoIgnoreCase(String codigo);
+
     Optional<Equipo> findByNumeroSerieIgnoreCase(String numeroSerie);
 
     interface ResumenUbicacion {
         Integer getUbicacionId();
+
         long getTotal();
+
         long getComputadoras();
     }
 
@@ -26,6 +30,4 @@ public interface EquipoRepository extends JpaRepository<Equipo, Integer> {
     List<ResumenUbicacion> resumirPorUbicacion();
 
     List<Equipo> findByUbicacionId(Integer ubicacionId);
-
-    List<Equipo> findByEstado(String estado);
 }

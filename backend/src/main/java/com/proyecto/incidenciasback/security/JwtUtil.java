@@ -2,7 +2,8 @@ package com.proyecto.incidenciasback.security;
 
 import com.proyecto.incidenciasback.config.JwtConfig;
 import com.proyecto.incidenciasback.model.Usuario;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
@@ -43,14 +44,5 @@ public class JwtUtil {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-    }
-
-    public boolean isValid(String token) {
-        try {
-            validateAndGetClaims(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
     }
 }
