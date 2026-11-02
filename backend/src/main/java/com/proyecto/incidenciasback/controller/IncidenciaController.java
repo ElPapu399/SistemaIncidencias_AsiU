@@ -1,6 +1,8 @@
 package com.proyecto.incidenciasback.controller;
 
 import com.proyecto.incidenciasback.dto.*;
+import com.proyecto.incidenciasback.model.Usuario;
+import com.proyecto.incidenciasback.security.AuthHelper;
 import com.proyecto.incidenciasback.service.IncidenciaService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -14,9 +16,11 @@ import java.util.List;
 public class IncidenciaController {
 
     private final IncidenciaService incidenciaService;
+    private final AuthHelper authHelper;
 
-    public IncidenciaController(IncidenciaService incidenciaService) {
+    public IncidenciaController(IncidenciaService incidenciaService, AuthHelper authHelper) {
         this.incidenciaService = incidenciaService;
+        this.authHelper = authHelper;
     }
 
     @GetMapping
@@ -76,5 +80,16 @@ public class IncidenciaController {
     @GetMapping("/calificaciones-tecnicos")
     public ResponseEntity<List<TecnicoCalificacionResponse>> obtenerCalificacionesTecnicos() {
         return ResponseEntity.ok(incidenciaService.obtenerCalificacionesTecnicos());
+    }
+
+    @GetMapping("/mis-calificaciones")
+    public ResponseEntity<TecnicoCalificacionResponse> obtenerMisCalificaciones() {
+        Usuario usuario = authHelper.obtenerUsuarioAutenticado();
+        return ResponseEntity.ok(incidenciaService.obtenerCalificacionesPorTecnico(usuario.getId()));
+    }
+
+    @GetMapping("/tecnicos/{tecnicoId}/calificaciones")
+    public ResponseEntity<TecnicoCalificacionResponse> obtenerCalificacionesTecnico(@PathVariable Integer tecnicoId) {
+        return ResponseEntity.ok(incidenciaService.obtenerCalificacionesPorTecnico(tecnicoId));
     }
 }

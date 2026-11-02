@@ -33,6 +33,7 @@ public class IncidenciaService {
         private final HistorialEstadoRepository historialEstadoRepository;
         private final ArchivoAdjuntoRepository archivoAdjuntoRepository;
         private final AuthHelper authHelper;
+        private final NotificacionService notificacionService;
 
         public IncidenciaService(IncidenciaRepository incidenciaRepository,
                         UsuarioRepository usuarioRepository,
@@ -42,7 +43,8 @@ public class IncidenciaService {
                         EquipoRepository equipoRepository,
                         HistorialEstadoRepository historialEstadoRepository,
                         ArchivoAdjuntoRepository archivoAdjuntoRepository,
-                        AuthHelper authHelper) {
+                        AuthHelper authHelper,
+                        NotificacionService notificacionService) {
                 this.incidenciaRepository = incidenciaRepository;
                 this.usuarioRepository = usuarioRepository;
                 this.categoriaRepository = categoriaRepository;
@@ -52,6 +54,7 @@ public class IncidenciaService {
                 this.historialEstadoRepository = historialEstadoRepository;
                 this.archivoAdjuntoRepository = archivoAdjuntoRepository;
                 this.authHelper = authHelper;
+                this.notificacionService = notificacionService;
         }
 
         @Transactional(readOnly = true)
@@ -171,6 +174,13 @@ public class IncidenciaService {
                                                 + asignador.getApellido() + ")",
                                 null, tecnico);
 
+                notificacionService.crearNotificacion(
+                                tecnico,
+                                "ASIGNACION",
+                                "Nuevo ticket asignado",
+                                "Se te ha asignado el ticket " + incidencia.getCodigoTicket() + ": " + incidencia.getTitulo(),
+                                incidencia);
+
                 return toResponse(incidencia);
         }
 
@@ -216,6 +226,22 @@ public class IncidenciaService {
 
                 registrarHistorial(incidencia, estadoAnterior, "Asignada", "REASIGNACION",
                                 reasignador, comentario, tecnicoAnterior, tecnicoNuevo);
+
+                notificacionService.crearNotificacion(
+                                tecnicoNuevo,
+                                "REASIGNACION",
+                                "Ticket reasignado",
+                                "Se te ha reasignado el ticket " + incidencia.getCodigoTicket() + ": " + incidencia.getTitulo()
+                                                + ". Motivo: " + request.getMotivo(),
+                                incidencia);
+
+                notificacionService.crearNotificacion(
+                                tecnicoAnterior,
+                                "REASIGNACION",
+                                "Ticket reasignado",
+                                "El ticket " + incidencia.getCodigoTicket() + " fue reasignado a "
+                                                + tecnicoNuevo.getNombre() + " " + tecnicoNuevo.getApellido() + ".",
+                                incidencia);
 
                 return toResponse(incidencia);
         }
@@ -269,6 +295,20 @@ public class IncidenciaService {
 
                 registrarHistorial(incidencia, estadoAnterior, nuevoEstado, "CAMBIO_ESTADO",
                                 usuario, request.getComentario(), null, null);
+
+                if (incidencia.getEstudiante() != null && !estadoAnterior.equals(nuevoEstado)) {
+                        String solucion = incidencia.getSolucionTecnica();
+                        String detalle = "Tu ticket " + incidencia.getCodigoTicket() + " ahora se encuentra en estado '" + nuevoEstado + "'.";
+                        if ("Resuelta".equals(nuevoEstado) && solucion != null && !solucion.trim().isEmpty()) {
+                                detalle = detalle + " Solución técnica: " + solucion;
+                        }
+                        notificacionService.crearNotificacion(
+                                        incidencia.getEstudiante(),
+                                        "CAMBIO_ESTADO",
+                                        "Actualización de tu ticket",
+                                        detalle,
+                                        incidencia);
+                }
 
                 return toResponse(incidencia);
         }
@@ -368,29 +408,52 @@ public class IncidenciaService {
         }
 
         private IncidenciaResponse toResponse(Incidencia inc) {
+                Integer estudianteId = inc.getEstudiante() != null ? inc.getEstudiante().getId() : null;
+                String estudianteNombre = inc.getEstudiante() != null
+                                ? inc.getEstudiante().getNombre() + " " + inc.getEstudiante().getApellido()
+                                : "Sin estudiante";
+
+                Integer tecnicoId = inc.getTecnico() != null ? inc.getTecnico().getId() : null;
+                String tecnicoNombre = inc.getTecnico() != null
+                                ? inc.getTecnico().getNombre() + " " + inc.getTecnico().getApellido()
+                                : null;
+
+                Integer categoriaId = inc.getCategoria() != null ? inc.getCategoria().getId() : null;
+                String categoriaNombre = inc.getCategoria() != null ? inc.getCategoria().getNombre() : "Sin categoría";
+                String especialidadNombre = (inc.getCategoria() != null && inc.getCategoria().getEspecialidad() != null)
+                                ? inc.getCategoria().getEspecialidad().getNombre()
+                                : null;
+
+                Integer prioridadId = inc.getPrioridad() != null ? inc.getPrioridad().getId() : null;
+                String prioridadNivel = inc.getPrioridad() != null ? inc.getPrioridad().getNivel() : "Media";
+
+                Integer ubicacionId = inc.getUbicacion() != null ? inc.getUbicacion().getId() : null;
+                String ubicacionTexto = inc.getUbicacion() != null
+                                ? inc.getUbicacion().getPabellon() + " - " + inc.getUbicacion().getAulaLaboratorio()
+                                : "Sin ubicación";
+
+                Integer equipoId = inc.getEquipo() != null ? inc.getEquipo().getId() : null;
+                String equipoCodigo = inc.getEquipo() != null ? inc.getEquipo().getCodigo() : null;
+
                 IncidenciaResponse resp = new IncidenciaResponse(
                                 inc.getId(),
                                 inc.getCodigoTicket(),
                                 inc.getTitulo(),
                                 inc.getDescripcion(),
                                 inc.getEstado(),
-                                inc.getEstudiante().getId(),
-                                inc.getEstudiante().getNombre() + " " + inc.getEstudiante().getApellido(),
-                                inc.getTecnico() != null ? inc.getTecnico().getId() : null,
-                                inc.getTecnico() != null
-                                                ? inc.getTecnico().getNombre() + " " + inc.getTecnico().getApellido()
-                                                : null,
-                                inc.getCategoria().getId(),
-                                inc.getCategoria().getNombre(),
-                                inc.getCategoria().getEspecialidad() != null
-                                                ? inc.getCategoria().getEspecialidad().getNombre()
-                                                : null,
-                                inc.getPrioridad().getId(),
-                                inc.getPrioridad().getNivel(),
-                                inc.getUbicacion().getId(),
-                                inc.getUbicacion().getPabellon() + " - " + inc.getUbicacion().getAulaLaboratorio(),
-                                inc.getEquipo() != null ? inc.getEquipo().getId() : null,
-                                inc.getEquipo() != null ? inc.getEquipo().getCodigo() : null,
+                                estudianteId,
+                                estudianteNombre,
+                                tecnicoId,
+                                tecnicoNombre,
+                                categoriaId,
+                                categoriaNombre,
+                                especialidadNombre,
+                                prioridadId,
+                                prioridadNivel,
+                                ubicacionId,
+                                ubicacionTexto,
+                                equipoId,
+                                equipoCodigo,
                                 inc.getSolucionTecnica(),
                                 inc.getFechaCreacion(),
                                 inc.getFechaInicioAtencion(),
@@ -409,7 +472,7 @@ public class IncidenciaService {
                 Map<Integer, HistorialEstado> reasignaciones = historialEstadoRepository
                                 .findByTipoAccionOrderByFechaCambioDesc("REASIGNACION")
                                 .stream()
-                                .filter(h -> h.getIncidencia() != null)
+                                .filter(h -> h.getIncidencia() != null && h.getIncidencia().getId() != null)
                                 .collect(Collectors.toMap(
                                                 h -> h.getIncidencia().getId(),
                                                 h -> h,
@@ -418,7 +481,7 @@ public class IncidenciaService {
                 Map<Integer, HistorialEstado> asignaciones = historialEstadoRepository
                                 .findByTipoAccionOrderByFechaCambioAsc("ASIGNACION")
                                 .stream()
-                                .filter(h -> h.getIncidencia() != null)
+                                .filter(h -> h.getIncidencia() != null && h.getIncidencia().getId() != null)
                                 .collect(Collectors.toMap(
                                                 h -> h.getIncidencia().getId(),
                                                 h -> h,
@@ -462,30 +525,54 @@ public class IncidenciaService {
         private IncidenciaDetalleResponse toDetalleResponse(Incidencia inc,
                         List<HistorialEstadoResponse> historial,
                         List<ArchivoAdjuntoResponse> adjuntos) {
+                Integer estudianteId = inc.getEstudiante() != null ? inc.getEstudiante().getId() : null;
+                String estudianteNombre = inc.getEstudiante() != null
+                                ? inc.getEstudiante().getNombre() + " " + inc.getEstudiante().getApellido()
+                                : "Sin estudiante";
+
+                Integer tecnicoId = inc.getTecnico() != null ? inc.getTecnico().getId() : null;
+                String tecnicoNombre = inc.getTecnico() != null
+                                ? inc.getTecnico().getNombre() + " " + inc.getTecnico().getApellido()
+                                : null;
+
+                Integer categoriaId = inc.getCategoria() != null ? inc.getCategoria().getId() : null;
+                String categoriaNombre = inc.getCategoria() != null ? inc.getCategoria().getNombre() : "Sin categoría";
+                String especialidadNombre = (inc.getCategoria() != null && inc.getCategoria().getEspecialidad() != null)
+                                ? inc.getCategoria().getEspecialidad().getNombre()
+                                : null;
+
+                Integer prioridadId = inc.getPrioridad() != null ? inc.getPrioridad().getId() : null;
+                String prioridadNivel = inc.getPrioridad() != null ? inc.getPrioridad().getNivel() : "Media";
+
+                Integer ubicacionId = inc.getUbicacion() != null ? inc.getUbicacion().getId() : null;
+                String ubicacionTexto = inc.getUbicacion() != null
+                                ? inc.getUbicacion().getPabellon() + " - " + inc.getUbicacion().getAulaLaboratorio()
+                                : "Sin ubicación";
+
+                Integer equipoId = inc.getEquipo() != null ? inc.getEquipo().getId() : null;
+                String equipoCodigo = inc.getEquipo() != null ? inc.getEquipo().getCodigo() : null;
+                String equipoTipo = inc.getEquipo() != null ? inc.getEquipo().getTipo() : null;
+
                 return new IncidenciaDetalleResponse(
                                 inc.getId(),
                                 inc.getCodigoTicket(),
                                 inc.getTitulo(),
                                 inc.getDescripcion(),
                                 inc.getEstado(),
-                                inc.getEstudiante().getId(),
-                                inc.getEstudiante().getNombre() + " " + inc.getEstudiante().getApellido(),
-                                inc.getTecnico() != null ? inc.getTecnico().getId() : null,
-                                inc.getTecnico() != null
-                                                ? inc.getTecnico().getNombre() + " " + inc.getTecnico().getApellido()
-                                                : null,
-                                inc.getCategoria().getId(),
-                                inc.getCategoria().getNombre(),
-                                inc.getCategoria().getEspecialidad() != null
-                                                ? inc.getCategoria().getEspecialidad().getNombre()
-                                                : null,
-                                inc.getPrioridad().getId(),
-                                inc.getPrioridad().getNivel(),
-                                inc.getUbicacion().getId(),
-                                inc.getUbicacion().getPabellon() + " - " + inc.getUbicacion().getAulaLaboratorio(),
-                                inc.getEquipo() != null ? inc.getEquipo().getId() : null,
-                                inc.getEquipo() != null ? inc.getEquipo().getCodigo() : null,
-                                inc.getEquipo() != null ? inc.getEquipo().getTipo() : null,
+                                estudianteId,
+                                estudianteNombre,
+                                tecnicoId,
+                                tecnicoNombre,
+                                categoriaId,
+                                categoriaNombre,
+                                especialidadNombre,
+                                prioridadId,
+                                prioridadNivel,
+                                ubicacionId,
+                                ubicacionTexto,
+                                equipoId,
+                                equipoCodigo,
+                                equipoTipo,
                                 inc.getSolucionTecnica(),
                                 inc.getFechaCreacion(),
                                 inc.getFechaInicioAtencion(),
@@ -498,13 +585,18 @@ public class IncidenciaService {
         }
 
         private HistorialEstadoResponse toHistorialResponse(HistorialEstado h) {
+                Integer usuarioId = h.getUsuario() != null ? h.getUsuario().getId() : null;
+                String usuarioNombre = h.getUsuario() != null
+                                ? h.getUsuario().getNombre() + " " + h.getUsuario().getApellido()
+                                : "Sistema";
+
                 return new HistorialEstadoResponse(
                                 h.getId(),
                                 h.getEstadoAnterior(),
                                 h.getEstadoNuevo(),
                                 h.getTipoAccion(),
-                                h.getUsuario().getId(),
-                                h.getUsuario().getNombre() + " " + h.getUsuario().getApellido(),
+                                usuarioId,
+                                usuarioNombre,
                                 h.getComentario(),
                                 h.getTecnicoAnterior() != null ? h.getTecnicoAnterior().getId() : null,
                                 h.getTecnicoAnterior() != null
@@ -535,14 +627,28 @@ public class IncidenciaService {
         }
 
         public List<TecnicoCalificacionResponse> obtenerCalificacionesTecnicos() {
+                List<Usuario> tecnicos = usuarioRepository.findByRolNombreIn(
+                                List.of("TECNICO", "TECNICO_GENERAL", "TECNICO_ESPECIALISTA"));
+
                 List<Incidencia> calificadas = incidenciaRepository.findByCalificacionIsNotNullAndTecnicoIsNotNull();
 
                 Map<Integer, List<Incidencia>> porTecnico = calificadas.stream()
+                                .filter(i -> i.getTecnico() != null)
                                 .collect(Collectors.groupingBy(i -> i.getTecnico().getId()));
 
-                return porTecnico.entrySet().stream().map(entry -> {
-                        List<Incidencia> incidencias = entry.getValue();
-                        Usuario tecnico = incidencias.get(0).getTecnico();
+                return tecnicos.stream().map(tecnico -> {
+                        List<Incidencia> incidencias = porTecnico.getOrDefault(tecnico.getId(), Collections.emptyList());
+
+                        if (incidencias.isEmpty()) {
+                                return new TecnicoCalificacionResponse(
+                                                tecnico.getId(),
+                                                tecnico.getNombre(),
+                                                tecnico.getApellido(),
+                                                tecnico.getEspecialidad() != null ? tecnico.getEspecialidad().getNombre() : null,
+                                                0.0,
+                                                0,
+                                                Collections.emptyList());
+                        }
 
                         double promedio = incidencias.stream()
                                         .mapToInt(Incidencia::getCalificacion)
@@ -550,16 +656,7 @@ public class IncidenciaService {
                                         .orElse(0.0);
 
                         List<TecnicoCalificacionResponse.ComentarioCalificacion> comentarios = incidencias.stream()
-                                        .map(i -> new TecnicoCalificacionResponse.ComentarioCalificacion(
-                                                        i.getId(),
-                                                        i.getCodigoTicket(),
-                                                        i.getTitulo(),
-                                                        i.getCalificacion(),
-                                                        i.getMotivoCalificacion(),
-                                                        i.getComentarioCalificacion(),
-                                                        i.getEstudiante().getNombre() + " "
-                                                                        + i.getEstudiante().getApellido(),
-                                                        i.getFechaCierre()))
+                                        .map(this::toComentarioCalificacion)
                                         .collect(Collectors.toList());
 
                         return new TecnicoCalificacionResponse(
@@ -572,5 +669,56 @@ public class IncidenciaService {
                                         incidencias.size(),
                                         comentarios);
                 }).collect(Collectors.toList());
+        }
+
+        public TecnicoCalificacionResponse obtenerCalificacionesPorTecnico(Integer tecnicoId) {
+                Usuario tecnico = usuarioRepository.findById(tecnicoId)
+                                .orElseThrow(() -> new RuntimeException("Técnico no encontrado con id: " + tecnicoId));
+
+                List<Incidencia> incidencias = incidenciaRepository
+                                .findByTecnicoIdAndCalificacionIsNotNullOrderByFechaCierreDesc(tecnicoId);
+
+                if (incidencias.isEmpty()) {
+                        return new TecnicoCalificacionResponse(
+                                        tecnico.getId(),
+                                        tecnico.getNombre(),
+                                        tecnico.getApellido(),
+                                        tecnico.getEspecialidad() != null ? tecnico.getEspecialidad().getNombre() : null,
+                                        0.0,
+                                        0,
+                                        Collections.emptyList());
+                }
+
+                double promedio = incidencias.stream()
+                                .mapToInt(Incidencia::getCalificacion)
+                                .average()
+                                .orElse(0.0);
+
+                List<TecnicoCalificacionResponse.ComentarioCalificacion> comentarios = incidencias.stream()
+                                .map(this::toComentarioCalificacion)
+                                .collect(Collectors.toList());
+
+                return new TecnicoCalificacionResponse(
+                                tecnico.getId(),
+                                tecnico.getNombre(),
+                                tecnico.getApellido(),
+                                tecnico.getEspecialidad() != null ? tecnico.getEspecialidad().getNombre() : null,
+                                Math.round(promedio * 10.0) / 10.0,
+                                incidencias.size(),
+                                comentarios);
+        }
+
+        private TecnicoCalificacionResponse.ComentarioCalificacion toComentarioCalificacion(Incidencia i) {
+                return new TecnicoCalificacionResponse.ComentarioCalificacion(
+                                i.getId(),
+                                i.getCodigoTicket(),
+                                i.getTitulo(),
+                                i.getCalificacion(),
+                                i.getMotivoCalificacion(),
+                                i.getComentarioCalificacion(),
+                                i.getEstudiante() != null
+                                                ? (i.getEstudiante().getNombre() + " " + i.getEstudiante().getApellido())
+                                                : "Estudiante",
+                                i.getFechaCierre());
         }
 }

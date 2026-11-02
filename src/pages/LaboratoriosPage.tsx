@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import Header from '../components/dashboard/Header';
 import LaboratorioCard from '../components/dashboard/LaboratorioCard';
 import LaboratorioForm from '../components/dashboard/LaboratorioForm';
+import { CardsGridSkeleton } from '../components/dashboard/SkeletonLoaders';
 import { obtenerLaboratorios, guardarLaboratorio } from '../services/laboratoriosService';
 import type { LaboratorioFormulario } from '../services/laboratoriosService';
 import type { Laboratorio } from '../types/laboratorio';
@@ -43,7 +44,7 @@ export default function LaboratoriosPage({ title, description }: LaboratoriosPag
           </div>
           {esAdmin && <button type="button" onClick={() => { setEditingLaboratorio(null); setModalOpen(true); }} className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700"><Plus className="h-5 w-5" aria-hidden="true" />Nuevo Laboratorio</button>}
         </div>
-        {loading ? <p role="status" className="text-slate-500">Cargando…</p> : error ? (
+        {loading ? <CardsGridSkeleton count={6} /> : error ? (
           <div role="alert" className="space-y-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"><p>{error}</p><button type="button" onClick={() => { setError(''); setLoading(true); setIntento((value) => value + 1); }} className="cursor-pointer underline">Reintentar</button></div>
         ) : laboratorios.length === 0 ? <p className="rounded-2xl bg-white p-10 text-center text-slate-500">Aún no hay laboratorios registrados.</p> : (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">

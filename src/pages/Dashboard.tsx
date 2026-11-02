@@ -13,7 +13,8 @@ import type { Incident } from '../types/incident';
 import { getCurrentUser } from '../utils/auth';
 import GuidedTour from '../components/dashboard/GuidedTour';
 import { getTourSteps, getTourStorageKey } from '../data/tourSteps';
-import StudentWelcomeBanner from '../components/dashboard/StudentWelcomeBanner';
+import RoleWelcomeBanner from '../components/dashboard/RoleWelcomeBanner';
+import { StatCardsGridSkeleton, TableSkeleton, CategoryBreakdownSkeleton } from '../components/dashboard/SkeletonLoaders';
 
 const CATEGORY_COLORS = ['#8b5cf6', '#3b82f6', '#f59e0b', '#10b981', '#ef4444', '#06b6d4', '#ec4899'];
 
@@ -69,24 +70,27 @@ export default function Dashboard() {
     <>
       <Header title="Panel principal" subtitle="Resumen de incidencias universitarias" />
 
-      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-200">
+      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-100">
+        <RoleWelcomeBanner nombre={usuario?.nombre} rol={usuario?.rol} />
+
         {loading ? (
-          <p className="text-slate-600">Cargando incidencias...</p>
+          <>
+            <StatCardsGridSkeleton count={isEstudiante ? 4 : 5} />
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div className={isEstudiante ? 'xl:col-span-3' : 'xl:col-span-2'}>
+                <TableSkeleton rows={4} showFilters={false} />
+              </div>
+              {!isEstudiante && (
+                <div>
+                  <CategoryBreakdownSkeleton />
+                </div>
+              )}
+            </div>
+          </>
         ) : error ? (
           <div className="bg-red-100 text-red-700 p-4 rounded-lg">{error}</div>
         ) : (
           <>
-            {isEstudiante ? (
-              <StudentWelcomeBanner nombre={usuario?.nombre} />
-            ) : (
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="text-left">
-                  <h3 className="text-2xl font-bold text-black">Bienvenido al ASIU</h3>
-                  <p className="text-sm text-slate-500 mt-1">Sistema de Atención y Seguimiento de Incidencias Universitarias</p>
-                </div>
-              </div>
-            )}
-
             <div data-tour="stat-cards" className={`grid grid-cols-2 ${isEstudiante ? 'xl:grid-cols-4' : 'xl:grid-cols-5'} gap-3 sm:gap-4`}>
               {statCards.map((card) => <StatCard key={card.title} {...card} />)}
             </div>

@@ -330,3 +330,9 @@ export async function obtenerCalificacionesTecnicos(): Promise<TecnicoCalificaci
   if (!response.ok) throw new Error('Error al obtener calificaciones de técnicos');
   return response.json();
 }
+
+export async function obtenerMisCalificaciones(): Promise<TecnicoCalificacion> {
+  const response = await fetchWithAuth('/incidencias/mis-calificaciones');
+  if (!response.ok) throw new Error('Error al obtener mis calificaciones');
+  return response.json();
+}

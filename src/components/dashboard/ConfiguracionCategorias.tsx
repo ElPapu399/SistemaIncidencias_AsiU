@@ -3,6 +3,7 @@ import { Pencil, Plus, Tag } from 'lucide-react';
 import { guardarCategoria, obtenerCatalogoConfiguracion } from '../../services/configuracionService';
 import type { CategoriaConfiguracion, CategoriaFormulario } from '../../services/configuracionService';
 import CategoriaForm from './CategoriaForm';
+import { TableSkeleton } from './SkeletonLoaders';
 import SortableHeader from '../common/SortableHeader';
 import {
   type SortDirection,
@@ -71,7 +72,7 @@ export default function ConfiguracionCategorias() {
     setMensaje(id === undefined ? 'Categoría creada correctamente.' : 'Categoría actualizada correctamente.');
   }
 
-  if (loading) return <p role="status" className="text-sm text-slate-500">Cargando categorías…</p>;
+  if (loading) return <TableSkeleton rows={4} showFilters={false} />;
   if (error) return (
     <div role="alert" className="space-y-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
       <p>{error}</p>

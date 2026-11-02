@@ -40,4 +40,7 @@ public interface IncidenciaRepository extends JpaRepository<Incidencia, Integer>
 
     @EntityGraph(attributePaths = {"estudiante", "tecnico", "categoria", "categoria.especialidad", "prioridad", "ubicacion", "equipo"})
     List<Incidencia> findByCalificacionIsNotNullAndTecnicoIsNotNull();
+
+    @EntityGraph(attributePaths = {"estudiante", "tecnico", "categoria", "categoria.especialidad", "prioridad", "ubicacion", "equipo"})
+    List<Incidencia> findByTecnicoIdAndCalificacionIsNotNullOrderByFechaCierreDesc(Integer tecnicoId);
 }

@@ -8,6 +8,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class DataLoader implements CommandLineRunner {
 
@@ -20,6 +22,7 @@ public class DataLoader implements CommandLineRunner {
         private final UbicacionRepository ubicacionRepository;
         private final CategoriaRepository categoriaRepository;
         private final EquipoRepository equipoRepository;
+        private final IncidenciaRepository incidenciaRepository;
         private final BCryptPasswordEncoder passwordEncoder;
 
         public DataLoader(UsuarioRepository usuarioRepository,
@@ -29,6 +32,7 @@ public class DataLoader implements CommandLineRunner {
                         UbicacionRepository ubicacionRepository,
                         CategoriaRepository categoriaRepository,
                         EquipoRepository equipoRepository,
+                        IncidenciaRepository incidenciaRepository,
                         BCryptPasswordEncoder passwordEncoder) {
                 this.usuarioRepository = usuarioRepository;
                 this.rolRepository = rolRepository;
@@ -37,6 +41,7 @@ public class DataLoader implements CommandLineRunner {
                 this.ubicacionRepository = ubicacionRepository;
                 this.categoriaRepository = categoriaRepository;
                 this.equipoRepository = equipoRepository;
+                this.incidenciaRepository = incidenciaRepository;
                 this.passwordEncoder = passwordEncoder;
         }
 
@@ -143,6 +148,41 @@ public class DataLoader implements CommandLineRunner {
                                 "987-990-112", "Ingeniería de Sistemas", "Activo");
 
                 crearEquiposSiVacio();
+                inicializarCalificacionesDePrueba();
+        }
+
+        private void inicializarCalificacionesDePrueba() {
+                try {
+                        List<Incidencia> existentes = incidenciaRepository.findByCalificacionIsNotNullAndTecnicoIsNotNull();
+                        if (!existentes.isEmpty()) return;
+
+                        List<Incidencia> todas = incidenciaRepository.findAll();
+                        for (Incidencia i : todas) {
+                                if ("INC-2026-0007".equals(i.getCodigoTicket())) {
+                                        i.setCalificacion(5);
+                                        i.setMotivoCalificacion("Atención rápida y eficaz");
+                                        i.setComentarioCalificacion("Excelente soporte, solucionó el problema con el sistema operativo muy rápido.");
+                                        incidenciaRepository.save(i);
+                                } else if ("INC-2026-0009".equals(i.getCodigoTicket())) {
+                                        i.setCalificacion(5);
+                                        i.setMotivoCalificacion("Excelente trato del técnico");
+                                        i.setComentarioCalificacion("Muy amable y eficiente, dejó el teclado completamente operativo.");
+                                        incidenciaRepository.save(i);
+                                } else if ("INC-2026-0015".equals(i.getCodigoTicket())) {
+                                        i.setCalificacion(4);
+                                        i.setMotivoCalificacion("Problema 100% resuelto");
+                                        i.setComentarioCalificacion("Restableció el internet del laboratorio a tiempo para la clase.");
+                                        incidenciaRepository.save(i);
+                                } else if ("INC-2026-0020".equals(i.getCodigoTicket())) {
+                                        i.setCalificacion(5);
+                                        i.setMotivoCalificacion("Problema 100% resuelto");
+                                        i.setComentarioCalificacion("Reinstaló los servicios de base de datos local y pudimos continuar la práctica.");
+                                        incidenciaRepository.save(i);
+                                }
+                        }
+                } catch (Exception e) {
+                        log.warn("No se pudieron inicializar calificaciones de prueba: {}", e.getMessage());
+                }
         }
 
         private Rol obtenerOCrearRol(String nombreRol) {

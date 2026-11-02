@@ -4,6 +4,7 @@ import { Building2, ChevronRight, MapPin, Plus, Search } from 'lucide-react';
 import Header from '../components/dashboard/Header';
 import EquipoForm from '../components/dashboard/EquipoForm';
 import EquiposTable from '../components/dashboard/EquiposTable';
+import { TableSkeleton } from '../components/dashboard/SkeletonLoaders';
 import { cambiarEstadoEquipo, guardarEquipo, obtenerEquiposLaboratorio, obtenerLaboratorio } from '../services/laboratoriosService';
 import { ESTADOS_EQUIPO } from '../types/equipo';
 import type { Equipo, EquipoEstadoFormulario, EquipoFormulario } from '../types/equipo';
@@ -63,7 +64,12 @@ export default function LaboratorioDetallePage() {
       <Header title="Equipos del laboratorio" subtitle={laboratorio?.nombre} />
       <main className="flex-1 space-y-6 bg-slate-100 p-6 text-left lg:p-8">
         <nav aria-label="Ruta de navegación" className="flex flex-wrap items-center gap-2 text-sm font-semibold"><Link to="/dashboard/laboratorios" className="inline-flex items-center gap-2 text-blue-600 hover:underline"><Building2 className="h-5 w-5" />Laboratorios</Link><ChevronRight className="h-4 w-4 text-slate-500" aria-hidden="true" /><span aria-current="page" className="text-slate-900">{laboratorio?.nombre ?? 'Detalle del laboratorio'}</span></nav>
-        {loading ? <p role="status" className="text-slate-500">Cargando laboratorio y equipos…</p> : error ? (
+        {loading ? (
+          <div className="space-y-6">
+            <div className="h-40 rounded-2xl border border-slate-200 bg-white p-6 animate-pulse" />
+            <TableSkeleton rows={4} showFilters={true} />
+          </div>
+        ) : error ? (
           <div role="alert" className="space-y-3 rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700"><p>{error}</p><button type="button" onClick={() => { setError(''); setLoading(true); setIntento((value) => value + 1); }} className="cursor-pointer underline">Reintentar</button></div>
         ) : laboratorio && <>
           <section aria-label="Resumen del laboratorio" className="rounded-2xl border border-slate-200 bg-white p-6">

@@ -1,9 +1,10 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { Menu } from 'lucide-react';
 import { useOutletContext } from 'react-router-dom';
 import type { MenuContext } from '../../layouts/DashboardLayout';
 import { getCurrentUser } from '../../utils/auth';
+import NotificationsMenu from './NotificationsMenu';
 
 interface HeaderProps {
   title: string;
@@ -55,14 +56,7 @@ export default function Header({ title, subtitle, nombreUsuario }: HeaderProps) 
       </div>
 
       <div className="flex items-center gap-4">
-
-        <button
-          type="button"
-          aria-label="Notificaciones"
-          className="relative w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-        >
-          <FontAwesomeIcon icon={faBell} />
-        </button>
+        <NotificationsMenu />
 
         <div data-tour="header-user-info" className="flex items-center gap-3 pl-4 border-l border-slate-200">
           <div className="w-9 h-9 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-sm">

@@ -74,7 +74,7 @@ export default function DashboardLayout() {
         <Sidebar onClose={() => setMenuAbierto(false)} />
       </div>
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 bg-slate-100 min-h-screen">
         <Outlet
           context={{
             menuAbierto,

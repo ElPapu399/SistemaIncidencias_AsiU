@@ -94,12 +94,7 @@ function App() {
         />
         <Route
           path="calificaciones-tecnicos"
-          element={
-            <CalificacionesTecnicosPage
-              title="Calificaciones de Técnicos"
-              description="Consulta el desempeño y los comentarios de los técnicos de soporte."
-            />
-          }
+          element={<CalificacionesTecnicosPage />}
         />
         <Route
           path="perfil"

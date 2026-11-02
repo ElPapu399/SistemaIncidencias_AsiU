@@ -23,6 +23,7 @@ import {
 import type { Incident } from '../types/incident';
 import { getCurrentUser } from '../utils/auth';
 import Button from '../components/Button';
+import { TableSkeleton } from '../components/dashboard/SkeletonLoaders';
 
 const CLOSED_STATUSES = ['Resuelta', 'Resuelto', 'Cerrada', 'Cancelado'];
 
@@ -210,7 +211,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
     <>
       <Header title={pageTitle} subtitle={pageSubtitle} />
 
-      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-200">
+      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-100">
         {/* Header section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="text-left">
@@ -266,7 +267,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
 
         {/* Tabs técnico especialista */}
         {isTecnicoEspecialista && !soloMisIncidencias && (
-          <div className="flex items-center gap-2 p-1 bg-slate-300/70 rounded-2xl max-w-fit">
+          <div className="flex items-center gap-2 p-1 bg-slate-200/80 rounded-2xl max-w-fit">
             {tecnicoTabs.map((tab) => {
               const isActive = tecnicoFilter === tab.key;
               return (
@@ -284,10 +285,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
         )}
 
         {loading && (
-          <div className="bg-white rounded-2xl p-12 text-center text-slate-500 border border-slate-300">
-            <FontAwesomeIcon icon={faSpinner} spin className="text-2xl mb-2 text-slate-400" />
-            <p>Cargando incidencias...</p>
-          </div>
+          <TableSkeleton rows={6} showFilters={true} />
         )}
 
         {error && (

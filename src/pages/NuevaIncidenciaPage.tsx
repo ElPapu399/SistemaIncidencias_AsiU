@@ -177,15 +177,15 @@ export default function NuevaIncidenciaPage() {
         subtitle="Reporta averías o problemas técnicos en laboratorios o aulas del campus universitario."
       />
 
-      <main className="flex-1 overflow-y-auto p-6 bg-slate-200">
-        <div className="max-w-3xl w-full mr-auto">
+      <main className="flex-1 overflow-y-auto p-6 bg-slate-100 lg:p-8">
+        <div className="max-w-3xl w-full mx-auto">
           {success ? (
-            <div className="bg-white border border-slate-700 rounded-2xl p-8 text-center shadow-xl space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center text-3xl">
+            <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center shadow-sm space-y-4">
+              <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center text-3xl">
                 <FontAwesomeIcon icon={faCircleCheck} />
               </div>
-              <h3 className="text-xl font-bold text-black">¡Incidencia registrada con éxito!</h3>
-              <p className="text-md text-slate-600">
+              <h3 className="text-xl font-bold text-slate-900">¡Incidencia registrada con éxito!</h3>
+              <p className="text-sm text-slate-600">
                 Tu solicitud ha sido enviada al equipo de soporte técnico. Puedes dar seguimiento al estado de atención en tu panel.
               </p>
               <div className="pt-4 flex items-center justify-center gap-3">
@@ -200,7 +200,7 @@ export default function NuevaIncidenciaPage() {
                     setUbicacionId(0);
                     handleRemoveFile();
                   }}
-                  className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
+                  className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
                 >
                   Registrar otra incidencia
                 </button>
@@ -214,31 +214,31 @@ export default function NuevaIncidenciaPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-white border border-slate-700 rounded-2xl shadow-xl overflow-hidden">
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
               {/* Card Banner */}
-              <div className="px-6 py-4 border-b border-slate-800 bg-white flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-slate-100 bg-white flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-black flex items-center gap-2">
-                    <FontAwesomeIcon icon={faPaperPlane} className="text-amber-400 text-sm" />
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <FontAwesomeIcon icon={faPaperPlane} className="text-amber-500 text-sm" />
                     Formulario de Solicitud de Incidencia
                   </h3>
-                  <p className="text-xs text-slate-600 mt-0.5">
+                  <p className="text-xs text-slate-500 mt-0.5">
                     Proporciona los datos del equipo o ambiente para que un técnico sea asignado.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => navigate('/dashboard/incidencias')}
-                  className="px-2 py-1 rounded-lg bg-blue-600/50 hover:bg-blue-800 text-slate-200 hover:text-white hover:font-bold text-xs font-medium inline-flex items-center gap-1 transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <FontAwesomeIcon icon={faArrowLeft} />
-                  <span className="px-1 py-1">Volver</span>
+                  <span>Volver</span>
                 </button>
               </div>
 
               {loading ? (
                 <div className="p-12 text-center text-slate-400">
-                  <FontAwesomeIcon icon={faSpinner} spin className="text-2xl text-amber-400 mb-2" />
+                  <FontAwesomeIcon icon={faSpinner} spin className="text-2xl text-amber-500 mb-2" />
                   <p className="text-sm">Cargando formulario...</p>
                 </div>
               ) : (
@@ -253,7 +253,7 @@ export default function NuevaIncidenciaPage() {
                       value={titulo}
                       onChange={(e) => setTitulo(e.target.value)}
                       placeholder="Ej: Computadora no da vídeo o proyector sin señal"
-                      className="w-full bg-gray-200 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-gray-600 placeholder:text-slate-500 focus:outline-none focus:border-amber-500/50 transition-colors"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-colors"
                     />
                   </div>
 
@@ -266,7 +266,7 @@ export default function NuevaIncidenciaPage() {
                       <select
                         value={categoriaId}
                         onChange={(e) => handleCategoriaChange(Number(e.target.value))}
-                        className="w-full bg-gray-200 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-amber-500/50 transition-colors"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-500 transition-colors"
                       >
                         <option value={0} disabled>
                           Seleccionar categoría
@@ -286,7 +286,7 @@ export default function NuevaIncidenciaPage() {
                       <select
                         value={ubicacionId}
                         onChange={(e) => setUbicacionId(Number(e.target.value))}
-                        className="w-full bg-gray-200 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:border-amber-500/50 transition-colors"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-500 transition-colors"
                       >
                         <option value={0} disabled>
                           Seleccionar aula / laboratorio
@@ -310,7 +310,7 @@ export default function NuevaIncidenciaPage() {
                       value={descripcion}
                       onChange={(e) => setDescripcion(e.target.value)}
                       placeholder="Indica qué equipo presenta la falla, qué sucede al encenderlo, o cualquier detalle relevante..."
-                      className="w-full bg-gray-200 border border-slate-600 rounded-xl px-4 py-2.5 text-sm text-gray-500 placeholder:text-slate-500 focus:outline-none focus:border-amber-500/50 transition-colors"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-colors"
                     />
                   </div>
 
@@ -382,22 +382,22 @@ export default function NuevaIncidenciaPage() {
 
                   {/* Mensaje de error si falla validación */}
                   {error && (
-                    <div className="text-red-400 text-sm bg-red-950/40 border border-red-800/50 rounded-xl px-4 py-3">
+                    <div className="text-red-700 text-sm bg-red-50 border border-red-200 rounded-xl px-4 py-3">
                       {error}
                     </div>
                   )}
 
                   {/* Botones de acción */}
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-                    <span className="text-[13px] text-slate-500 flex items-center gap-1.5">
-                      <FontAwesomeIcon icon={faShieldHalved} className="text-amber-400" />
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
+                    <span className="text-xs text-slate-500 flex items-center gap-1.5 order-2 sm:order-1">
+                      <FontAwesomeIcon icon={faShieldHalved} className="text-amber-500" />
                       Tu solicitud será procesada por el equipo de soporte de ASIU.
                     </span>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 w-full sm:w-auto justify-end order-1 sm:order-2">
                       <button
                         type="button"
                         onClick={() => navigate('/dashboard/incidencias')}
-                        className="px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:font-bold bg-red-400 hover:bg-red-800 transition-colors"
+                        className="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
                       >
                         Cancelar
                       </button>

@@ -3,6 +3,7 @@ import { Pencil, Plus } from 'lucide-react';
 import { guardarEspecialidad, obtenerEspecialidades } from '../../services/configuracionService';
 import type { EspecialidadCatalogo, EspecialidadFormulario } from '../../services/configuracionService';
 import EspecialidadForm from './EspecialidadForm';
+import { TableSkeleton } from './SkeletonLoaders';
 import SortableHeader from '../common/SortableHeader';
 import {
   type SortDirection,
@@ -56,7 +57,7 @@ export default function ConfiguracionEspecialidades() {
     setMensaje(id === undefined ? 'Especialidad creada correctamente.' : 'Especialidad actualizada correctamente.');
   }
 
-  if (loading) return <p role="status" className="text-sm text-slate-500">Cargando especialidades…</p>;
+  if (loading) return <TableSkeleton rows={4} showFilters={false} />;
   if (error) return (
     <div role="alert" className="space-y-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
       <p>{error}</p>

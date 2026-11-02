@@ -11,7 +11,7 @@ export default function PlaceholderPage({ title, description }: PlaceholderPageP
   return (
     <>
       <Header title={title} />
-      <main className="flex-1 flex items-center justify-center p-6 bg-slate-200">
+      <main className="flex-1 flex items-center justify-center p-6 bg-slate-100">
         <div className="text-center max-w-md">
           <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center mb-4">
             <FontAwesomeIcon icon={faHammer} className="text-2xl text-slate-500" />

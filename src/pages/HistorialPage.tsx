@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import Header from '../components/dashboard/Header';
 import HistorialTable from '../components/dashboard/HistorialTable';
 import IncidentDetailModal from '../components/dashboard/IncidentDetailModal';
+import { TableSkeleton } from '../components/dashboard/SkeletonLoaders';
 import { obtenerIncidencias, obtenerIncidenciasPorEstudiante, obtenerIncidenciasPorTecnico } from '../services/incidenciasService';
 import type { Incident } from '../types/incident';
 import { getCurrentUser } from '../utils/auth';
@@ -58,16 +57,13 @@ export default function HistorialPage({ title = 'Historial', description }: Hist
   return (
     <>
       <Header title={title} subtitle={subtitle} />
-      <main className="flex-1 space-y-6 overflow-y-auto bg-slate-200 p-6">
+      <main className="flex-1 space-y-6 overflow-y-auto bg-slate-100 p-6">
         <div className="text-left">
           <h3 className="text-2xl font-bold text-black">{esEstudiante || esEspecialista ? 'Mi historial de incidencias' : 'Historial general de incidencias'}</h3>
           <p className="mt-1 text-sm text-slate-600">{loading ? 'Cargando historial…' : error ? 'Historial no disponible' : `${incidents.length} incidencia${incidents.length !== 1 ? 's' : ''} resuelta${incidents.length !== 1 ? 's' : ''} o cerrada${incidents.length !== 1 ? 's' : ''}`}</p>
         </div>
         {loading ? (
-          <div role="status" className="rounded-2xl border border-slate-300 bg-white p-12 text-center text-slate-500">
-            <FontAwesomeIcon icon={faSpinner} spin className="mb-2 text-2xl text-slate-400" />
-            <p>Cargando historial…</p>
-          </div>
+          <TableSkeleton rows={5} showFilters={true} />
         ) : error ? (
           <div role="alert" className="space-y-3 rounded-2xl border border-red-300 bg-red-100 p-6 text-sm text-red-700">
             <p>{error}</p>

@@ -96,10 +96,15 @@ export default function Sidebar({ onClose }: SidebarProps) {
     },
     {
       to: "/dashboard/calificaciones-tecnicos",
-      label: "Calificaciones",
+      label: {
+        ADMIN: "Calificaciones",
+        TECNICO: "Mis Calificaciones",
+        TECNICO_GENERAL: "Mis Calificaciones",
+        TECNICO_ESPECIALISTA: "Mis Calificaciones",
+      } as Record<string, string>,
       icon: faStar,
       tourId: "sidebar-calificaciones",
-      roles: ["ADMIN", "TECNICO_GENERAL"],
+      roles: ["ADMIN", ...ALL_TECNICOS],
     },
     {
       to: "/dashboard/historial",

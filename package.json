@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test:auth": "node --experimental-vm-modules --test tests/fetchWithAuth.test.mjs",
     "test:reportes": "node --experimental-strip-types --test tests/reportesMetrics.test.mjs tests/reportesCharts.test.mjs",
+    "test": "npm run test:auth && npm run test:reportes",
     "preview": "vite preview",
     "db:export": "docker exec incidencias_db mysqldump -u root -proot campus_incidencias_db > database/init.sql",
     "db:sync": "docker compose down -v && docker compose up -d"

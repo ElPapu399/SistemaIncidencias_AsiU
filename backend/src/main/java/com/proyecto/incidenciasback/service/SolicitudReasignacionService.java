@@ -24,17 +24,20 @@ public class SolicitudReasignacionService {
         private final UsuarioRepository usuarioRepository;
         private final IncidenciaService incidenciaService;
         private final AuthHelper authHelper;
+        private final NotificacionService notificacionService;
 
         public SolicitudReasignacionService(SolicitudReasignacionRepository solicitudRepository,
                         IncidenciaRepository incidenciaRepository,
                         UsuarioRepository usuarioRepository,
                         IncidenciaService incidenciaService,
-                        AuthHelper authHelper) {
+                        AuthHelper authHelper,
+                        NotificacionService notificacionService) {
                 this.solicitudRepository = solicitudRepository;
                 this.incidenciaRepository = incidenciaRepository;
                 this.usuarioRepository = usuarioRepository;
                 this.incidenciaService = incidenciaService;
                 this.authHelper = authHelper;
+                this.notificacionService = notificacionService;
         }
 
         @Transactional
@@ -114,6 +117,27 @@ public class SolicitudReasignacionService {
 
                         // Delega en IncidenciaService para registrar trazabilidad completa en historial
                         incidenciaService.reasignarTecnico(solicitud.getIncidencia().getId(), reasignarRequest);
+
+                        notificacionService.crearNotificacion(
+                                        solicitud.getTecnicoSolicitante(),
+                                        "SOLICITUD_REASIGNACION",
+                                        "Solicitud de reasignación aprobada",
+                                        "Tu solicitud de reasignación para el ticket "
+                                                        + solicitud.getIncidencia().getCodigoTicket()
+                                                        + " ha sido aprobada.",
+                                        solicitud.getIncidencia());
+                } else {
+                        String motivo = request.getComentario() != null && !request.getComentario().isBlank()
+                                        ? ". Motivo: " + request.getComentario()
+                                        : ".";
+                        notificacionService.crearNotificacion(
+                                        solicitud.getTecnicoSolicitante(),
+                                        "SOLICITUD_REASIGNACION",
+                                        "Solicitud de reasignación rechazada",
+                                        "Tu solicitud de reasignación para el ticket "
+                                                        + solicitud.getIncidencia().getCodigoTicket()
+                                                        + " fue rechazada" + motivo,
+                                        solicitud.getIncidencia());
                 }
 
                 solicitudRepository.save(solicitud);

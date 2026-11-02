@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { obtenerEstadosSistema } from '../../services/configuracionService';
+import { TableSkeleton } from './SkeletonLoaders';
 
 const estadoClases: Record<string, string> = {
   Pendiente: 'border-slate-200 bg-slate-100 text-slate-600',
@@ -27,7 +28,7 @@ export default function ConfiguracionEstados() {
   return (
     <div className="space-y-5">
       <h3 className="text-lg font-bold text-slate-900">Estados oficiales del sistema</h3>
-      {loading ? <p role="status" className="text-sm text-slate-500">Cargando estados…</p> : error ? (
+      {loading ? <TableSkeleton rows={3} showFilters={false} /> : error ? (
         <div role="alert" className="space-y-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           <p>{error}</p>
           <button type="button" onClick={() => { setError(''); setLoading(true); setIntento((value) => value + 1); }} className="cursor-pointer font-semibold underline">Reintentar</button>

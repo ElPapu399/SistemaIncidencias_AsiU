@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faSpinner, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import Header from '../components/dashboard/Header';
 import StudentTable from '../components/StudentTable';
 import UserFormModal from '../components/dashboard/UserForm';
 import Button from '../components/Button';
+import { TableSkeleton } from '../components/dashboard/SkeletonLoaders';
 import type { User } from '../types/user';
 import { fetchWithAuth } from '../utils/fetchWithAuth';
 
@@ -63,7 +64,7 @@ export default function EstudiantesPage({ title, description }: EstudiantesPageP
     return (
         <>
             <Header title={title} subtitle={description} />
-            <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-200">
+            <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-100">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="text-left">
                         <h3 className="text-2xl font-bold text-black">Gestión de Estudiantes</h3>
@@ -87,9 +88,7 @@ export default function EstudiantesPage({ title, description }: EstudiantesPageP
                 )}
 
                 {loading ? (
-                    <div className="flex items-center justify-center py-20">
-                        <FontAwesomeIcon icon={faSpinner} spin className="text-3xl text-slate-400" />
-                    </div>
+                    <TableSkeleton rows={5} showFilters={true} />
                 ) : estudiantes.length === 0 ? (
                     <div className="text-center py-20">
                         <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-300 flex items-center justify-center mb-4">

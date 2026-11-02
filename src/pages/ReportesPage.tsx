@@ -11,6 +11,7 @@ import { obtenerEstadosSistema } from '../services/configuracionService';
 import type { Incident, Tecnico } from '../types/incident';
 import { calcularMetricasReportes } from '../utils/reportesMetrics';
 import { calcularGraficosReportes } from '../utils/reportesCharts';
+import { StatCardsGridSkeleton } from '../components/dashboard/SkeletonLoaders';
 
 export default function ReportesPage() {
   const [incidents, setIncidents] = useState<Incident[]>([]);
@@ -50,7 +51,17 @@ export default function ReportesPage() {
           <h1 className="m-0! text-2xl! font-bold! tracking-normal! text-slate-900">Reportes y estadísticas</h1>
           <p className="mt-1 text-slate-500">Análisis del sistema de incidencias</p>
         </div>
-        {loading ? <p role="status" className="rounded-2xl border border-slate-200 bg-white p-8 text-sm text-slate-500">Cargando reportes…</p> : error ? (
+        {loading ? (
+          <>
+            <StatCardsGridSkeleton count={5} />
+            <div className="grid auto-rows-[minmax(340px,auto)] grid-cols-1 gap-6 xl:grid-cols-2">
+              <div className="h-85 rounded-2xl border border-slate-200 bg-white p-6 animate-pulse" />
+              <div className="h-85 rounded-2xl border border-slate-200 bg-white p-6 animate-pulse" />
+              <div className="h-85 rounded-2xl border border-slate-200 bg-white p-6 animate-pulse" />
+              <div className="h-85 rounded-2xl border border-slate-200 bg-white p-6 animate-pulse" />
+            </div>
+          </>
+        ) : error ? (
           <div role="alert" className="space-y-3 rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
             <p>{error}</p>
             <button type="button" onClick={() => { setError(''); setLoading(true); setIntento((actual) => actual + 1); }} className="cursor-pointer font-semibold underline">Reintentar</button>
