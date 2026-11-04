@@ -91,8 +91,28 @@ export default function Dashboard() {
           <div className="bg-red-100 text-red-700 p-4 rounded-lg">{error}</div>
         ) : (
           <>
-            <div data-tour="stat-cards" className={`grid grid-cols-2 ${isEstudiante ? 'xl:grid-cols-4' : 'xl:grid-cols-5'} gap-3 sm:gap-4`}>
-              {statCards.map((card) => <StatCard key={card.title} {...card} />)}
+            <div
+              data-tour="stat-cards"
+              role="region"
+              aria-label="Resumen de incidencias"
+              tabIndex={0}
+              className={`
+                flex w-full min-w-0 gap-3
+                overflow-x-auto overscroll-x-contain
+                snap-x snap-mandatory pb-2
+                sm:grid sm:grid-cols-2 sm:gap-4
+                sm:overflow-visible sm:snap-none sm:pb-0
+                ${isEstudiante ? 'xl:grid-cols-4' : 'xl:grid-cols-5'} gap-3 sm:gap-4
+              `}
+            >
+              {statCards.map((card) => (
+                <div
+                  key={card.title}
+                  className="w-[55%] min-w-0 shrink-0 snap-start sm:w-auto [&>div]:h-full"
+                >
+                  <StatCard {...card}/>
+                </div>
+              ))}
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">

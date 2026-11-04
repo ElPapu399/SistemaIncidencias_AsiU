@@ -128,47 +128,63 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
     return (
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
             <div className="px-5 py-4 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center gap-3">
-                <div className="flex-1 min-w-[200px]">
-                    <SearchBar
-                        value={search}
-                        onSearch={setSearch}
-                        placeholder="Buscar por nombre o correo..."
-                    />
+                <div className="flex w-full min-w-0 flex-none items-center gap-2 lg:w-auto lg:flex-1 lg:min-w-50">
+                    <div className="flex-1 min-w-50">
+                        <SearchBar
+                            value={search}
+                            onSearch={setSearch}
+                            placeholder="Buscar por nombre o correo..."
+                        />
+                    </div>
+                    {hasActiveFilters && (
+                        <button
+                            type="button"
+                            onClick={clearFilters}
+                            className="
+                                shrink-0 whitespace-nowrap px-3 py-2
+                                text-xs font-semibold text-rose-600
+                                bg-rose-50 hover:bg-rose-100 border
+                                border-rose-200 rounded-xl transition-colors cursor-pointer sm:hidden"
+                        >   
+                            Limpiar
+                        </button>
+                    )}
                 </div>
 
-                <select
-                    value={filterEstado}
-                    onChange={e => setFilterEstado(e.target.value)}
-                    className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
-                >
-                    <option value="">Todos los estados</option>
-                    {hasActivo && <option value="Activo">Activo</option>}
-                    {hasInactivo && <option value="Inactivo">Inactivo</option>}
-                </select>
-
-                <select
-                    value={filterEspecialidad}
-                    onChange={e => setFilterEspecialidad(e.target.value)}
-                    className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
-                >
-                    <option value="">Todas las especialidades</option>
-                    {availableEspecialidades.map(e => (
-                        <option key={e} value={e}>{e}</option>
-                    ))}
-                </select>
+                <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto overscroll-x-contain pb-2 lg:contents">
+                    <select
+                        value={filterEstado}
+                        onChange={e => setFilterEstado(e.target.value)}
+                        className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
+                    >
+                        <option value="">Todos los estados</option>
+                        {hasActivo && <option value="Activo">Activo</option>}
+                        {hasInactivo && <option value="Inactivo">Inactivo</option>}
+                    </select>
+                    <select
+                        value={filterEspecialidad}
+                        onChange={e => setFilterEspecialidad(e.target.value)}
+                        className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
+                    >
+                        <option value="">Todas las especialidades</option>
+                        {availableEspecialidades.map(e => (
+                            <option key={e} value={e}>{e}</option>
+                        ))}
+                    </select>
+                </div>
 
                 {hasActiveFilters && (
                     <button
                         type="button"
                         onClick={clearFilters}
-                        className="px-3 py-2 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-colors cursor-pointer"
+                        className="px-3 py-2 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-colors cursor-pointer hidden sm:inline-flex"
                     >   
                         Limpiar
                     </button>
                 )}
             </div>
 
-            <div className="overflow-x-auto overflow-y-auto max-h-[520px]">
+            <div className="overflow-x-auto overflow-y-auto max-h-130">
                 <table className="w-full text-left">
                     <thead className="sticky top-0 bg-slate-50 z-10">
                         <tr className="border-b border-slate-200 bg-slate-50">
@@ -194,7 +210,7 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                                     <tr key={user.id} className="hover:bg-slate-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                                                <div className="w-9 h-9 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
                                                     {user.nombre.charAt(0)}{user.apellido.charAt(0)}
                                                 </div>
                                                 <p className="text-sm font-semibold text-slate-900">

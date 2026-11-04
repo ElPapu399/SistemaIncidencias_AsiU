@@ -309,19 +309,22 @@ export default function RoleWelcomeBanner({ nombre, rol }: RoleWelcomeBannerProp
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0">
+        <div className="flex w-full min-w-0 items-center gap-3
+          overflow-x-auto overscroll-x-contain snap-x snap-mandatory pb-2
+          lg:w-auto lg:shrink-0 lg:overflow-visible
+          lg:snap-none lg:pb-0">
           <Link
             to={config.primaryAction.to}
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-sm transition-all hover:shadow-md cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-sm transition-all hover:shadow-md cursor-pointer w-[85%] shrink-0 snap-start lg:w-auto"
           >
-            <PrimaryIcon className="w-4 h-4" />
+            <PrimaryIcon className="w-4 h-4 shrink-0" />
             <span>{config.primaryAction.label}</span>
           </Link>
           <Link
             to={config.secondaryAction.to}
-            className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm border border-slate-300 transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm border border-slate-300 transition-colors cursor-pointer shrink-0 whitespace-nowrap w-[85%] snap-start lg:w-auto"
           >
-            <SecondaryIcon className="w-4 h-4 text-slate-500" />
+            <SecondaryIcon className="w-4 h-4 shrink-0 text-slate-500" />
             <span>{config.secondaryAction.label}</span>
           </Link>
         </div>
@@ -338,13 +341,23 @@ export default function RoleWelcomeBanner({ nombre, rol }: RoleWelcomeBannerProp
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div
+          role="region"
+          tabIndex={0}
+          className="
+            flex w-full min-w-0 gap-3
+            overflow-x-auto overscroll-x-contain
+            snap-x snap-mandatory pb-2
+            sm:grid sm:grid-cols-2 sm:overflow-visible
+            sm:snap-none sm:pb-0 lg:grid-cols-4
+          "
+        >
           {config.steps.map((step) => {
             const Icon = step.icon;
             return (
               <div
                 key={step.num}
-                className="bg-slate-50/70 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:bg-slate-50 hover:border-slate-300 transition-colors text-left"
+                className="w-[65%] min-w-0 shrink-0 snap-start sm:w-auto bg-slate-50/70 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:bg-slate-50 hover:border-slate-300 transition-colors text-left"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2.5">

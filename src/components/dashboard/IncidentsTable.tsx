@@ -239,8 +239,27 @@ export default function IncidentsTable({
     <div className="bg-white border border-slate-300 rounded-2xl overflow-hidden shadow-sm">
       {/* Filter Bar */}
       <div className="px-5 py-4 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center gap-3">
-        <div className="w-full min-w-0 flex-none lg:w-auto lg:flex-1 lg:min-w-50">
-          <SearchBar value={search} onSearch={setSearch} placeholder="Buscar por ID, título, usuario o técnico..." />
+        <div className="flex w-full min-w-0 flex-none items-center gap-2 lg:w-auto lg:flex-1 lg:min-w-50">
+          <div className="min-w-0 flex-1">
+            <SearchBar
+              value={search}
+              onSearch={setSearch}
+              placeholder="Buscar por ID, título, usuario o técnico..."
+            />
+          </div>
+          {hasFilters && (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="
+                  shrink-0 whitespace-nowrap px-3 py-2 text-xs font-semibold text-rose-600
+                  bg-rose-50 hover:bg-rose-100 border border-rose-200
+                  rounded-xl transition-colors cursor-pointer sm:hidden
+                "
+              >
+                Limpiar
+              </button>
+            )}
         </div>
 
         <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto overscroll-x-contain pb-2 lg:contents">
@@ -274,7 +293,7 @@ export default function IncidentsTable({
         )}
 
         {hasFilters && (
-          <button type="button" onClick={clearFilters} className="px-3 py-2 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-colors cursor-pointer">
+          <button type="button" onClick={clearFilters} className="px-3 py-2 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-colors cursor-pointer hidden sm:inline-flex">
             Limpiar
           </button>
         )}

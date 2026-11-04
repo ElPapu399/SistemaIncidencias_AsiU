@@ -68,12 +68,27 @@ export default function ReportesPage() {
           </div>
         ) : (
           <>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
-            <ReportMetricCard title="Tasa de resolución" value={`${metricas.tasaResolucion}%`} description={`${metricas.resueltas} de ${incidents.length} incidencias resueltas o cerradas`} icon={CheckCircle2} accent="bg-emerald-500" />
-            <ReportMetricCard title="Tiempo promedio" value={metricas.tiempoPromedioHoras === null ? '—' : `${decimal.format(metricas.tiempoPromedioHoras)} h`} description={metricas.incidenciasConTiempo > 0 ? 'Desde el registro hasta la resolución o cierre' : 'Sin fechas válidas para calcular el promedio'} icon={Clock3} accent="bg-blue-500" />
-            <ReportMetricCard title="Alta prioridad" value={metricas.altaPrioridad} description="Incidencias activas de prioridad alta" icon={TriangleAlert} accent="bg-red-500" />
-            <ReportMetricCard title="Sin asignar" value={metricas.sinAsignar} description="Incidencias activas sin técnico asignado" icon={CircleAlert} accent="bg-orange-500" />
-            <ReportMetricCard title="Satisfacción (CSAT)" value={metricas.satisfaccion === null ? '—' : decimal.format(metricas.satisfaccion)} suffix="/ 5,0" description={metricas.evaluaciones > 0 ? `Basado en ${metricas.evaluaciones} ${metricas.evaluaciones === 1 ? 'evaluación' : 'evaluaciones'} de estudiantes` : 'Sin evaluaciones de estudiantes'} icon={Star} accent="bg-yellow-400" />
+          <div className="flex w-full min-w-0 gap-3
+                overflow-x-auto overscroll-x-contain
+                snap-x snap-mandatory pb-2
+                sm:grid sm:grid-cols-2 sm:gap-4
+                sm:overflow-visible sm:snap-none sm:pb-0 xl:grid-cols-5"
+          >
+            <div className="w-[75%] min-w-0 shrink-0 snap-start sm:w-auto [&>section]:h-full">
+              <ReportMetricCard title="Tasa de resolución" value={`${metricas.tasaResolucion}%`} description={`${metricas.resueltas} de ${incidents.length} incidencias resueltas o cerradas`} icon={CheckCircle2} accent="bg-emerald-500" />
+            </div>
+            <div className="w-[75%] min-w-0 shrink-0 snap-start sm:w-auto [&>section]:h-full">
+              <ReportMetricCard title="Tiempo promedio" value={metricas.tiempoPromedioHoras === null ? '—' : `${decimal.format(metricas.tiempoPromedioHoras)} h`} description={metricas.incidenciasConTiempo > 0 ? 'Desde el registro hasta la resolución o cierre' : 'Sin fechas válidas para calcular el promedio'} icon={Clock3} accent="bg-blue-500" />
+            </div>
+            <div className="w-[75%] min-w-0 shrink-0 snap-start sm:w-auto [&>section]:h-full">
+              <ReportMetricCard title="Alta prioridad" value={metricas.altaPrioridad} description="Incidencias activas de prioridad alta" icon={TriangleAlert} accent="bg-red-500" />
+            </div>
+            <div className="w-[75%] min-w-0 shrink-0 snap-start sm:w-auto [&>section]:h-full">
+              <ReportMetricCard title="Sin asignar" value={metricas.sinAsignar} description="Incidencias activas sin técnico asignado" icon={CircleAlert} accent="bg-orange-500" />
+            </div>
+            <div className="w-[75%] min-w-0 shrink-0 snap-start sm:w-auto [&>section]:h-full">
+              <ReportMetricCard title="Satisfacción (CSAT)" value={metricas.satisfaccion === null ? '—' : decimal.format(metricas.satisfaccion)} suffix="/ 5,0" description={metricas.evaluaciones > 0 ? `Basado en ${metricas.evaluaciones} ${metricas.evaluaciones === 1 ? 'evaluación' : 'evaluaciones'} de estudiantes` : 'Sin evaluaciones de estudiantes'} icon={Star} accent="bg-yellow-400" />
+            </div>
           </div>
           <div className="grid auto-rows-[minmax(340px,auto)] grid-cols-1 gap-6 xl:grid-cols-2">
             <ReportMonthlyChart meses={meses} />

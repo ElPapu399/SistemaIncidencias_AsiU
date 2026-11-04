@@ -1,17 +1,21 @@
 import type { ReactNode } from 'react';
 
 interface ButtonProps {
-  text: string;
+  text?: string;
   onClick?: () => void;
   variant?: 'primary' | 'secondary';
   type?: 'button' | 'submit' | 'reset';
   fullWidth?: boolean;
   icon?: ReactNode;
   disabled?: boolean;
+  iconOnly?: boolean;
+  ariaLabel?: string;
 }
 
-const Button = ({ text, onClick, variant = 'primary', type = 'button', icon, disabled = false }: ButtonProps) => {
-  const baseClasses = 'px-6 py-3 rounded-full font-semibold';
+const Button = ({ text, onClick, variant = 'primary', type = 'button', icon, disabled = false, iconOnly = false, ariaLabel }: ButtonProps) => {
+  const baseClasses = iconOnly
+  ? 'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl p-0! sm:h-auto sm:w-auto sm:px-5! sm:py-2.5!'
+  : 'px-6 py-3 rounded-full font-semibold';
 
   const variants = {
     primary:
@@ -21,9 +25,18 @@ const Button = ({ text, onClick, variant = 'primary', type = 'button', icon, dis
   };
 
   return (
-    <button type={type} onClick={onClick} disabled={disabled} className={`${baseClasses} ${variants[variant]}`}>
-      {icon && <span className="mr-2">{icon}</span>}
-      {text}
+    <button type={type} onClick={onClick} disabled={disabled} className={`${baseClasses} ${variants[variant]}`} aria-label={ariaLabel} title={ariaLabel}>
+      {icon && (
+        <span className={iconOnly ? 'inline-flex' : 'mr-2'}>
+          {icon}
+        </span>
+      )}
+
+      {text && (
+        <span className={iconOnly ? 'hidden sm:inline' : undefined}>
+          {text}
+        </span>
+      )}
     </button>
   );
 };

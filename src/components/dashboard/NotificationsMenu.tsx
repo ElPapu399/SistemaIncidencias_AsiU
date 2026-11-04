@@ -165,7 +165,7 @@ export default function NotificationsMenu() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="static sm:relative" ref={dropdownRef}>
       <button
         type="button"
         onClick={toggleMenu}
@@ -176,14 +176,14 @@ export default function NotificationsMenu() {
       >
         <FontAwesomeIcon icon={faBell} />
         {conteoNoLeidas > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center shadow-sm animate-in fade-in zoom-in duration-200">
+          <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center shadow-sm animate-in fade-in zoom-in duration-200">
             {conteoNoLeidas > 99 ? '99+' : conteoNoLeidas}
           </span>
         )}
       </button>
 
       {abierto && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl border border-slate-200 bg-white shadow-xl z-50 overflow-hidden text-left animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute inset-x-3 top-full sm:right-0 mt-2 w-auto sm:left-auto sm:w-96 rounded-2xl border border-slate-200 bg-white shadow-xl z-50 overflow-hidden text-left animate-in fade-in zoom-in-95 duration-150">
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 bg-slate-50/70">
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold text-slate-800">Notificaciones</span>

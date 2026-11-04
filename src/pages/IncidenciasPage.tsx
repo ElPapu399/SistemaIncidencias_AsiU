@@ -213,8 +213,8 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
 
       <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-100">
         {/* Header section */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="text-left">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 flex-1 text-left">
             <h3 className="text-2xl font-bold text-black">{sectionHeading}</h3>
             <p className="text-sm text-slate-600 mt-1">{countLabel}</p>
           </div>
@@ -226,7 +226,15 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
               </button>
             )}
             {isEstudiante && (
-              <Button text="Nueva incidencia" icon={<FontAwesomeIcon icon={faPlus} />} type="button" onClick={() => openModal('form')} variant="secondary" />
+              <Button
+                icon={<FontAwesomeIcon icon={faPlus} />}
+                iconOnly
+                ariaLabel="Nueva incidencia"
+                text="Nueva incidencia"
+                type="button"
+                onClick={() => openModal('form')}
+                variant="secondary"
+              />
             )}
           </div>
         </div>
@@ -267,15 +275,28 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
 
         {/* Tabs técnico especialista */}
         {isTecnicoEspecialista && !soloMisIncidencias && (
-          <div className="flex items-center gap-2 p-1 bg-slate-200/80 rounded-2xl max-w-fit">
+          <div className="flex w-full items-center gap-2 p-1 bg-slate-200/80 rounded-2xl sm:w-fit">
             {tecnicoTabs.map((tab) => {
               const isActive = tecnicoFilter === tab.key;
               return (
-                <button key={tab.key} type="button" onClick={() => setTecnicoFilter(tab.key)}
-                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${isActive ? tab.activeClass : 'text-slate-700 hover:text-slate-900 hover:bg-white/50'}`}>
-                  <FontAwesomeIcon icon={tab.icon} />
-                  <span>{tab.label}</span>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] ${isActive ? (tab.badgeClass) : (tab.inactiveClass || tab.badgeClass)}`}>
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setTecnicoFilter(tab.key)}
+                  aria-label={`${tab.label}: ${tab.count}`}
+                  aria-pressed={isActive}
+                  title={tab.label}
+                  className={`inline-flex flex-1 sm:flex-none items-center justify-center gap-3 sm:gap-2 min-w-0
+                    px-3 sm:px-4 py-3 sm:py-2 rounded-xl text-sm sm:text-xs font-bold
+                    transition-all cursor-pointer ${
+                      isActive
+                        ? tab.activeClass
+                        : 'text-slate-700 hover:text-slate-900 hover:bg-white/50'
+                    }`}
+                >
+                  <FontAwesomeIcon icon={tab.icon} className="text-lg sm:text-sm shrink-0" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className={`shrink-0 px-2 py-0.5 rounded-full text-xs sm:text-[10px] ${isActive ? (tab.badgeClass) : (tab.inactiveClass || tab.badgeClass)}`}>
                     {tab.count}
                   </span>
                 </button>

@@ -65,16 +65,18 @@ export default function EstudiantesPage({ title, description }: EstudiantesPageP
         <>
             <Header title={title} subtitle={description} />
             <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-100">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div className="text-left">
+                <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1 text-left">
                         <h3 className="text-2xl font-bold text-black">Gestión de Estudiantes</h3>
                         <p className="text-sm text-slate-500 mt-1">
                             {totalEstudiantes} estudiante{totalEstudiantes !== 1 ? 's' : ''} registrado{totalEstudiantes !== 1 ? 's' : ''} en el sistema
                         </p>
                     </div>
                     <Button
+                        icon={<FontAwesomeIcon icon={faPlus}/>}
+                        iconOnly
+                        ariaLabel="Nuevo Estudiante"
                         text="Nuevo Estudiante"
-                        icon={<FontAwesomeIcon icon={faPlus} />}
                         type="button"
                         onClick={handleCreate}
                         variant="secondary"

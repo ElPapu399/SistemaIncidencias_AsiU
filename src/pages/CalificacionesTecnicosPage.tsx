@@ -753,25 +753,25 @@ export default function CalificacionesTecnicosPage({
           /* Admin View */
           <>
             {/* Stats summary */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3 items-start">
+              <div className="col-span-2 xl:col-span-1 min-w-0 bg-white rounded-2xl border border-slate-200 p-4 xl:p-5 shadow-sm">
                 <p className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">
                   Promedio General
                 </p>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <span className="text-3xl font-extrabold text-slate-900">
                     {promedioGeneral > 0 ? promedioGeneral.toFixed(1) : '—'}
                   </span>
                   {promedioGeneral > 0 && <StarRating rating={promedioGeneral} size="text-lg" />}
                 </div>
               </div>
-              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+              <div className="min-w-0 bg-white rounded-2xl border border-slate-200 p-4 xl:p-5 shadow-sm">
                 <p className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">
                   Técnicos en el Equipo
                 </p>
                 <span className="text-3xl font-extrabold text-slate-900">{filtered.length}</span>
               </div>
-              <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+              <div className="min-w-0 bg-white rounded-2xl border border-slate-200 p-4 xl:p-5 shadow-sm">
                 <p className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">
                   Total Calificaciones
                 </p>
@@ -781,7 +781,7 @@ export default function CalificacionesTecnicosPage({
 
             {/* Filter + Sort controls */}
             <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center gap-3">
-              <div className="flex-1 min-w-[220px]">
+              <div className="flex-1 min-w-55">
                 <SearchBar
                   value={search}
                   onSearch={setSearch}
@@ -789,7 +789,7 @@ export default function CalificacionesTecnicosPage({
                 />
               </div>
 
-              <div className="flex items-center gap-2 min-w-[180px]">
+              <div className="flex items-center gap-2 min-w-45">
                 <FontAwesomeIcon icon={faFilter} className="text-slate-400 text-sm shrink-0" />
                 <select
                   value={filterMotivo}
