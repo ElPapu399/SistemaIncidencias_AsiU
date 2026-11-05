@@ -1,6 +1,6 @@
 -- ==============================================================
 -- SISTEMA DE GESTIÓN DE INCIDENCIAS - ASIU
--- Base de Datos Actual - Datos Completos y Realistas
+-- Base de Datos Actual - Estructura y Datos Completos
 -- Compatible con MySQL local y Aiven for MySQL (Cloud)
 -- Regla de Negocio: 
 --  * 'Resuelta': Incidencia solucionada por técnico, SIN calificación (esperando confirmación del alumno).
@@ -8,6 +8,179 @@
 -- ==============================================================
 
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- 0. CREACIÓN DE TABLAS (SI NO EXISTEN)
+CREATE TABLE IF NOT EXISTS `roles` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nombre` (`nombre`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `especialidades` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) NOT NULL,
+  `descripcion` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nombre` (`nombre`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `usuarios` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `apellido` varchar(100) NOT NULL,
+  `correo` varchar(150) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `rol_id` int NOT NULL,
+  `especialidad_id` int DEFAULT NULL,
+  `fecha_creacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `carrera` varchar(100) DEFAULT NULL,
+  `estado` varchar(20) DEFAULT 'Activo',
+  `telefono` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `correo` (`correo`),
+  KEY `fk_usuario_rol` (`rol_id`),
+  KEY `fk_usuario_especialidad` (`especialidad_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `ubicaciones` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `pabellon` varchar(50) NOT NULL,
+  `aula_laboratorio` varchar(50) NOT NULL,
+  `piso` int NOT NULL,
+  `tipo` varchar(30) NOT NULL,
+  `capacidad` int DEFAULT NULL,
+  `estado` varchar(20) DEFAULT 'Operativo',
+  `encargado_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_ubicacion_encargado` (`encargado_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `prioridades` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nivel` varchar(20) NOT NULL,
+  `tiempo_maximo_horas` int NOT NULL,
+  `descripcion` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nivel` (`nivel`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `categorias` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `especialidad_id` int NOT NULL,
+  `prioridad_defecto_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_categoria_especialidad` (`especialidad_id`),
+  KEY `fk_categoria_prioridad` (`prioridad_defecto_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `equipos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `codigo` varchar(50) NOT NULL,
+  `tipo` varchar(50) NOT NULL,
+  `marca` varchar(100) DEFAULT NULL,
+  `modelo` varchar(100) DEFAULT NULL,
+  `numero_serie` varchar(100) DEFAULT NULL,
+  `fecha_adquisicion` date DEFAULT NULL,
+  `ubicacion_id` int DEFAULT NULL,
+  `estado` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `codigo` (`codigo`),
+  KEY `fk_equipo_ubicacion` (`ubicacion_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `incidencias` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `codigo_ticket` varchar(20) NOT NULL,
+  `titulo` varchar(150) NOT NULL,
+  `descripcion` text NOT NULL,
+  `estado` varchar(20) NOT NULL DEFAULT 'Pendiente',
+  `estudiante_id` int NOT NULL,
+  `tecnico_id` int DEFAULT NULL,
+  `categoria_id` int NOT NULL,
+  `prioridad_id` int NOT NULL,
+  `ubicacion_id` int NOT NULL,
+  `solucion_tecnica` text,
+  `fecha_creacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `fecha_inicio_atencion` timestamp NULL DEFAULT NULL,
+  `fecha_cierre` timestamp NULL DEFAULT NULL,
+  `calificacion` int DEFAULT NULL,
+  `comentario_calificacion` text,
+  `motivo_calificacion` varchar(100) DEFAULT NULL,
+  `equipo_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `codigo_ticket` (`codigo_ticket`),
+  KEY `fk_incidencia_estudiante` (`estudiante_id`),
+  KEY `fk_incidencia_tecnico` (`tecnico_id`),
+  KEY `fk_incidencia_categoria` (`categoria_id`),
+  KEY `fk_incidencia_prioridad` (`prioridad_id`),
+  KEY `fk_incidencia_ubicacion` (`ubicacion_id`),
+  KEY `fk_incidencia_equipo` (`equipo_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `archivos_adjuntos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `incidencia_id` int NOT NULL,
+  `url_archivo` varchar(255) NOT NULL,
+  `nombre_original` varchar(150) NOT NULL,
+  `fecha_subida` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `tamanio_bytes` bigint DEFAULT NULL,
+  `tipo_archivo` varchar(100) DEFAULT NULL,
+  `subido_por` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_adjunto_incidencia` (`incidencia_id`),
+  KEY `fk_adjunto_subido_por` (`subido_por`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `historial_estados` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `incidencia_id` int NOT NULL,
+  `estado_anterior` varchar(20) NOT NULL,
+  `estado_nuevo` varchar(20) NOT NULL,
+  `usuario_id` int NOT NULL,
+  `comentario` varchar(500) DEFAULT NULL,
+  `fecha_cambio` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `tipo_accion` varchar(30) NOT NULL,
+  `tecnico_anterior_id` int DEFAULT NULL,
+  `tecnico_nuevo_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_historial_incidencia` (`incidencia_id`),
+  KEY `fk_historial_usuario` (`usuario_id`),
+  KEY `fk_historial_tec_ant` (`tecnico_anterior_id`),
+  KEY `fk_historial_tec_nue` (`tecnico_nuevo_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `solicitudes_reasignacion` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `comentario_respuesta` varchar(500) DEFAULT NULL,
+  `estado` varchar(20) NOT NULL,
+  `fecha_respuesta` datetime(6) DEFAULT NULL,
+  `fecha_solicitud` datetime(6) DEFAULT NULL,
+  `motivo` text NOT NULL,
+  `incidencia_id` int NOT NULL,
+  `revisado_por_id` int DEFAULT NULL,
+  `tecnico_nuevo_id` int DEFAULT NULL,
+  `tecnico_solicitante_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_reasig_incidencia` (`incidencia_id`),
+  KEY `fk_reasig_revisado` (`revisado_por_id`),
+  KEY `fk_reasig_tec_nuevo` (`tecnico_nuevo_id`),
+  KEY `fk_reasig_tec_solic` (`tecnico_solicitante_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `historial_equipos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `equipo_id` int NOT NULL,
+  `usuario_id` int NOT NULL,
+  `estado_anterior` varchar(20) NOT NULL,
+  `estado_nuevo` varchar(20) NOT NULL,
+  `motivo` varchar(500) NOT NULL,
+  `fecha` datetime(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_hist_eq_equipo` (`equipo_id`),
+  KEY `fk_hist_eq_usuario` (`usuario_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 1. LIMPIEZA DE TABLAS
 TRUNCATE TABLE solicitudes_reasignacion;
