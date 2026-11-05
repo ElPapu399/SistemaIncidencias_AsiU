@@ -19,7 +19,6 @@ import {
   marcarComoLeida,
   marcarTodasComoLeidas,
 } from '../../services/notificacionesService';
-import { getCurrentUser } from '../../utils/auth';
 
 function tiempoRelativo(fechaIso: string): string {
   try {
@@ -155,13 +154,8 @@ export default function NotificationsMenu() {
     }
     setAbierto(false);
 
-    // Redirigir según el rol del usuario actual
-    const rol = getCurrentUser()?.rol;
-    if (rol === 'TECNICO_ESPECIALISTA' && notif.tipo === 'ASIGNACION') {
-      navigate('/dashboard/mis-incidencias');
-    } else {
-      navigate('/dashboard/incidencias');
-    }
+    // Redirigir a la vista de incidencias
+    navigate('/dashboard/incidencias');
   };
 
   return (

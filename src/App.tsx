@@ -4,8 +4,7 @@ import Dashboard from './pages/Dashboard';
 import DashboardLayout from './layouts/DashboardLayout';
 
 import IncidenciasPage from './pages/IncidenciasPage';
-import EstudiantesPage from './pages/EstudiantesPage';
-import TecnicosPage from './pages/TecnicosPage';
+import UsuariosPage from './pages/UsuariosPage';
 import NuevaIncidenciaPage from './pages/NuevaIncidenciaPage';
 import LaboratoriosPage from './pages/LaboratoriosPage';
 import LaboratorioDetallePage from './pages/LaboratorioDetallePage';
@@ -14,6 +13,10 @@ import Perfil from './pages/Perfil';
 import HistorialPage from './pages/HistorialPage';
 import ReportesPage from './pages/ReportesPage';
 import CalificacionesTecnicosPage from './pages/CalificacionesTecnicosPage';
+import CargaTecnicosPage from './pages/CargaTecnicosPage';
+import CentroAyudaPage from './pages/CentroAyudaPage';
+import TallerEquiposPage from './pages/TallerEquiposPage';
+import MiRendimientoPage from './pages/MiRendimientoPage';
 
 function App() {
   return (
@@ -43,20 +46,19 @@ function App() {
         <Route
           path="usuarios"
           element={
-            <EstudiantesPage
-              title="Estudiantes"
-              description="Gestión de usuarios del sistema."
+            <UsuariosPage
+              title="Usuarios"
+              description="Gestión integral de estudiantes y personal técnico."
             />
           }
         />
         <Route
           path="tecnicos"
-          element={
-            <TecnicosPage
-              title="Tecnicos"
-              description="Gestión de tecnicos de soporte del sistema."
-            />
-          }
+          element={<Navigate to="/dashboard/usuarios?tab=tecnicos" replace />}
+        />
+        <Route
+          path="carga-tecnicos"
+          element={<CargaTecnicosPage />}
         />
         <Route
           path="laboratorios"
@@ -95,6 +97,18 @@ function App() {
         <Route
           path="calificaciones-tecnicos"
           element={<CalificacionesTecnicosPage />}
+        />
+        <Route
+          path="taller-equipos"
+          element={<TallerEquiposPage />}
+        />
+        <Route
+          path="mi-rendimiento"
+          element={<MiRendimientoPage />}
+        />
+        <Route
+          path="ayuda"
+          element={<CentroAyudaPage />}
         />
         <Route
           path="perfil"

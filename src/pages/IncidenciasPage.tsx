@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus, faSpinner, faClipboardCheck, faListUl, faHandsHoldingChild, faCheck,
@@ -22,7 +23,6 @@ import {
 } from '../services/incidenciasService';
 import type { Incident } from '../types/incident';
 import { getCurrentUser } from '../utils/auth';
-import Button from '../components/Button';
 import { TableSkeleton } from '../components/dashboard/SkeletonLoaders';
 
 const CLOSED_STATUSES = ['Resuelta', 'Resuelto', 'Cerrada', 'Cancelado'];
@@ -44,23 +44,23 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
   const [errorToast, setErrorToast] = useState<string | null>(null);
   const [selfAssigning, setSelfAssigning] = useState(false);
 
-  const [tecnicoFilter, setTecnicoFilter] = useState<'all' | 'mine' | 'available'>(
-    soloMisIncidencias ? 'mine' : 'all'
-  );
-
-  const [activeModal, setActiveModal] = useState<ModalKey>(null);
-  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
-
   const usuario = getCurrentUser();
   const currentUserRole = usuario?.rol;
   const isEstudiante = currentUserRole === 'ESTUDIANTE';
   const isSupportOrAdmin = currentUserRole === 'ADMIN' || currentUserRole === 'TECNICO_GENERAL';
   const isTecnicoEspecialista = currentUserRole === 'TECNICO_ESPECIALISTA' || currentUserRole === 'TECNICO';
 
+  const [tecnicoFilter, setTecnicoFilter] = useState<'all' | 'mine' | 'available'>(
+    soloMisIncidencias || isTecnicoEspecialista ? 'mine' : 'all'
+  );
+
+  const [activeModal, setActiveModal] = useState<ModalKey>(null);
+  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
+
   const [prevSoloMisIncidencias, setPrevSoloMisIncidencias] = useState(soloMisIncidencias);
   if (soloMisIncidencias !== prevSoloMisIncidencias) {
     setPrevSoloMisIncidencias(soloMisIncidencias);
-    setTecnicoFilter(soloMisIncidencias ? 'mine' : 'all');
+    setTecnicoFilter(soloMisIncidencias || isTecnicoEspecialista ? 'mine' : 'all');
   }
 
   const cargarSolicitudes = useCallback(async () => {
@@ -182,19 +182,27 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
   }, [selectedIncident, usuario?.id, recargar, closeModal]);
 
   const pageTitle = isEstudiante ? 'Mis Incidencias'
-    : soloMisIncidencias ? 'Mis Incidencias Asignadas'
-    : isTecnicoEspecialista ? 'Todas las Incidencias'
+    : isTecnicoEspecialista
+      ? (tecnicoFilter === 'mine' ? 'Mis Incidencias Asignadas' : tecnicoFilter === 'available' ? 'Incidencias Disponibles' : 'Todas las Incidencias')
+    : currentUserRole === 'TECNICO_GENERAL' ? 'Gestión de Incidencias'
     : title || 'Incidencias';
 
   const pageSubtitle = isEstudiante
     ? 'Consulta, filtra y da seguimiento al estado de tus incidencias reportadas en el campus.'
-    : soloMisIncidencias ? 'Consulta y atiende únicamente las incidencias asignadas a tu cuenta como técnico especialista.'
-    : isTecnicoEspecialista ? 'Consulta el estado de todas las incidencias del campus o autoasígnate tickets disponibles.'
+    : isTecnicoEspecialista
+      ? (tecnicoFilter === 'mine'
+          ? 'Consulta y atiende únicamente las incidencias asignadas a tu cuenta como técnico especialista.'
+          : tecnicoFilter === 'available'
+            ? 'Incidencias sin asignar o pendientes que puedes autoasignarte para atender en el campus.'
+            : 'Consulta el panorama de todas las incidencias del campus.')
+    : currentUserRole === 'TECNICO_GENERAL'
+      ? 'Bandeja de triaje: delega incidencias a técnicos especialistas y gestiona reasignaciones.'
     : description || 'Gestión de incidencias del campus.';
 
   const sectionHeading = isEstudiante ? 'Mis Incidencias Reportadas'
-    : soloMisIncidencias ? 'Mis Incidencias Asignadas'
-    : isTecnicoEspecialista ? 'Todas las Incidencias del Campus'
+    : isTecnicoEspecialista
+      ? (tecnicoFilter === 'mine' ? 'Mis Incidencias Asignadas' : tecnicoFilter === 'available' ? 'Incidencias Disponibles para Tomar' : 'Todas las Incidencias del Campus')
+    : currentUserRole === 'TECNICO_GENERAL' ? 'Bandeja de Triaje y Delegación'
     : 'Gestión de Incidencias';
 
   const n = displayedIncidents.length;
@@ -202,9 +210,9 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
     : `${n} incidencia${n !== 1 ? 's' : ''} ${soloMisIncidencias ? 'asignada' : isEstudiante ? 'reportada' : 'registrada'}${n !== 1 ? 's' : ''}`;
 
   const tecnicoTabs = [
-    { key: 'all' as const, label: 'Todas las incidencias', icon: faListUl, count: incidents.length, activeClass: 'bg-white text-slate-900 shadow-sm', badgeClass: 'bg-slate-100 text-slate-700' },
     { key: 'mine' as const, label: 'Mis asignadas', icon: faClipboardCheck, count: myAssignedCount, activeClass: 'bg-violet-600 text-white shadow-sm', badgeClass: 'bg-violet-500 text-white', inactiveClass: 'bg-violet-100 text-violet-800' },
     { key: 'available' as const, label: 'Disponibles para tomar', icon: faHandsHoldingChild, count: availableCount, activeClass: 'bg-emerald-600 text-white shadow-sm', badgeClass: 'bg-emerald-500 text-white', inactiveClass: 'bg-emerald-100 text-emerald-800' },
+    { key: 'all' as const, label: 'Todas las incidencias', icon: faListUl, count: incidents.length, activeClass: 'bg-white text-slate-900 shadow-sm', badgeClass: 'bg-slate-100 text-slate-700' },
   ];
 
   return (
@@ -226,15 +234,13 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
               </button>
             )}
             {isEstudiante && (
-              <Button
-                icon={<FontAwesomeIcon icon={faPlus} />}
-                iconOnly
-                ariaLabel="Nueva incidencia"
-                text="Nueva incidencia"
-                type="button"
-                onClick={() => openModal('form')}
-                variant="secondary"
-              />
+              <Link
+                to="/dashboard/nueva"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors cursor-pointer"
+              >
+                <FontAwesomeIcon icon={faPlus} className="text-xs" />
+                <span>Nueva incidencia</span>
+              </Link>
             )}
           </div>
         </div>

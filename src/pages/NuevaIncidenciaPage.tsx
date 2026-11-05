@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPaperPlane,
@@ -24,6 +24,7 @@ import { getCurrentUser } from '../utils/auth';
 
 export default function NuevaIncidenciaPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [titulo, setTitulo] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -57,6 +58,30 @@ export default function NuevaIncidenciaPage() {
         setCategorias(catData);
         setUbicaciones(ubiData);
         setPrioridades(prioData);
+
+        const paramCat = searchParams.get('categoria');
+        const paramTitulo = searchParams.get('titulo');
+
+        if (paramTitulo) {
+          setTitulo(paramTitulo);
+        }
+
+        if (paramCat) {
+          const matchCat = catData.find(
+            (c) =>
+              c.nombre.toLowerCase().includes(paramCat.toLowerCase()) ||
+              paramCat.toLowerCase().includes(c.nombre.toLowerCase())
+          );
+          if (matchCat) {
+            setCategoriaId(matchCat.id);
+            if (matchCat.prioridadDefecto?.id) {
+              setPrioridadId(matchCat.prioridadDefecto.id);
+            } else {
+              const fallbackPrio = prioData.find((p) => p.nivel === 'Media') || prioData[0];
+              if (fallbackPrio) setPrioridadId(fallbackPrio.id);
+            }
+          }
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -65,7 +90,7 @@ export default function NuevaIncidenciaPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [searchParams]);
 
   const handleCategoriaChange = (selectedCatId: number) => {
     setCategoriaId(selectedCatId);

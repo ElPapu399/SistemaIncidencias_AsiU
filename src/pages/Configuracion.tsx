@@ -2,14 +2,12 @@ import { useRef, useState } from 'react';
 import type { FormEvent, KeyboardEvent } from 'react';
 import Header from '../components/dashboard/Header';
 import ConfiguracionCategorias from '../components/dashboard/ConfiguracionCategorias';
-import ConfiguracionEstados from '../components/dashboard/ConfiguracionEstados';
 import ConfiguracionEspecialidades from '../components/dashboard/ConfiguracionEspecialidades';
 
 const tabs = [
     { id: 'general', label: 'General' },
     { id: 'categorias', label: 'Categorías' },
     { id: 'especialidades', label: 'Especialidades' },
-    { id: 'estados', label: 'Estados' },
 ] as const;
 
 type TabId = typeof tabs[number]['id'];
@@ -120,8 +118,7 @@ export default function Configuracion() {
                 <div key={tab.id} id={`config-panel-${tab.id}`} role="tabpanel" aria-labelledby={`config-tab-${tab.id}`} hidden={activeTab !== tab.id} tabIndex={0} className="p-5 focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-blue-600 sm:p-7">
                 {activeTab === tab.id && (
                     tab.id === 'categorias' ? <ConfiguracionCategorias />
-                    : tab.id === 'especialidades' ? <ConfiguracionEspecialidades />
-                    : <ConfiguracionEstados />
+                    : <ConfiguracionEspecialidades />
                 )}
                 </div>
             ))}

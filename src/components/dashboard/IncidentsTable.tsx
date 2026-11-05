@@ -3,7 +3,7 @@ import type { Incident } from '../../types/incident';
 import { StatusBadge, PriorityBadge, CategoryLabel, formatDate } from './IncidentBadges';
 import SearchBar from '../dashboard/SearchBar';
 import SortableHeader from '../common/SortableHeader';
-import { UserCheck, Eye, RefreshCw, ArrowRightLeft, UserPlus, History, Star } from 'lucide-react';
+import { UserCheck, Eye, RefreshCw, ArrowRightLeft, UserPlus, Star } from 'lucide-react';
 import { getCurrentUser, type UsuarioSession } from '../../utils/auth';
 import {
   type SortDirection,
@@ -32,8 +32,6 @@ const matchTerm = (i: Incident, term: string) => {
 
 const matchStatus = (status: string, targetFilter: string) => {
   if (targetFilter === 'all') return true;
-  if (targetFilter === 'activas') return !CLOSED_STATUSES.includes(status);
-  if (targetFilter === 'cerradas') return CLOSED_STATUSES.includes(status);
   return status === targetFilter || Boolean(STATUS_SYNONYMS[targetFilter]?.includes(status));
 };
 
@@ -69,7 +67,7 @@ interface IncidentsTableProps {
 const selectClass = "px-3 py-2 text-xs font-medium bg-white border border-slate-300 rounded-xl text-slate-700 focus:outline-none focus:border-amber-500";
 
 export default function IncidentsTable({
-  incidents, role, onAssign, onView, onViewTraceability, onChangeStatus,
+  incidents, role, onAssign, onView, onViewTraceability: _onViewTraceability, onChangeStatus,
   onRequestReassign, onSelfAssign, pendingIncidentIds, onReviewReassignments, onRate,
 }: IncidentsTableProps) {
   const usuario = getCurrentUser();
@@ -124,16 +122,6 @@ export default function IncidentsTable({
     );
   }, [incidents, term, filterPriority, filterCategory, filterReassignedOnly]);
 
-  const hasActiveStatus = useMemo(
-    () => matchingForStatus.some((i) => !CLOSED_STATUSES.includes(i.status)),
-    [matchingForStatus]
-  );
-
-  const hasClosedStatus = useMemo(
-    () => matchingForStatus.some((i) => CLOSED_STATUSES.includes(i.status)),
-    [matchingForStatus]
-  );
-
   const availableStatuses = useMemo(() => {
     const standard = STANDARD_STATUSES.filter((s) =>
       matchingForStatus.some((i) => i.status === s || STATUS_SYNONYMS[s]?.includes(i.status))
@@ -179,17 +167,11 @@ export default function IncidentsTable({
 
   useEffect(() => {
     if (filterStatus === 'all') return;
-    if (filterStatus === 'activas') {
-      if (!hasActiveStatus) setFilterStatus('all');
-    } else if (filterStatus === 'cerradas') {
-      if (!hasClosedStatus) setFilterStatus('all');
-    } else {
-      const isAvailable = availableStatuses.some(
-        (s) => s === filterStatus || STATUS_SYNONYMS[s]?.includes(filterStatus)
-      );
-      if (!isAvailable) setFilterStatus('all');
-    }
-  }, [availableStatuses, filterStatus, hasActiveStatus, hasClosedStatus]);
+    const isAvailable = availableStatuses.some(
+      (s) => s === filterStatus || STATUS_SYNONYMS[s]?.includes(filterStatus)
+    );
+    if (!isAvailable) setFilterStatus('all');
+  }, [availableStatuses, filterStatus]);
 
   useEffect(() => {
     if (filterReassignedOnly && reassignedCount === 0) {
@@ -265,8 +247,6 @@ export default function IncidentsTable({
         <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto overscroll-x-contain pb-2 lg:contents">
           <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={`${selectClass} shrink-0`}>
             <option value="all">Todos los Estados</option>
-            {hasActiveStatus && <option value="activas">Solo Activas</option>}
-            {hasClosedStatus && <option value="cerradas">Solo Cerradas</option>}
             {availableStatuses.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
 
@@ -352,7 +332,7 @@ export default function IncidentsTable({
                     <ActionButtons
                       incident={incident} role={role} usuario={usuario}
                       isPendingReassign={isPendingReassign}
-                      onView={onView} onViewTraceability={onViewTraceability}
+                      onView={onView}
                       onAssign={onAssign} onChangeStatus={onChangeStatus}
                       onRequestReassign={onRequestReassign} onSelfAssign={onSelfAssign}
                       onReviewReassignments={onReviewReassignments} onRate={onRate}
@@ -406,9 +386,9 @@ function AssigneeCell({ incident, isPrivileged }: { incident: Incident; isPrivil
   );
 }
 
-function ActionButtons({ incident, role, usuario, isPendingReassign, onView, onViewTraceability, onAssign, onChangeStatus, onRequestReassign, onSelfAssign, onReviewReassignments, onRate }: {
+function ActionButtons({ incident, role, usuario, isPendingReassign, onView, onAssign, onChangeStatus, onRequestReassign, onSelfAssign, onReviewReassignments, onRate }: {
   incident: Incident; role?: string; usuario: UsuarioSession | null; isPendingReassign?: boolean;
-  onView: (i: Incident) => void; onViewTraceability?: (i: Incident) => void;
+  onView: (i: Incident) => void;
   onAssign?: (i: Incident) => void; onChangeStatus?: (i: Incident) => void;
   onRequestReassign?: (i: Incident) => void; onSelfAssign?: (i: Incident) => void;
   onReviewReassignments?: () => void; onRate?: (i: Incident) => void;
@@ -427,12 +407,6 @@ function ActionButtons({ incident, role, usuario, isPendingReassign, onView, onV
       <button type="button" onClick={() => onView(incident)} className={`${btnBase} font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300`} title="Ver detalle">
         <Eye className="w-3.5 h-3.5" />
       </button>
-
-      {onViewTraceability && (
-        <button type="button" onClick={() => onViewTraceability(incident)} className={`${btnBase} font-semibold text-violet-700 bg-violet-50 hover:bg-violet-100 border border-violet-300 shadow-2xs`} title="Ver trazabilidad">
-          <History className="w-3.5 h-3.5" />
-        </button>
-      )}
 
       {isAdmin && onAssign && (
         <button type="button" onClick={() => onAssign(incident)} className={`${btnBase} font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300`} title="Asignar técnico">

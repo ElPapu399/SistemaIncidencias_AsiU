@@ -99,16 +99,23 @@ public class DataLoader implements CommandLineRunner {
                         crearCategoriaSiNoExiste("Base de datos local bloqueada", "Software", "Alta");
                 }
 
+                crearUsuarioSiNoExiste("Jhosep", "Loayza", "loayzajhosep58@gmail.com", "admin123", "ADMIN", null, "987-999-001",
+                                null, "Activo");
                 crearUsuarioSiNoExiste("Ana", "Rodríguez", "admin@utp.edu.pe", "admin123", "ADMIN", null, "987-000-000",
                                 null,
                                 "Activo");
 
+                crearUsuarioSiNoExiste("Alex", "Martínez", "roal2109@hotmail.com", "tecnico123", "TECNICO_GENERAL", null,
+                                "987-999-002", null, "Activo");
                 crearUsuarioSiNoExiste("Rosa", "Flores", "r.flores@utp.edu.pe", "tecnico123", "TECNICO_GENERAL", null,
                                 "987-666-321", null, "Activo");
                 crearUsuarioSiNoExiste("Jorge", "Herrera", "j.herrera@utp.edu.pe", "tecnico123", "TECNICO_GENERAL",
                                 null,
                                 "987-777-888", null, "Activo");
 
+                crearUsuarioSiNoExiste("Álvaro", "Cabrera", "ajcb0311@gmail.com", "tecnico123",
+                                "TECNICO_ESPECIALISTA",
+                                "Hardware", "987-999-003", null, "Activo");
                 crearUsuarioSiNoExiste("Carlos", "Mendoza", "c.mendoza@utp.edu.pe", "tecnico123",
                                 "TECNICO_ESPECIALISTA",
                                 "Hardware", "987-111-222", null, "Activo");
@@ -120,6 +127,8 @@ public class DataLoader implements CommandLineRunner {
                 crearUsuarioSiNoExiste("Marcos", "Vega", "m.vega@utp.edu.pe", "tecnico123", "TECNICO_ESPECIALISTA",
                                 "Audiovisual", "987-555-200", null, "Activo");
 
+                crearUsuarioSiNoExiste("Maykel", "Stefano", "maykelstefano3@gmail.com", "alumno123", "ESTUDIANTE", null,
+                                "987-999-004", "Ingeniería de Sistemas", "Activo");
                 crearUsuarioSiNoExiste("María", "García", "m.garcia@utp.edu.pe", "alumno123", "ESTUDIANTE", null,
                                 "987-654-321",
                                 "Ingeniería de Sistemas", "Activo");

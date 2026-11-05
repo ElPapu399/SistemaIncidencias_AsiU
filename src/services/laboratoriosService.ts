@@ -62,6 +62,10 @@ export function obtenerEquiposLaboratorio(id: string) {
   return consultar<Equipo[]>(`/equipos?ubicacionId=${encodeURIComponent(id)}`);
 }
 
+export function obtenerTodosLosEquipos() {
+  return consultar<Equipo[]>('/equipos');
+}
+
 export function guardarEquipo(datos: EquipoFormulario, id?: number) {
   return consultar<Equipo>(id === undefined ? '/equipos' : `/equipos/${id}`, {
     method: id === undefined ? 'POST' : 'PUT', body: JSON.stringify(datos),

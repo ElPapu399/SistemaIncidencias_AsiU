@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   PlusCircle,
@@ -6,9 +7,8 @@ import {
   UserCheck,
   Bell,
   Star,
-  Lightbulb,
-  Clock,
-  ArrowRight,
+  ChevronDown,
+  ChevronUp,
   BarChart3,
   Settings,
   Users,
@@ -19,6 +19,7 @@ import {
   Wrench,
   Laptop,
   Headphones,
+  Info,
   type LucideIcon,
 } from 'lucide-react';
 import type { UserRole } from '../../types/user';
@@ -28,7 +29,6 @@ interface StepItem {
   title: string;
   desc: string;
   icon: LucideIcon;
-  accent: string;
 }
 
 interface RoleConfig {
@@ -49,130 +49,111 @@ interface RoleConfig {
   };
   flowTitle: string;
   steps: StepItem[];
-  tipTitle: string;
-  tipText: string;
-  scheduleText: string;
-  scheduleIcon: LucideIcon;
+  noteText: string;
 }
 
 const ROLE_CONFIGS: Record<string, RoleConfig> = {
   ADMIN: {
-    badge: 'Panel de Administración · ASIU',
+    badge: 'Administración ASIU',
     badgeIcon: ShieldCheck,
-    badgeStyle: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-    greetingTitle: (name) => `¡Hola, ${name || 'Administrador'}! 🛡️`,
+    badgeStyle: 'bg-slate-100 text-slate-700 border-slate-200',
+    greetingTitle: (name) => `Hola, ${name || 'bienvenido'}`,
     description:
-      'Supervisa la resolución de incidencias en el campus, gestiona usuarios y catálogos, y analiza métricas de cumplimiento de SLA y satisfacción del servicio.',
+      'Gestiona usuarios, revisa las incidencias activas en el campus y supervisa los reportes de atención del equipo técnico.',
     primaryAction: {
       to: '/dashboard/reportes',
-      label: 'Ver reportes y métricas',
+      label: 'Ver reportes',
       icon: BarChart3,
     },
     secondaryAction: {
       to: '/dashboard/configuracion',
-      label: 'Configurar catálogos',
+      label: 'Configuración',
       icon: Settings,
     },
-    flowTitle: '¿Cuáles son tus responsabilidades como administrador?',
+    flowTitle: 'Funciones del administrador',
     steps: [
       {
-        num: '1',
-        title: 'Gestión de Usuarios',
-        desc: 'Administra cuentas y roles de estudiantes, técnicos generales y especialistas de campo.',
+        num: '01',
+        title: 'Usuarios',
+        desc: 'Crea y edita cuentas de estudiantes, técnicos y personal de soporte.',
         icon: Users,
-        accent: 'bg-blue-100 text-blue-700 border-blue-200',
       },
       {
-        num: '2',
-        title: 'Catálogos y SLA',
-        desc: 'Configura categorías, edificios, laboratorios y tiempos máximos de respuesta de atención.',
+        num: '02',
+        title: 'Catálogos',
+        desc: 'Configura pabellones, laboratorios, tipos de falla y prioridades.',
         icon: Sliders,
-        accent: 'bg-violet-100 text-violet-700 border-violet-200',
       },
       {
-        num: '3',
-        title: 'Supervisión de Soporte',
-        desc: 'Monitorea la carga de trabajo, solicitudes de reasignación y flujo de tickets universitarios.',
+        num: '03',
+        title: 'Monitoreo',
+        desc: 'Revisa el estado de los tickets y aprueba solicitudes de reasignación.',
         icon: ArrowRightLeft,
-        accent: 'bg-amber-100 text-amber-700 border-amber-200',
       },
       {
-        num: '4',
-        title: 'Auditoría y Métricas',
-        desc: 'Evalúa calificaciones de estudiantes, reportes de satisfacción e historial de trazabilidad.',
-        icon: ShieldCheck,
-        accent: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+        num: '04',
+        title: 'Métricas',
+        desc: 'Consulta tiempos de atención, tasas de resolución y satisfacción.',
+        icon: BarChart3,
       },
     ],
-    tipTitle: 'Supervisión continua:',
-    tipText:
-      'Revisa periódicamente la sección de Calificaciones para identificar oportunidades de mejora y destacar el desempeño de los técnicos.',
-    scheduleText: 'Auditoría y control global activo',
-    scheduleIcon: ShieldCheck,
+    noteText: 'Supervisión general del sistema de incidencias universitarias.',
   },
 
   TECNICO_GENERAL: {
-    badge: 'Mesa de Ayuda · Gestión y Triaje',
+    badge: 'Mesa de Ayuda',
     badgeIcon: Headphones,
     badgeStyle: 'bg-sky-50 text-sky-700 border-sky-200',
-    greetingTitle: (name) => `¡Hola, ${name || 'Técnico'}! 🎧`,
+    greetingTitle: (name) => `Hola, ${name || 'bienvenido'}`,
     description:
-      'Gestiona la bandeja de entrada de tickets, clasifica la criticidad de cada falla y deriva las incidencias a los técnicos especialistas idóneos.',
+      'Revisa los reportes nuevos de los estudiantes, valida los datos de cada falla y asigna el técnico especialista correspondiente.',
     primaryAction: {
       to: '/dashboard/incidencias',
-      label: 'Revisar incidencias',
+      label: 'Bandeja de incidencias',
       icon: ClipboardList,
     },
     secondaryAction: {
-      to: '/dashboard/calificaciones-tecnicos',
-      label: 'Mis calificaciones',
-      icon: Star,
+      to: '/dashboard/carga-tecnicos',
+      label: 'Carga de trabajo',
+      icon: Users,
     },
-    flowTitle: '¿Cómo funciona el flujo de trabajo en Mesa de Ayuda?',
+    flowTitle: 'Flujo de trabajo en mesa de ayuda',
     steps: [
       {
-        num: '1',
-        title: 'Recepción y Triaje',
-        desc: 'Revisa las incidencias entrantes reportadas por estudiantes y valida la criticidad de la falla.',
+        num: '01',
+        title: 'Recepción',
+        desc: 'Revisa las incidencias registradas y confirma el aula o laboratorio.',
         icon: FileText,
-        accent: 'bg-blue-100 text-blue-700 border-blue-200',
       },
       {
-        num: '2',
-        title: 'Asignación Técnica',
-        desc: 'Deriva cada ticket al técnico especialista idóneo según la categoría y ubicación del problema.',
+        num: '02',
+        title: 'Disponibilidad',
+        desc: 'Consulta la carga de trabajo de los especialistas antes de asignar.',
+        icon: Users,
+      },
+      {
+        num: '03',
+        title: 'Asignación',
+        desc: 'Deriva el ticket al técnico idóneo evitando sobrecargas.',
         icon: UserCheck,
-        accent: 'bg-violet-100 text-violet-700 border-violet-200',
       },
       {
-        num: '3',
-        title: 'Gestión de Reasignaciones',
-        desc: 'Evalúa y responde solicitudes de reasignación enviadas por los técnicos en laboratorios.',
+        num: '04',
+        title: 'Reasignaciones',
+        desc: 'Evalúa solicitudes de cambio de técnico enviadas desde laboratorios.',
         icon: ArrowRightLeft,
-        accent: 'bg-amber-100 text-amber-700 border-amber-200',
-      },
-      {
-        num: '4',
-        title: 'Atención de 1er Nivel',
-        desc: 'Resuelve directamente incidencias de configuración o asesoría técnica sin requerir desplazamiento.',
-        icon: CheckCircle2,
-        accent: 'bg-emerald-100 text-emerald-700 border-emerald-200',
       },
     ],
-    tipTitle: 'Regla operativa:',
-    tipText:
-      'Prioriza incidencias de prioridad Alta (resolución en menos de 4h) para asegurar el cumplimiento del Acuerdo de Nivel de Servicio (SLA).',
-    scheduleText: 'Mesa de ayuda y triaje activa',
-    scheduleIcon: Headphones,
+    noteText: 'Atiende primero los tickets de alta prioridad para evitar demoras.',
   },
 
   TECNICO_ESPECIALISTA: {
-    badge: 'Soporte Especializado · Nivel 2',
+    badge: 'Soporte Técnico',
     badgeIcon: Wrench,
     badgeStyle: 'bg-amber-50 text-amber-700 border-amber-200',
-    greetingTitle: (name) => `¡Hola, ${name || 'Especialista'}! 🛠️`,
+    greetingTitle: (name) => `Hola, ${name || 'bienvenido'}`,
     description:
-      'Atiende incidencias de tu área técnica, diagnostica en laboratorios y registra la solución aplicada para restablecer la operatividad de los equipos.',
+      'Atiende las incidencias asignadas a tu área en laboratorios y aulas, realiza el diagnóstico presencial y registra la solución aplicada.',
     primaryAction: {
       to: '/dashboard/incidencias',
       label: 'Mis tickets asignados',
@@ -183,50 +164,42 @@ const ROLE_CONFIGS: Record<string, RoleConfig> = {
       label: 'Mis calificaciones',
       icon: Star,
     },
-    flowTitle: '¿Cómo resolver incidencias especializadas?',
+    flowTitle: 'Flujo de trabajo en laboratorios',
     steps: [
       {
-        num: '1',
-        title: 'Diagnóstico en Sitio',
-        desc: 'Acude al laboratorio o aula correspondiente e inspecciona el equipo o sistema afectado.',
+        num: '01',
+        title: 'Revisión',
+        desc: 'Revisa en tu bandeja los casos asignados a tu especialidad.',
+        icon: ClipboardList,
+      },
+      {
+        num: '02',
+        title: 'Atención en sitio',
+        desc: 'Acude al aula o laboratorio para inspeccionar y solucionar el equipo.',
         icon: Laptop,
-        accent: 'bg-blue-100 text-blue-700 border-blue-200',
       },
       {
-        num: '2',
-        title: 'Solicitud de Reasignación',
-        desc: 'Si la avería corresponde a otra especialidad, solicita la derivación detallando el motivo.',
+        num: '03',
+        title: 'Derivación',
+        desc: 'Si la falla pertenece a otra área, solicita transferir el ticket.',
         icon: ArrowRightLeft,
-        accent: 'bg-violet-100 text-violet-700 border-violet-200',
       },
       {
-        num: '3',
-        title: 'Solución Técnica',
-        desc: 'Aplica el mantenimiento, repara la falla y registra el reporte de solución para cerrar el caso.',
+        num: '04',
+        title: 'Cierre',
+        desc: 'Registra la solución aplicada para que el estudiante pueda verificarla.',
         icon: CheckCircle2,
-        accent: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-      },
-      {
-        num: '4',
-        title: 'Evaluación y Calidad',
-        desc: 'Revisa las estrellas y comentarios de los estudiantes para mantener la excelencia técnica.',
-        icon: Star,
-        accent: 'bg-amber-100 text-amber-700 border-amber-200',
       },
     ],
-    tipTitle: 'Buenas prácticas:',
-    tipText:
-      'Redactar una descripción clara de la solución aplicada facilita la validación del estudiante y nutre la base de conocimiento universitaria.',
-    scheduleText: 'Atención técnica en laboratorios',
-    scheduleIcon: Clock,
+    noteText: 'Detallar la solución ayuda a que el estudiante confirme y califique la atención.',
   },
 
   ESTUDIANTE: {
-    badge: 'Portal del Estudiante · Soporte Campus',
+    badge: 'Portal del Estudiante',
     badgeStyle: 'bg-blue-50 text-blue-700 border-blue-200',
-    greetingTitle: (name) => `¡Hola, ${name || 'Estudiante'}! 👋`,
+    greetingTitle: (name) => `Hola, ${name || 'bienvenido'}`,
     description:
-      '¿Detectaste alguna avería en computadoras de laboratorio, proyectores, conectividad Wi-Fi o infraestructura de la universidad? Repórtala aquí y nuestro equipo técnico se encargará de solucionarla con trazabilidad en tiempo real.',
+      'Reporta fallas con computadoras, proyectores, internet o infraestructura en tus aulas y sigue el avance de tu atención.',
     primaryAction: {
       to: '/dashboard/nueva',
       label: 'Reportar incidencia',
@@ -237,42 +210,34 @@ const ROLE_CONFIGS: Record<string, RoleConfig> = {
       label: 'Ver mis tickets',
       icon: ClipboardList,
     },
-    flowTitle: '¿Cómo funciona el proceso de atención?',
+    flowTitle: '¿Cómo funciona la atención?',
     steps: [
       {
-        num: '1',
-        title: 'Registra el ticket',
-        desc: 'Describe la falla, indica el laboratorio o aula y adjunta fotos de evidencia.',
+        num: '01',
+        title: 'Envía tu reporte',
+        desc: 'Indica el aula o laboratorio, describe qué falla y adjunta fotos si tienes.',
         icon: FileText,
-        accent: 'bg-blue-100 text-blue-700 border-blue-200',
       },
       {
-        num: '2',
-        title: 'Asignación técnica',
-        desc: 'Mesa de ayuda evalúa la prioridad y asigna al técnico especialista correspondiente.',
+        num: '02',
+        title: 'Asignación',
+        desc: 'Mesa de ayuda clasifica tu caso y le asigna un técnico especialista.',
         icon: UserCheck,
-        accent: 'bg-violet-100 text-violet-700 border-violet-200',
       },
       {
-        num: '3',
-        title: 'Seguimiento activo',
-        desc: 'Monitorea el avance y recibe notificaciones cuando tu ticket sea atendido.',
+        num: '03',
+        title: 'Atención técnica',
+        desc: 'El técnico acude a revisar y solucionar la falla reportada.',
         icon: Bell,
-        accent: 'bg-amber-100 text-amber-700 border-amber-200',
       },
       {
-        num: '4',
-        title: 'Solución y calificación',
-        desc: 'Revisa la solución aplicada y evalúa el servicio del técnico para seguir mejorando.',
+        num: '04',
+        title: 'Conformidad',
+        desc: 'Revisa la solución registrada y deja tu calificación del servicio.',
         icon: Star,
-        accent: 'bg-emerald-100 text-emerald-700 border-emerald-200',
       },
     ],
-    tipTitle: 'Consejo útil:',
-    tipText:
-      'Detallar el pabellón, aula y número de máquina (ej. Lab 204, PC-15) permite que el técnico atienda el problema de inmediato.',
-    scheduleText: 'Soporte presencial: Lun - Vie 7:00 a 22:00',
-    scheduleIcon: Clock,
+    noteText: 'Horario de soporte presencial en campus: lunes a viernes de 7:00 a 22:00.',
   },
 };
 
@@ -282,119 +247,123 @@ export interface RoleWelcomeBannerProps {
 }
 
 export default function RoleWelcomeBanner({ nombre, rol }: RoleWelcomeBannerProps) {
-  // Map legacy 'TECNICO' to 'TECNICO_ESPECIALISTA' or 'TECNICO_GENERAL'
+  const [showGuide, setShowGuide] = useState(() => {
+    try {
+      const saved = localStorage.getItem('asiu_banner_guide_open');
+      return saved !== null ? saved === 'true' : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const toggleGuide = () => {
+    setShowGuide((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('asiu_banner_guide_open', String(next));
+      } catch {
+        // ignore storage errors
+      }
+      return next;
+    });
+  };
+
   const normalizedRole = rol === 'TECNICO' ? 'TECNICO_GENERAL' : (rol || 'ESTUDIANTE');
   const config = ROLE_CONFIGS[normalizedRole] || ROLE_CONFIGS.ESTUDIANTE;
 
   const PrimaryIcon = config.primaryAction.icon;
   const SecondaryIcon = config.secondaryAction.icon;
-  const ScheduleIcon = config.scheduleIcon;
   const BadgeIcon = config.badgeIcon;
 
   return (
-    <div className="bg-white border border-slate-300 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-      {/* Hero Welcome Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
-        <div className="space-y-2 max-w-2xl text-left">
-          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${config.badgeStyle}`}>
-            {BadgeIcon && <BadgeIcon className="w-3.5 h-3.5" />}
-            <span>{config.badge}</span>
+    <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
+      {/* Header bar */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div className="space-y-1.5 max-w-2xl text-left">
+          <div className="flex items-center gap-2">
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${config.badgeStyle}`}>
+              {BadgeIcon && <BadgeIcon className="w-3.5 h-3.5" />}
+              <span>{config.badge}</span>
+            </span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
             {config.greetingTitle(nombre)}
           </h2>
-          <p className="text-sm text-slate-600 leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
             {config.description}
           </p>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex w-full min-w-0 items-center gap-3
-          overflow-x-auto overscroll-x-contain snap-x snap-mandatory pb-2
-          lg:w-auto lg:shrink-0 lg:overflow-visible
-          lg:snap-none lg:pb-0">
+        {/* Action buttons + toggle */}
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 shrink-0">
           <Link
             to={config.primaryAction.to}
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-sm transition-all hover:shadow-md cursor-pointer w-[85%] shrink-0 snap-start lg:w-auto"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow-xs transition-colors cursor-pointer"
           >
             <PrimaryIcon className="w-4 h-4 shrink-0" />
             <span>{config.primaryAction.label}</span>
           </Link>
           <Link
             to={config.secondaryAction.to}
-            className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm border border-slate-300 transition-colors cursor-pointer shrink-0 whitespace-nowrap w-[85%] snap-start lg:w-auto"
+            className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm border border-slate-300 transition-colors cursor-pointer"
           >
             <SecondaryIcon className="w-4 h-4 shrink-0 text-slate-500" />
             <span>{config.secondaryAction.label}</span>
           </Link>
+          <button
+            type="button"
+            onClick={toggleGuide}
+            className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+            title={showGuide ? 'Ocultar guía rápida' : 'Mostrar guía rápida'}
+          >
+            <span>{showGuide ? 'Ocultar guía' : 'Guía rápida'}</span>
+            {showGuide ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </button>
         </div>
       </div>
 
-      {/* Process / Responsibility Flow (4 steps) */}
-      <div className="pt-2 border-t border-slate-100">
-        <div className="flex items-center justify-between mb-3 text-left">
-          <p className="text-xs uppercase font-bold tracking-wider text-slate-500">
-            {config.flowTitle}
-          </p>
-          <span className="hidden sm:inline-flex items-center gap-1 text-xs text-slate-400">
-            Flujo paso a paso <ArrowRight className="w-3.5 h-3.5" />
-          </span>
-        </div>
-
-        <div
-          role="region"
-          tabIndex={0}
-          className="
-            flex w-full min-w-0 gap-3
-            overflow-x-auto overscroll-x-contain
-            snap-x snap-mandatory pb-2
-            sm:grid sm:grid-cols-2 sm:overflow-visible
-            sm:snap-none sm:pb-0 lg:grid-cols-4
-          "
-        >
-          {config.steps.map((step) => {
-            const Icon = step.icon;
-            return (
-              <div
-                key={step.num}
-                className="w-[65%] min-w-0 shrink-0 snap-start sm:w-auto bg-slate-50/70 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:bg-slate-50 hover:border-slate-300 transition-colors text-left"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-2.5">
-                    <span className={`w-8 h-8 rounded-lg border flex items-center justify-center text-xs font-bold ${step.accent}`}>
-                      {step.num}
-                    </span>
-                    <Icon className="w-4 h-4 text-slate-400" />
-                  </div>
-                  <h4 className="text-xs font-bold text-slate-900 mb-1">{step.title}</h4>
-                  <p className="text-[11px] text-slate-500 leading-relaxed">{step.desc}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Helpful Tip & Schedule Strip */}
-      <div className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-3.5 sm:px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-left">
-        <div className="flex items-start sm:items-center gap-2.5 text-amber-900">
-          <div className="w-6 h-6 rounded-md bg-amber-100 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
-            <Lightbulb className="w-3.5 h-3.5 text-amber-700" />
+      {/* Collapsible Flow Section */}
+      {showGuide && (
+        <div className="pt-4 border-t border-slate-100 space-y-3.5">
+          <div className="flex items-center justify-between text-left">
+            <span className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+              {config.flowTitle}
+            </span>
           </div>
-          <span>
-            <strong className="font-semibold text-amber-950">{config.tipTitle}</strong> {config.tipText}
-          </span>
-        </div>
 
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 border border-amber-300 text-amber-800 font-medium shrink-0 self-start sm:self-auto text-[11px]">
-          <ScheduleIcon className="w-3 h-3 text-amber-600" />
-          <span>{config.scheduleText}</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            {config.steps.map((step) => {
+              const Icon = step.icon;
+              return (
+                <div
+                  key={step.num}
+                  className="bg-slate-50/70 border border-slate-200/90 rounded-xl p-3.5 flex flex-col justify-between hover:bg-slate-50 transition-colors text-left"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[11px] font-bold text-slate-400 font-mono">
+                        {step.num}
+                      </span>
+                      <Icon className="w-4 h-4 text-slate-400" />
+                    </div>
+                    <h4 className="text-xs font-bold text-slate-800 mb-1">{step.title}</h4>
+                    <p className="text-[11px] text-slate-500 leading-normal">{step.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Simple Institutional Note */}
+          <div className="bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2.5 flex items-center gap-2 text-xs text-slate-600 text-left">
+            <Info className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <span>{config.noteText}</span>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
 // Backward-compatible alias
 export { RoleWelcomeBanner as StudentWelcomeBanner };
-

@@ -61,6 +61,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/laboratorios", "/api/laboratorios/**").hasAnyRole("ADMIN", "TECNICO_ESPECIALISTA")
                         .requestMatchers(HttpMethod.POST, "/api/equipos").hasAnyRole("ADMIN", "TECNICO_ESPECIALISTA")
                         .requestMatchers(HttpMethod.PUT, "/api/equipos/**").hasAnyRole("ADMIN", "TECNICO_ESPECIALISTA")
+                        .requestMatchers("/api/auditoria", "/api/auditoria/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(exceptions -> exceptions
                         .accessDeniedHandler((request, response, accessDeniedException) -> {

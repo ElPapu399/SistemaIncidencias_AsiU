@@ -47,7 +47,7 @@ export default function IncidentTraceabilityModal({
   const [historial, setHistorial] = useState<HistorialItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sortAsc, setSortAsc] = useState(false);
+  const [sortAsc, setSortAsc] = useState(true);
 
   const cargarHistorial = useCallback(async () => {
     if (!incident?.numericId) return;
@@ -123,6 +123,16 @@ export default function IncidentTraceabilityModal({
         bgColor: 'bg-blue-100',
         borderColor: 'border-blue-300',
         badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
+      };
+    }
+    if (t === 'CALIFICACION' || estadoNuevo === 'Cerrada' || c.includes('calificación')) {
+      return {
+        label: 'Cierre y Calificación',
+        icon: ShieldCheck,
+        color: 'text-amber-600',
+        bgColor: 'bg-amber-100',
+        borderColor: 'border-amber-300',
+        badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
       };
     }
     if (estadoNuevo === 'Resuelta' || estadoNuevo === 'Resuelto' || c.includes('resuelta') || c.includes('solución')) {

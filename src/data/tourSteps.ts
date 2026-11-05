@@ -60,9 +60,9 @@ const estudianteSteps: TourStep[] = [
   },
   RECENT_TABLE,
   {
-    target: 'sidebar-historial',
-    title: 'Historial',
-    content: 'Revisa las incidencias que ya fueron resueltas o cerradas. Puedes ver los detalles y la trazabilidad completa.',
+    target: 'sidebar-ayuda',
+    title: 'Centro de ayuda',
+    content: 'Consulta guías rápidas de autoayuda para Wi-Fi, contraseñas, licencias de software y equipos antes de abrir un ticket.',
     position: 'right',
   },
   HEADER_USER,
@@ -82,14 +82,14 @@ const adminSteps: TourStep[] = [
   },
   {
     target: 'sidebar-usuarios',
-    title: 'Gestión de estudiantes',
-    content: 'Administra las cuentas de los estudiantes: crea nuevos, edita datos o desactiva cuentas.',
+    title: 'Gestión de usuarios',
+    content: 'Administra las cuentas de estudiantes y del personal técnico de soporte desde una sola vista con pestañas.',
     position: 'right',
   },
   {
-    target: 'sidebar-tecnicos',
-    title: 'Gestión de técnicos',
-    content: 'Administra al equipo técnico de soporte. Asigna especialidades y consulta su carga de trabajo.',
+    target: 'sidebar-laboratorios',
+    title: 'Gestión de laboratorios',
+    content: 'Consulta y administra la infraestructura de laboratorios de cómputo y equipos del campus.',
     position: 'right',
   },
   {
@@ -107,7 +107,7 @@ const adminSteps: TourStep[] = [
   {
     target: 'sidebar-configuracion',
     title: 'Configuración del sistema',
-    content: 'Gestiona categorías, especialidades y estados de incidencias. Personaliza el sistema según las necesidades del campus.',
+    content: 'Gestiona categorías y especialidades de incidencias. Personaliza el sistema según las necesidades del campus.',
     position: 'right',
   },
   {
@@ -126,29 +126,17 @@ const tecnicoSteps: TourStep[] = [
   SIDEBAR_NAV,
   STAT_CARDS,
   {
-    target: 'sidebar-mis-incidencias',
-    title: 'Mis incidencias asignadas',
-    content: 'Aquí encontrarás las incidencias que te fueron asignadas. Cambia su estado conforme avanzas en la atención.',
-    position: 'right',
-  },
-  {
     target: 'sidebar-incidencias',
-    title: 'Todas las incidencias',
-    content: 'Consulta el panorama completo de incidencias en el campus, incluyendo las asignadas a otros técnicos.',
+    title: 'Incidencias',
+    content: 'Consulta tus incidencias asignadas, toma tickets disponibles y revisa el panorama completo del campus.',
     position: 'right',
   },
   RECENT_TABLE,
-  {
-    target: 'sidebar-historial',
-    title: 'Historial',
-    content: 'Revisa las incidencias resueltas o cerradas y la trazabilidad de cada una.',
-    position: 'right',
-  },
   HEADER_USER,
   PERFIL,
 ];
 
-// ─── TECNICO_GENERAL (Coordinador) ───
+// ─── TECNICO_GENERAL (Mesa de ayuda / Triaje) ───
 const tecnicoGeneralSteps: TourStep[] = [
   COMMON_WELCOME,
   SIDEBAR_NAV,
@@ -156,28 +144,16 @@ const tecnicoGeneralSteps: TourStep[] = [
   {
     target: 'sidebar-incidencias',
     title: 'Gestión de incidencias',
-    content: 'Como técnico general, puedes gestionar incidencias: asignar técnicos especialistas, cambiar estados y dar seguimiento.',
+    content: 'Como soporte de mesa de ayuda, revisa los tickets entrantes, delega casos a los técnicos especialistas y atiende solicitudes de reasignación.',
     position: 'right',
   },
   {
-    target: 'sidebar-tecnicos',
-    title: 'Equipo técnico',
-    content: 'Consulta y administra al equipo de técnicos de soporte bajo tu coordinación.',
-    position: 'right',
-  },
-  {
-    target: 'sidebar-calificaciones',
-    title: 'Calificaciones',
-    content: 'Revisa las evaluaciones de desempeño de los técnicos del equipo.',
+    target: 'sidebar-carga-tecnicos',
+    title: 'Carga de trabajo',
+    content: 'Monitorea la cantidad de tickets activos de cada especialista para balancear las asignaciones.',
     position: 'right',
   },
   RECENT_TABLE,
-  {
-    target: 'sidebar-historial',
-    title: 'Historial general',
-    content: 'Accede al historial completo de incidencias resueltas y cerradas del campus.',
-    position: 'right',
-  },
   HEADER_USER,
   PERFIL,
 ];
@@ -188,15 +164,9 @@ const tecnicoEspecialistaSteps: TourStep[] = [
   SIDEBAR_NAV,
   STAT_CARDS,
   {
-    target: 'sidebar-mis-incidencias',
-    title: 'Mis incidencias asignadas',
-    content: 'Atiende las incidencias especializadas que te fueron asignadas. Actualiza su estado mientras trabajas en ellas.',
-    position: 'right',
-  },
-  {
     target: 'sidebar-incidencias',
-    title: 'Todas las incidencias',
-    content: 'Vista general de todas las incidencias del campus para tener contexto completo.',
+    title: 'Incidencias',
+    content: 'Gestiona tus incidencias asignadas en laboratorios y toma nuevos tickets disponibles para tu especialidad.',
     position: 'right',
   },
   {
@@ -205,13 +175,25 @@ const tecnicoEspecialistaSteps: TourStep[] = [
     content: 'Consulta la información de los laboratorios y equipos del campus.',
     position: 'right',
   },
-  RECENT_TABLE,
   {
-    target: 'sidebar-historial',
-    title: 'Historial',
-    content: 'Revisa incidencias resueltas y cerradas con trazabilidad completa.',
+    target: 'sidebar-taller',
+    title: 'Taller de equipos',
+    content: 'Monitorea el hardware en mantenimiento o averiado en el campus y actualiza su estado directamente.',
     position: 'right',
   },
+  {
+    target: 'sidebar-mi-rendimiento',
+    title: 'Mi rendimiento',
+    content: 'Visualiza tus métricas de productividad: porcentaje de resolución, tiempo promedio y desglose por categorías.',
+    position: 'right',
+  },
+  {
+    target: 'sidebar-calificaciones',
+    title: 'Mis calificaciones',
+    content: 'Revisa las evaluaciones y comentarios recibidos de los estudiantes.',
+    position: 'right',
+  },
+  RECENT_TABLE,
   HEADER_USER,
   PERFIL,
 ];
