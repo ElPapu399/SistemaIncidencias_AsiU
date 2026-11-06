@@ -62,6 +62,8 @@ public class EmailService {
 
         } catch (ResendException e) {
             log.error("Error al enviar correo de recuperación a {}: {}", destinatario, e.getMessage());
+        } catch (Exception e) {
+            log.error("Error inesperado en servicio de correo para {}: {}", destinatario, e.getMessage(), e);
         }
     }
 }

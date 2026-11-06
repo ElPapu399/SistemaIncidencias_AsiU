@@ -1,6 +1,7 @@
 package com.proyecto.incidenciasback.repository;
 
 import com.proyecto.incidenciasback.model.HistorialEstado;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,7 +16,9 @@ public interface HistorialEstadoRepository extends JpaRepository<HistorialEstado
 
     List<HistorialEstado> findByIncidenciaIdOrderByFechaCambioAsc(Integer incidenciaId);
 
+    @EntityGraph(attributePaths = {"incidencia", "tecnicoAnterior", "tecnicoNuevo", "usuario"})
     List<HistorialEstado> findByTipoAccionOrderByFechaCambioDesc(String tipoAccion);
 
+    @EntityGraph(attributePaths = {"incidencia", "tecnicoAnterior", "tecnicoNuevo", "usuario"})
     List<HistorialEstado> findByTipoAccionOrderByFechaCambioAsc(String tipoAccion);
 }

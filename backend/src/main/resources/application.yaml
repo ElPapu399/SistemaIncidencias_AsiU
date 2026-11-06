@@ -34,7 +34,7 @@ app:
     secret: ${JWT_SECRET:AsIU-SistemaIncidencias-JWT-SecretKey-2026-MinLength32!}
     expiration-ms: ${JWT_EXPIRATION:1800000}
   mail:
-    from: ${MAIL_FROM:loayzajhosep58@gmail.com}
+    from: ${MAIL_FROM:onboarding@resend.dev}
 
 cors:
   allowed-origins: ${CORS_ORIGINS:http://localhost:5173}

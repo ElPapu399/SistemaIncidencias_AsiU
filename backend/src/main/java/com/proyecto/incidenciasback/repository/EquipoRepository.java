@@ -1,6 +1,7 @@
 package com.proyecto.incidenciasback.repository;
 
 import com.proyecto.incidenciasback.model.Equipo;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,6 +10,9 @@ import java.util.Optional;
 
 @Repository
 public interface EquipoRepository extends JpaRepository<Equipo, Integer> {
+
+    @EntityGraph(attributePaths = {"ubicacion"})
+    List<Equipo> findAll();
 
     Optional<Equipo> findByCodigo(String codigo);
 
@@ -29,5 +33,6 @@ public interface EquipoRepository extends JpaRepository<Equipo, Integer> {
             "from Equipo e where e.ubicacion is not null group by e.ubicacion.id")
     List<ResumenUbicacion> resumirPorUbicacion();
 
+    @EntityGraph(attributePaths = {"ubicacion"})
     List<Equipo> findByUbicacionId(Integer ubicacionId);
 }
