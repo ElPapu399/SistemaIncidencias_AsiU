@@ -301,7 +301,7 @@ export default function IncidentsTable({
               const isPendingReassign = pendingIncidentIds?.has(incident.numericId || 0);
               return (
                 <tr key={incident.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="px-5 py-3.5 font-mono font-bold text-amber-600">{incident.id}</td>
+                  <td className="px-5 py-3.5 font-mono font-bold text-amber-800">{incident.id}</td>
 
                   <td className="px-5 py-3.5 max-w-xs">
                     <p className="text-slate-900 font-semibold text-sm truncate">{incident.title}</p>

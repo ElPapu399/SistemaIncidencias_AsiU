@@ -183,7 +183,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <main className="flex min-h-screen">
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative bg-blue-700 overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-br from-blue-900/70 to-transparent" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-300/20 rounded-full" />
@@ -457,7 +457,7 @@ const Login = () => {
           
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 
