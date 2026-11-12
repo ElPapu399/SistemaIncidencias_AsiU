@@ -153,29 +153,33 @@ export default function StudentTable({ usuarios, onEdit }: StudentTableProps) {
                     )}
                 </div>
                 
-                <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto overscroll-x-contain pb-2 lg:contents">
-                    <select
-                        aria-label="Filtrar por carrera"
-                        value={filterCarrera}
-                        onChange={e => setFilterCarrera(e.target.value)}
-                        className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
-                    >
-                        <option value="">Todas las carreras</option>
-                        {availableCarreras.map(c => (
-                            <option key={c} value={c}>{c}</option>
-                        ))}
-                    </select>
-                    <select
-                        aria-label="Filtrar por estado"
-                        value={filterEstado}
-                        onChange={e => setFilterEstado(e.target.value)}
-                        className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
-                    >
-                        <option value="">Todos los estados</option>
-                        {hasActivo && <option value="Activo">Activos</option>}
-                        {hasInactivo && <option value="Inactivo">Inactivos</option>}
-                    </select>
-                </div>
+                
+                
+<div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto overscroll-x-contain pb-2 lg:contents">
+    <select
+        aria-label="Filtrar por carrera"
+        value={filterCarrera}
+        onChange={e => setFilterCarrera(e.target.value)}
+        className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
+    >
+        <option value="">Todas las carreras</option>
+        {availableCarreras.map(c => (
+            <option key={c} value={c}>{c}</option>
+        ))}
+    </select>
+    <select
+        aria-label="Filtrar por estado"
+        value={filterEstado}
+        onChange={e => setFilterEstado(e.target.value)}
+        className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
+    >
+        <option value="">Todos los estados</option>
+        {hasActivo && <option value="Activo">Activos</option>}
+        {hasInactivo && <option value="Inactivo">Inactivos</option>}
+    </select>
+</div>
+
+
 
                 {hasActiveFilters && (
                     <button
