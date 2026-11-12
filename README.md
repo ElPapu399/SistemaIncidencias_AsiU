@@ -155,21 +155,32 @@ SistemaIncidencias_AsiU/
 │   │   └── DashboardLayout.tsx      ← Layout general del panel
 │   ├── pages/                       ← Vistas principales
 │   │   ├── Dashboard.tsx            ← Panel general con KPIs
-│   │   ├── EstudiantesPage.tsx      ← Gestión de alumnos
 │   │   ├── IncidenciasPage.tsx      ← Gestión y filtrado de incidencias
-│   │   ├── Login.tsx                ← Pantalla de autenticación
-│   │   ├── PlaceholderPage.tsx      ← Páginas en desarrollo (Reportes/Ajustes)
-│   │   └── TecnicosPage.tsx         ← Gestión de técnicos por tipo
+│   │   ├── NuevaIncidenciaPage.tsx  ← Reporte asistido de incidencias
+│   │   ├── UsuariosPage.tsx         ← Gestión integral de estudiantes y técnicos
+│   │   ├── CargaTecnicosPage.tsx    ← Monitoreo de carga laboral y asignación
+│   │   ├── CalificacionesTecnicosPage.tsx ← Evaluaciones de servicio y satisfacción
+│   │   ├── MiRendimientoPage.tsx    ← Métricas individuales de desempeño técnico
+│   │   ├── TallerEquiposPage.tsx    ← Inventario y estado operativo de hardware
+│   │   ├── LaboratoriosPage.tsx     ← Mapa y administración de infraestructura
+│   │   ├── ReportesPage.tsx         ← Analítica global y bitácora de auditoría
+│   │   ├── Configuracion.tsx        ← Ajustes de catálogo (categorías/especialidades)
+│   │   ├── CentroAyudaPage.tsx      ← Guías de uso y soporte por rol
+│   │   ├── Perfil.tsx               ← Datos y preferencias del usuario
+│   │   └── Login.tsx                ← Pantalla de autenticación y recuperación
 │   ├── services/
-│   │   └── incidenciasService.ts    ← Consumo de endpoints de tickets
+│   │   ├── incidenciasService.ts    ← Consumo de endpoints de tickets
+│   │   ├── auditoriaService.ts      ← Consulta de bitácora inmutable
+│   │   └── laboratoriosService.ts   ← Gestión de infraestructura de laboratorios
 │   ├── types/                       ← Interfaces TypeScript
 │   │   ├── incident.ts
+│   │   ├── laboratorio.ts
 │   │   └── user.ts
 │   ├── utils/
 │   │   ├── auth.ts                  ← Almacenamiento y decodificación de JWT
-│   │   └── fetchWithAuth.ts         ← Fetch wrapper con cabecera Bearer y manejo 401
+│   │   ├── fetchWithAuth.ts         ← Fetch wrapper con cabecera Bearer y manejo 401
+│   │   └── tableSorting.ts          ← Utilidades deterministas de ordenamiento
 │   ├── App.tsx
-│   ├── App.css
 │   ├── index.css
 │   └── main.tsx
 ├── backend/                         ← Backend Spring Boot 3 (Java 21)

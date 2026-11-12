@@ -1,10 +1,14 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faPlus, faSpinner, faClipboardCheck, faListUl, faHandsHoldingChild, faCheck,
-} from '@fortawesome/free-solid-svg-icons';
-import { ArrowRightLeft } from 'lucide-react';
+  Plus,
+  Check,
+  Loader2,
+  ClipboardCheck,
+  Handshake,
+  ListFilter,
+  ArrowRightLeft,
+} from 'lucide-react';
 
 import Header from '../components/dashboard/Header';
 import IncidentsTable from '../components/dashboard/IncidentsTable';
@@ -210,9 +214,9 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
     : `${n} incidencia${n !== 1 ? 's' : ''} ${soloMisIncidencias ? 'asignada' : isEstudiante ? 'reportada' : 'registrada'}${n !== 1 ? 's' : ''}`;
 
   const tecnicoTabs = [
-    { key: 'mine' as const, label: 'Mis asignadas', icon: faClipboardCheck, count: myAssignedCount, activeClass: 'bg-violet-600 text-white shadow-sm', badgeClass: 'bg-violet-500 text-white', inactiveClass: 'bg-violet-100 text-violet-800' },
-    { key: 'available' as const, label: 'Disponibles para tomar', icon: faHandsHoldingChild, count: availableCount, activeClass: 'bg-emerald-600 text-white shadow-sm', badgeClass: 'bg-emerald-500 text-white', inactiveClass: 'bg-emerald-100 text-emerald-800' },
-    { key: 'all' as const, label: 'Todas las incidencias', icon: faListUl, count: incidents.length, activeClass: 'bg-white text-slate-900 shadow-sm', badgeClass: 'bg-slate-100 text-slate-700' },
+    { key: 'mine' as const, label: 'Mis asignadas', icon: ClipboardCheck, count: myAssignedCount, activeClass: 'bg-violet-600 text-white shadow-sm', badgeClass: 'bg-violet-500 text-white', inactiveClass: 'bg-violet-100 text-violet-800' },
+    { key: 'available' as const, label: 'Disponibles para tomar', icon: Handshake, count: availableCount, activeClass: 'bg-emerald-600 text-white shadow-sm', badgeClass: 'bg-emerald-500 text-white', inactiveClass: 'bg-emerald-100 text-emerald-800' },
+    { key: 'all' as const, label: 'Todas las incidencias', icon: ListFilter, count: incidents.length, activeClass: 'bg-white text-slate-900 shadow-sm', badgeClass: 'bg-slate-100 text-slate-700' },
   ];
 
   return (
@@ -238,7 +242,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
                 to="/dashboard/nueva"
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors cursor-pointer"
               >
-                <FontAwesomeIcon icon={faPlus} className="text-xs" />
+                <Plus className="w-3.5 h-3.5" />
                 <span>Nueva incidencia</span>
               </Link>
             )}
@@ -249,7 +253,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
         {successToast && (
           <div className="bg-emerald-500 text-white px-5 py-3 rounded-2xl shadow-lg flex items-center justify-between text-sm font-semibold animate-fade-in">
             <div className="flex items-center gap-2">
-              <FontAwesomeIcon icon={faCheck} className="text-white" />
+              <Check className="w-4 h-4 text-white" />
               <span>{successToast}</span>
             </div>
             <button onClick={() => setSuccessToast(null)} className="text-emerald-100 hover:text-white ml-4 text-xs underline cursor-pointer">Cerrar</button>
@@ -300,7 +304,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
                         : 'text-slate-700 hover:text-slate-900 hover:bg-white/50'
                     }`}
                 >
-                  <FontAwesomeIcon icon={tab.icon} className="text-lg sm:text-sm shrink-0" />
+                  <tab.icon className="w-4 h-4 text-lg sm:text-sm shrink-0" />
                   <span className="hidden sm:inline">{tab.label}</span>
                   <span className={`shrink-0 px-2 py-0.5 rounded-full text-xs sm:text-[10px] ${isActive ? (tab.badgeClass) : (tab.inactiveClass || tab.badgeClass)}`}>
                     {tab.count}
@@ -396,9 +400,9 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
                 className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-300 text-white transition-all shadow-sm cursor-pointer disabled:cursor-not-allowed"
               >
                 {selfAssigning ? (
-                  <FontAwesomeIcon icon={faSpinner} spin className="text-xs" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
-                  <FontAwesomeIcon icon={faCheck} className="text-xs" />
+                  <Check className="w-3.5 h-3.5" />
                 )}
                 <span>{selfAssigning ? 'Asignando...' : 'Sí, tomar incidencia'}</span>
               </button>

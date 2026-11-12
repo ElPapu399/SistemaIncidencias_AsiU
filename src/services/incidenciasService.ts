@@ -10,6 +10,7 @@ import type {
 import { fetchWithAuth } from '../utils/fetchWithAuth';
 import { getCurrentUser } from '../utils/auth';
 import { API_BASE } from '../config/api';
+import { notificarCambio } from './notificacionesService';
 
 export function getAttachmentUrl(urlArchivo?: string | number | null): string {
   if (!urlArchivo) return '';
@@ -101,7 +102,9 @@ export async function crearIncidencia(data: CreateIncidentData): Promise<Inciden
     throw new Error(errorData?.error || 'Error al crear la incidencia');
   }
 
-  return response.json();
+  const result = await response.json();
+  notificarCambio();
+  return result;
 }
 
 export async function asignarTecnico(incidenciaId: number, tecnicoId: number): Promise<void> {
@@ -114,6 +117,8 @@ export async function asignarTecnico(incidenciaId: number, tecnicoId: number): P
     const errorData = await response.json().catch(() => null);
     throw new Error(errorData?.error || 'Error al asignar el técnico');
   }
+
+  notificarCambio();
 }
 
 export async function cambiarEstado(
@@ -136,6 +141,8 @@ export async function cambiarEstado(
     const errorData = await response.json().catch(() => null);
     throw new Error(errorData?.error || 'Error al actualizar el estado de la incidencia');
   }
+
+  notificarCambio();
 }
 
 export async function calificarIncidencia(
@@ -236,6 +243,8 @@ export async function reasignarTecnico(
     const errorData = await response.json().catch(() => null);
     throw new Error(errorData?.error || 'Error al reasignar el técnico');
   }
+
+  notificarCambio();
 }
 
 export interface SolicitudReasignacion {
@@ -270,7 +279,9 @@ export async function solicitarReasignacion(
     throw new Error(errorData?.error || errorData?.message || 'Error al solicitar reasignación');
   }
 
-  return response.json();
+  const result = await response.json();
+  notificarCambio();
+  return result;
 }
 
 export async function obtenerSolicitudesPendientes(): Promise<SolicitudReasignacion[]> {
@@ -301,7 +312,9 @@ export async function responderSolicitud(
     throw new Error(errorData?.error || errorData?.message || 'Error al responder solicitud');
   }
 
-  return response.json();
+  const result = await response.json();
+  notificarCambio();
+  return result;
 }
 
 export interface ComentarioCalificacion {

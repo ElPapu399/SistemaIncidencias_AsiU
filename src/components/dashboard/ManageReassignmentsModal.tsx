@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faXmark,
-  faSpinner,
-  faCheck,
-  faBan,
-  faUserGear,
-  faClock,
-  faCircleExclamation,
-} from '@fortawesome/free-solid-svg-icons';
-import { ArrowRightLeft } from 'lucide-react';
+  ArrowRightLeft,
+  X,
+  AlertCircle,
+  Loader2,
+  Check,
+  Clock,
+  Ban,
+  UserCheck,
+} from 'lucide-react';
 import type { Tecnico } from '../../types/incident';
 import {
   type SolicitudReasignacion,
@@ -17,7 +16,7 @@ import {
   responderSolicitud,
   obtenerTecnicosPorEspecialidad,
 } from '../../services/incidenciasService';
-import { formatDate } from './IncidentBadges';
+import { formatDate, StatusBadge } from './IncidentBadges';
 
 interface ManageReassignmentsModalProps {
   isOpen: boolean;
@@ -169,9 +168,10 @@ export default function ManageReassignmentsModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 transition-colors cursor-pointer"
+            aria-label="Cerrar modal"
+            className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
           >
-            <FontAwesomeIcon icon={faXmark} />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
@@ -185,7 +185,7 @@ export default function ManageReassignmentsModal({
         {/* Error general */}
         {error && (
           <div className="px-6 py-2.5 bg-red-50 border-b border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
-            <FontAwesomeIcon icon={faCircleExclamation} />
+            <AlertCircle className="w-4 h-4" />
             <span>{error}</span>
           </div>
         )}
@@ -194,13 +194,13 @@ export default function ManageReassignmentsModal({
         <div className="p-6 overflow-y-auto space-y-4 flex-1">
           {loading ? (
             <div className="py-16 text-center text-slate-500 space-y-2">
-              <FontAwesomeIcon icon={faSpinner} spin className="text-2xl text-violet-600" />
+              <Loader2 className="w-7 h-7 animate-spin text-violet-600 mx-auto" />
               <p className="text-xs">Cargando solicitudes pendientes...</p>
             </div>
           ) : solicitudes.length === 0 ? (
             <div className="py-16 text-center text-slate-500 space-y-2">
               <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center">
-                <FontAwesomeIcon icon={faCheck} className="text-xl" />
+                <Check className="w-6 h-6" />
               </div>
               <p className="text-sm font-semibold text-slate-800">
                 ¡No hay solicitudes pendientes!
@@ -234,15 +234,13 @@ export default function ManageReassignmentsModal({
                         </span>
                         <span>•</span>
                         <span className="flex items-center gap-1 text-slate-400">
-                          <FontAwesomeIcon icon={faClock} className="text-[10px]" />
+                          <Clock className="w-3 h-3 text-slate-400" />
                           {formatDate(sol.fechaSolicitud)}
                         </span>
                       </div>
                     </div>
 
-                    <span className="px-2.5 py-1 bg-amber-100 border border-amber-300 text-amber-800 text-[11px] font-bold rounded-full">
-                      Pendiente
-                    </span>
+                    <StatusBadge status="Pendiente" />
                   </div>
 
                   {/* Motivo escrito por el técnico */}
@@ -267,12 +265,12 @@ export default function ManageReassignmentsModal({
                       <h5 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
                         {activeAction.type === 'APROBAR' ? (
                           <>
-                            <FontAwesomeIcon icon={faCheck} className="text-violet-600" />
+                            <Check className="w-4 h-4 text-violet-600" />
                             Aprobar solicitud y reasignar incidencia
                           </>
                         ) : (
                           <>
-                            <FontAwesomeIcon icon={faBan} className="text-rose-600" />
+                            <Ban className="w-4 h-4 text-rose-600" />
                             Rechazar solicitud de reasignación
                           </>
                         )}
@@ -339,15 +337,15 @@ export default function ManageReassignmentsModal({
                           }`}
                         >
                           {isProcessing ? (
-                            <FontAwesomeIcon icon={faSpinner} spin />
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
                           ) : activeAction.type === 'APROBAR' ? (
                             <>
-                              <FontAwesomeIcon icon={faCheck} />
+                              <Check className="w-3.5 h-3.5" />
                               Confirmar y Reasignar
                             </>
                           ) : (
                             <>
-                              <FontAwesomeIcon icon={faBan} />
+                              <Ban className="w-3.5 h-3.5" />
                               Confirmar Rechazo
                             </>
                           )}
@@ -362,7 +360,7 @@ export default function ManageReassignmentsModal({
                         onClick={() => handleStartRechazar(sol)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-colors cursor-pointer"
                       >
-                        <FontAwesomeIcon icon={faBan} className="text-xs" />
+                        <Ban className="w-3.5 h-3.5" />
                         <span>Rechazar</span>
                       </button>
                       <button
@@ -370,7 +368,7 @@ export default function ManageReassignmentsModal({
                         onClick={() => handleStartAprobar(sol)}
                         className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 border border-violet-600 transition-colors shadow-xs cursor-pointer"
                       >
-                        <FontAwesomeIcon icon={faUserGear} className="text-xs" />
+                        <UserCheck className="w-3.5 h-3.5" />
                         <span>Aprobar y Reasignar</span>
                       </button>
                     </div>

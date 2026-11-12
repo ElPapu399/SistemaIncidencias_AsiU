@@ -1,6 +1,14 @@
 import { fetchWithAuth } from '../utils/fetchWithAuth';
 import type { Notificacion } from '../types/notificacion';
 
+export const EVENTO_NOTIFICACIONES_REFRESH = 'notificaciones:refresh';
+
+export function notificarCambio(): void {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(EVENTO_NOTIFICACIONES_REFRESH));
+  }
+}
+
 export async function obtenerNotificaciones(): Promise<Notificacion[]> {
   const response = await fetchWithAuth('/notificaciones');
   if (!response.ok) {

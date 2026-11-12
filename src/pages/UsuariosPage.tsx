@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faUsers, faGraduationCap, faScrewdriverWrench } from '@fortawesome/free-solid-svg-icons';
+import { Plus, Users, GraduationCap, Wrench } from 'lucide-react';
 
 import Header from '../components/dashboard/Header';
 import StudentTable from '../components/StudentTable';
@@ -109,7 +108,7 @@ export default function UsuariosPage({
             </p>
           </div>
           <Button
-            icon={<FontAwesomeIcon icon={faPlus} />}
+            icon={<Plus className="w-4 h-4" />}
             text={isEstudiantes ? 'Nuevo Estudiante' : 'Nuevo Técnico'}
             ariaLabel={isEstudiantes ? 'Nuevo Estudiante' : 'Nuevo Técnico'}
             type="button"
@@ -130,7 +129,7 @@ export default function UsuariosPage({
                   : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
               }`}
             >
-              <FontAwesomeIcon icon={faGraduationCap} className="text-base" />
+              <GraduationCap className="w-4 h-4 text-base" />
               <span>Estudiantes</span>
               <span
                 className={`ml-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
@@ -150,7 +149,7 @@ export default function UsuariosPage({
                   : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
               }`}
             >
-              <FontAwesomeIcon icon={faScrewdriverWrench} className="text-base" />
+              <Wrench className="w-4 h-4 text-base" />
               <span>Personal Técnico</span>
               <span
                 className={`ml-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
@@ -177,7 +176,7 @@ export default function UsuariosPage({
           estudiantes.length === 0 ? (
             <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
               <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-                <FontAwesomeIcon icon={faUsers} className="text-2xl text-slate-400" />
+                <Users className="w-8 h-8 text-slate-400" />
               </div>
               <h4 className="text-lg font-semibold text-slate-900">Sin estudiantes registrados</h4>
               <p className="text-sm text-slate-500 mt-1">
@@ -192,7 +191,7 @@ export default function UsuariosPage({
         ) : tecnicos.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
             <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-              <FontAwesomeIcon icon={faUsers} className="text-2xl text-slate-400" />
+              <Users className="w-8 h-8 text-slate-400" />
             </div>
             <h4 className="text-lg font-semibold text-slate-900">Sin técnicos registrados</h4>
             <p className="text-sm text-slate-500 mt-1">

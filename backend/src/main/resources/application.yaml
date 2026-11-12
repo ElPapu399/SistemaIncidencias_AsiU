@@ -37,4 +37,4 @@ app:
     from: ${MAIL_FROM:onboarding@resend.dev}
 
 cors:
-  allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
+  allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:4173}

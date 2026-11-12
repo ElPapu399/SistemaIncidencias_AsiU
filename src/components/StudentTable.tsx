@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { Pencil } from 'lucide-react';
 import SearchBar from "./dashboard/SearchBar";
 import { formatDate } from './dashboard/IncidentBadges';
 import SortableHeader from './common/SortableHeader';
@@ -244,7 +243,7 @@ export default function StudentTable({ usuarios, onEdit }: StudentTableProps) {
                                                 onClick={() => onEdit(user)}
                                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors cursor-pointer"
                                             >
-                                                <FontAwesomeIcon icon={faPenToSquare} />
+                                                <Pencil className="h-3.5 w-3.5" />
                                                 Editar
                                             </button>
                                         </td>

@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell } from '@fortawesome/free-solid-svg-icons';
 import {
+  Bell,
   CheckCheck,
   Clock,
   RotateCw,
@@ -18,6 +17,7 @@ import {
   obtenerConteoNoLeidas,
   marcarComoLeida,
   marcarTodasComoLeidas,
+  EVENTO_NOTIFICACIONES_REFRESH,
 } from '../../services/notificacionesService';
 
 function tiempoRelativo(fechaIso: string): string {
@@ -64,12 +64,26 @@ export default function NotificationsMenu() {
   const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
   const [conteoNoLeidas, setConteoNoLeidas] = useState(0);
   const [cargando, setCargando] = useState(false);
+  const [haRecibidoNueva, setHaRecibidoNueva] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const abiertoRef = useRef(abierto);
+  const prevConteoRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    abiertoRef.current = abierto;
+  }, [abierto]);
 
   const actualizarConteo = useCallback(async () => {
     try {
       const total = await obtenerConteoNoLeidas();
       setConteoNoLeidas(total);
+
+      // Si el contador subió respecto a la última consulta conocida, activar pulso visual
+      if (prevConteoRef.current !== null && total > prevConteoRef.current) {
+        setHaRecibidoNueva(true);
+        setTimeout(() => setHaRecibidoNueva(false), 3000);
+      }
+      prevConteoRef.current = total;
     } catch {
       // Silencioso para evitar romper la UI en caso de problemas transitorios
     }
@@ -80,7 +94,9 @@ export default function NotificationsMenu() {
     try {
       const datos = await obtenerNotificaciones();
       setNotificaciones(datos);
-      setConteoNoLeidas(datos.filter((n) => !n.leida).length);
+      const noLeidas = datos.filter((n) => !n.leida).length;
+      setConteoNoLeidas(noLeidas);
+      prevConteoRef.current = noLeidas;
     } catch {
       // Ignorar error transitorio
     } finally {
@@ -88,17 +104,52 @@ export default function NotificationsMenu() {
     }
   }, []);
 
-  // Sondeo periódico cada 30 segundos
+  // Polling dinámico adaptativo: 20s en pestaña activa, 60s en fondo, e instantáneo ante foco/visibilidad/eventos
   useEffect(() => {
     actualizarConteo();
-    const interval = setInterval(() => {
+
+    let timer: ReturnType<typeof setInterval> | null = null;
+
+    const programarSiguiente = () => {
+      if (timer) clearInterval(timer);
+      const intervalo = document.hidden ? 60000 : 20000;
+      timer = setInterval(() => {
+        actualizarConteo();
+        if (abiertoRef.current) {
+          cargarNotificaciones();
+        }
+      }, intervalo);
+    };
+
+    const revalidarInmediatamente = () => {
       actualizarConteo();
-      if (abierto) {
+      if (abiertoRef.current) {
         cargarNotificaciones();
       }
-    }, 30000);
-    return () => clearInterval(interval);
-  }, [actualizarConteo, cargarNotificaciones, abierto]);
+      programarSiguiente();
+    };
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        revalidarInmediatamente();
+      } else {
+        programarSiguiente();
+      }
+    };
+
+    window.addEventListener('focus', revalidarInmediatamente);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener(EVENTO_NOTIFICACIONES_REFRESH, revalidarInmediatamente);
+
+    programarSiguiente();
+
+    return () => {
+      if (timer) clearInterval(timer);
+      window.removeEventListener('focus', revalidarInmediatamente);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener(EVENTO_NOTIFICACIONES_REFRESH, revalidarInmediatamente);
+    };
+  }, [actualizarConteo, cargarNotificaciones]);
 
   // Cargar lista al abrir
   const toggleMenu = () => {
@@ -135,6 +186,7 @@ export default function NotificationsMenu() {
       await marcarTodasComoLeidas();
       setNotificaciones((prev) => prev.map((n) => ({ ...n, leida: true })));
       setConteoNoLeidas(0);
+      prevConteoRef.current = 0;
     } catch {
       // Error silencioso
     }
@@ -147,7 +199,11 @@ export default function NotificationsMenu() {
         setNotificaciones((prev) =>
           prev.map((n) => (n.id === notif.id ? { ...n, leida: true } : n))
         );
-        setConteoNoLeidas((prev) => Math.max(0, prev - 1));
+        setConteoNoLeidas((prev) => {
+          const nuevo = Math.max(0, prev - 1);
+          prevConteoRef.current = nuevo;
+          return nuevo;
+        });
       } catch {
         // Ignorar
       }
@@ -166,12 +222,23 @@ export default function NotificationsMenu() {
         aria-label={`Notificaciones${conteoNoLeidas > 0 ? `, ${conteoNoLeidas} no leídas` : ''}`}
         aria-haspopup="true"
         aria-expanded={abierto}
-        className="relative w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+        className={`relative w-9 h-9 rounded-xl border flex items-center justify-center transition-all cursor-pointer ${
+          haRecibidoNueva
+            ? 'bg-blue-50 border-blue-400 text-blue-600 ring-2 ring-blue-300 ring-offset-1'
+            : 'bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+        }`}
       >
-        <FontAwesomeIcon icon={faBell} />
+        <Bell
+          className={`h-4.5 w-4.5 ${haRecibidoNueva ? 'animate-bounce text-blue-600' : ''}`}
+        />
         {conteoNoLeidas > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 rounded-full bg-red-600 text-white text-[10px] font-bold flex items-center justify-center shadow-sm animate-in fade-in zoom-in duration-200">
-            {conteoNoLeidas > 99 ? '99+' : conteoNoLeidas}
+          <span className="absolute -top-1 -right-1 flex h-4.5 min-w-4.5 items-center justify-center">
+            {haRecibidoNueva && (
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+            )}
+            <span className="relative inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-sm">
+              {conteoNoLeidas > 99 ? '99+' : conteoNoLeidas}
+            </span>
           </span>
         )}
       </button>

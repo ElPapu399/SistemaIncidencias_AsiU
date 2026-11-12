@@ -1,6 +1,4 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
-import { Menu } from 'lucide-react';
+import { Menu, User } from 'lucide-react';
 import { useOutletContext } from 'react-router-dom';
 import type { MenuContext } from '../../layouts/DashboardLayout';
 import { getCurrentUser } from '../../utils/auth';
@@ -60,7 +58,7 @@ export default function Header({ title, subtitle, nombreUsuario }: HeaderProps) 
 
         <div data-tour="header-user-info" className="flex items-center gap-3 pl-4 border-l border-slate-200">
           <div className="w-9 h-9 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-sm">
-            <FontAwesomeIcon icon={faUser} className="text-white text-sm" />
+            <User className="text-white h-4 w-4" />
           </div>
           <div className="hidden md:block text-left">
             <p className="text-sm font-semibold text-slate-800">{nombreUsuario ?? usuario?.nombre ?? 'Usuario'}</p>

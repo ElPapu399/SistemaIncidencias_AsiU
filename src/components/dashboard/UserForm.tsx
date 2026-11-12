@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faXmark,
-    faSpinner,
-    faGraduationCap,
-    faScrewdriverWrench,
-    faInfoCircle,
-    faShieldHalved
-} from '@fortawesome/free-solid-svg-icons';
+    X,
+    Loader2,
+    GraduationCap,
+    Wrench,
+    Info,
+    Shield
+} from 'lucide-react';
 import type { User, Role, Especialidad } from '../../types/user';
 import { fetchWithAuth } from '../../utils/fetchWithAuth';
 
@@ -197,11 +196,7 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
         return 'Crear usuario';
     };
 
-    const getHeaderIcon = () => {
-        if (mode === 'estudiante') return faGraduationCap;
-        if (mode === 'tecnico') return faScrewdriverWrench;
-        return faShieldHalved;
-    };
+    const HeaderIcon = mode === 'estudiante' ? GraduationCap : mode === 'tecnico' ? Wrench : Shield;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -215,12 +210,12 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
                     <div className="flex items-center gap-3">
                         <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
                             mode === 'estudiante'
-                                ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                                ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20'
                                 : mode === 'tecnico'
-                                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
                                 : 'bg-slate-700 text-slate-300'
                         }`}>
-                            <FontAwesomeIcon icon={getHeaderIcon()} />
+                            <HeaderIcon className="w-5 h-5" />
                         </div>
                         <div>
                             <h3 className="text-lg font-bold text-slate-900 leading-tight">
@@ -237,9 +232,10 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
                     </div>
                     <button
                         onClick={onClose}
-                        className="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-400 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+                        aria-label="Cerrar modal"
+                        className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
                     >
-                        <FontAwesomeIcon icon={faXmark} />
+                        <X className="w-4 h-4" />
                     </button>
                 </div>
 
@@ -372,13 +368,13 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
                             {/* Info card de apoyo para entender el tipo de técnico */}
                             {isTecnicoGeneral && (
                                 <div className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2.5">
-                                    <FontAwesomeIcon icon={faInfoCircle} className="mt-0.5 text-amber-500 shrink-0" />
+                                    <Info className="w-4 h-4 mt-0.5 text-amber-500 shrink-0" />
                                     <span><strong>Soporte General:</strong> Mesa de ayuda y triaje inicial. Puede derivar y asignar incidencias a los especialistas.</span>
                                 </div>
                             )}
                             {isTecnicoEspecialista && (
                                 <div className="text-xs text-blue-800 bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start gap-2.5">
-                                    <FontAwesomeIcon icon={faInfoCircle} className="mt-0.5 text-blue-500 shrink-0" />
+                                    <Info className="w-4 h-4 mt-0.5 text-blue-500 shrink-0" />
                                     <span><strong>Soporte Especializado:</strong> Resuelve incidencias técnicas en campo según la especialidad seleccionada.</span>
                                 </div>
                             )}
@@ -530,7 +526,7 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
                             className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
                             {loading ? (
-                                <FontAwesomeIcon icon={faSpinner} spin />
+                                <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                                 getSubmitButtonLabel()
                             )}

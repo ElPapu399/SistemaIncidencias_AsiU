@@ -1,14 +1,13 @@
 import { useState, useMemo } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faMagnifyingGlass,
-  faXmark,
-  faShieldHalved,
-  faArrowRight,
-  faUser,
-  faComputer,
-  faTicket,
-} from '@fortawesome/free-solid-svg-icons';
+  Search,
+  X,
+  Shield,
+  ArrowRight,
+  User,
+  Monitor,
+  Ticket,
+} from 'lucide-react';
 
 import type { AuditoriaLog } from '../../services/auditoriaService';
 import { formatDate } from './IncidentBadges';
@@ -123,7 +122,7 @@ export default function AuditLogTable({
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-              <FontAwesomeIcon icon={faMagnifyingGlass} className="text-sm" />
+              <Search className="w-4 h-4" />
             </div>
             <input
               type="text"
@@ -136,9 +135,10 @@ export default function AuditLogTable({
               <button
                 type="button"
                 onClick={() => setBusqueda('')}
+                aria-label="Limpiar búsqueda"
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
               >
-                <FontAwesomeIcon icon={faXmark} className="text-xs" />
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -193,7 +193,7 @@ export default function AuditLogTable({
       ) : logsFiltrados.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 p-6">
           <div className="w-14 h-14 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center mb-3">
-            <FontAwesomeIcon icon={faShieldHalved} className="text-2xl text-slate-400" />
+            <Shield className="w-7 h-7 text-slate-400" />
           </div>
           <h4 className="text-base font-bold text-slate-800">
             No se encontraron eventos de auditoría
@@ -241,7 +241,7 @@ export default function AuditLogTable({
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 text-xs">
-                            <FontAwesomeIcon icon={faUser} />
+                            <User className="w-3.5 h-3.5" />
                           </div>
                           <div>
                             <div className="font-bold text-slate-900 leading-snug">
@@ -275,12 +275,11 @@ export default function AuditLogTable({
                       {/* Entidad */}
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-1.5">
-                          <FontAwesomeIcon
-                            icon={isInc ? faTicket : faComputer}
-                            className={`text-xs ${
-                              isInc ? 'text-blue-500' : 'text-amber-500'
-                            }`}
-                          />
+                          {isInc ? (
+                            <Ticket className="w-3.5 h-3.5 text-blue-500" />
+                          ) : (
+                            <Monitor className="w-3.5 h-3.5 text-amber-500" />
+                          )}
                           <span className="font-mono text-xs font-bold text-slate-800">
                             {log.entidadCodigo || '—'}
                           </span>
@@ -299,10 +298,7 @@ export default function AuditLogTable({
                             <span className="text-slate-400">
                               {log.estadoAnterior || 'Inicial'}
                             </span>
-                            <FontAwesomeIcon
-                              icon={faArrowRight}
-                              className="text-[10px] text-slate-300"
-                            />
+                            <ArrowRight className="w-3 h-3 text-slate-300" />
                             <span className="text-slate-900 font-bold">
                               {log.estadoNuevo}
                             </span>

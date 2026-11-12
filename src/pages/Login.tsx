@@ -229,8 +229,8 @@ const Login = () => {
             <FontAwesomeIcon icon={faGraduationCap} className="text-slate-950 text-xl" />
           </div>
           <div>
-            <div className="font-extrabold text-xl text-foreground">ASIU</div>
-            <p className="text-xs text-slate-400">
+            <div className="font-extrabold text-xl text-slate-900">ASIU</div>
+            <p className="text-xs text-slate-600">
               Sistema de Incidencias Universitarias
             </p>
           </div>
@@ -285,7 +285,7 @@ const Login = () => {
                     <button
                       type="button"
                       onClick={goToRecuperar}
-                      className="text-sm text-yellow-400 hover:text-yellow-300 font-semibold cursor-pointer"
+                      className="text-sm text-amber-300 hover:text-amber-200 hover:underline font-semibold cursor-pointer transition-colors"
                     >
                       ¿Olvidaste tu contraseña?
                     </button>

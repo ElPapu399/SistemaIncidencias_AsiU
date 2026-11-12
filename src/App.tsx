@@ -1,22 +1,31 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import DashboardLayout from './layouts/DashboardLayout';
 
-import IncidenciasPage from './pages/IncidenciasPage';
-import UsuariosPage from './pages/UsuariosPage';
-import NuevaIncidenciaPage from './pages/NuevaIncidenciaPage';
-import LaboratoriosPage from './pages/LaboratoriosPage';
-import LaboratorioDetallePage from './pages/LaboratorioDetallePage';
-import Configuracion from './pages/Configuracion';
-import Perfil from './pages/Perfil';
-import HistorialPage from './pages/HistorialPage';
-import ReportesPage from './pages/ReportesPage';
-import CalificacionesTecnicosPage from './pages/CalificacionesTecnicosPage';
-import CargaTecnicosPage from './pages/CargaTecnicosPage';
-import CentroAyudaPage from './pages/CentroAyudaPage';
-import TallerEquiposPage from './pages/TallerEquiposPage';
-import MiRendimientoPage from './pages/MiRendimientoPage';
+const IncidenciasPage = lazy(() => import('./pages/IncidenciasPage'));
+const UsuariosPage = lazy(() => import('./pages/UsuariosPage'));
+const NuevaIncidenciaPage = lazy(() => import('./pages/NuevaIncidenciaPage'));
+const LaboratoriosPage = lazy(() => import('./pages/LaboratoriosPage'));
+const LaboratorioDetallePage = lazy(() => import('./pages/LaboratorioDetallePage'));
+const Configuracion = lazy(() => import('./pages/Configuracion'));
+const Perfil = lazy(() => import('./pages/Perfil'));
+const HistorialPage = lazy(() => import('./pages/HistorialPage'));
+const ReportesPage = lazy(() => import('./pages/ReportesPage'));
+const CalificacionesTecnicosPage = lazy(() => import('./pages/CalificacionesTecnicosPage'));
+const CargaTecnicosPage = lazy(() => import('./pages/CargaTecnicosPage'));
+const CentroAyudaPage = lazy(() => import('./pages/CentroAyudaPage'));
+const TallerEquiposPage = lazy(() => import('./pages/TallerEquiposPage'));
+const MiRendimientoPage = lazy(() => import('./pages/MiRendimientoPage'));
+
+function PageLoader() {
+  return (
+    <div className="flex h-64 items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-500 border-t-transparent" />
+    </div>
+  );
+}
 
 function App() {
   return (
@@ -27,29 +36,35 @@ function App() {
         <Route
           path="incidencias"
           element={
-            <IncidenciasPage
-              title="Todas las Incidencias"
-              description="Aquí podrás consultar, filtrar y gestionar todas las incidencias del campus."
-            />
+            <Suspense fallback={<PageLoader />}>
+              <IncidenciasPage
+                title="Todas las Incidencias"
+                description="Aquí podrás consultar, filtrar y gestionar todas las incidencias del campus."
+              />
+            </Suspense>
           }
         />
         <Route
           path="mis-incidencias"
           element={
-            <IncidenciasPage
-              title="Mis Incidencias Asignadas"
-              description="Consulta, atiende y da seguimiento a las incidencias asignadas a tu cuenta."
-              soloMisIncidencias={true}
-            />
+            <Suspense fallback={<PageLoader />}>
+              <IncidenciasPage
+                title="Mis Incidencias Asignadas"
+                description="Consulta, atiende y da seguimiento a las incidencias asignadas a tu cuenta."
+                soloMisIncidencias={true}
+              />
+            </Suspense>
           }
         />
         <Route
           path="usuarios"
           element={
-            <UsuariosPage
-              title="Usuarios"
-              description="Gestión integral de estudiantes y personal técnico."
-            />
+            <Suspense fallback={<PageLoader />}>
+              <UsuariosPage
+                title="Usuarios"
+                description="Gestión integral de estudiantes y personal técnico."
+              />
+            </Suspense>
           }
         />
         <Route
@@ -58,61 +73,105 @@ function App() {
         />
         <Route
           path="carga-tecnicos"
-          element={<CargaTecnicosPage />}
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <CargaTecnicosPage />
+            </Suspense>
+          }
         />
         <Route
           path="laboratorios"
           element={
-            <LaboratoriosPage
-              title="Laboratorios"
-              description="Gestión de los laboratorios de la universidad."
-            />
+            <Suspense fallback={<PageLoader />}>
+              <LaboratoriosPage
+                title="Laboratorios"
+                description="Gestión de los laboratorios de la universidad."
+              />
+            </Suspense>
           }
         />
         <Route
           path="laboratorios/:laboratorioId"
-          element={<LaboratorioDetallePage />}
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <LaboratorioDetallePage />
+            </Suspense>
+          }
         />
         <Route
           path="nueva"
-          element={<NuevaIncidenciaPage />}
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <NuevaIncidenciaPage />
+            </Suspense>
+          }
         />
         <Route
           path="reportes"
-          element={<ReportesPage />}
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <ReportesPage />
+            </Suspense>
+          }
         />
         <Route
           path="configuracion"
-          element={<Configuracion />}
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <Configuracion />
+            </Suspense>
+          }
         />
         <Route
           path="historial"
           element={
-            <HistorialPage
-              title="Historial"
-              description="Consulta las incidencias resueltas o cerradas del campus."
-            />
+            <Suspense fallback={<PageLoader />}>
+              <HistorialPage
+                title="Historial"
+                description="Consulta las incidencias resueltas o cerradas del campus."
+              />
+            </Suspense>
           }
         />
         <Route
           path="calificaciones-tecnicos"
-          element={<CalificacionesTecnicosPage />}
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <CalificacionesTecnicosPage />
+            </Suspense>
+          }
         />
         <Route
           path="taller-equipos"
-          element={<TallerEquiposPage />}
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <TallerEquiposPage />
+            </Suspense>
+          }
         />
         <Route
           path="mi-rendimiento"
-          element={<MiRendimientoPage />}
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <MiRendimientoPage />
+            </Suspense>
+          }
         />
         <Route
           path="ayuda"
-          element={<CentroAyudaPage />}
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <CentroAyudaPage />
+            </Suspense>
+          }
         />
         <Route
           path="perfil"
-          element={<Perfil/>}
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <Perfil />
+            </Suspense>
+          }
         />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
