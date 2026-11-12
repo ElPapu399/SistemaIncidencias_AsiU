@@ -245,17 +245,17 @@ export default function IncidentsTable({
         </div>
 
         <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto overscroll-x-contain pb-2 lg:contents">
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={`${selectClass} shrink-0`}>
+          <select aria-label="Filtrar por estado" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={`${selectClass} shrink-0`}>
             <option value="all">Todos los Estados</option>
             {availableStatuses.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
 
-          <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className={`${selectClass} shrink-0`}>
+          <select aria-label="Filtrar por prioridad" value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className={`${selectClass} shrink-0`}>
             <option value="all">Todas las Prioridades</option>
             {availablePriorities.map((p) => <option key={p} value={p}>{p}</option>)}
           </select>
 
-          <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className={`${selectClass} shrink-0 max-w-45 truncate`}>
+          <select aria-label="Filtrar por categoría" value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className={`${selectClass} shrink-0 max-w-45 truncate`}>
             <option value="all">Todas las Categorías</option>
             {availableCategories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
           </select>

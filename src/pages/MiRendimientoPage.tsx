@@ -191,7 +191,7 @@ export default function MiRendimientoPage() {
             <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
                     Resueltos
                   </span>
                   <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1">
@@ -211,7 +211,7 @@ export default function MiRendimientoPage() {
             <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
                     En Atención
                   </span>
                   <div className="text-2xl sm:text-3xl font-extrabold text-blue-600 mt-1">
@@ -231,7 +231,7 @@ export default function MiRendimientoPage() {
             <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
                     Tiempo Promedio
                   </span>
                   <div className="text-2xl sm:text-3xl font-extrabold text-purple-600 mt-1">
@@ -251,7 +251,7 @@ export default function MiRendimientoPage() {
             <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
                     Satisfacción
                   </span>
                   <div className="text-2xl sm:text-3xl font-extrabold text-amber-500 mt-1">

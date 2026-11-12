@@ -145,6 +145,7 @@ export default function AuditLogTable({
 
           <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
             <select
+              aria-label="Filtrar por módulo"
               value={filtroTipo}
               onChange={(e) => setFiltroTipo(e.target.value as 'TODOS' | 'INCIDENCIA' | 'EQUIPO')}
               className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-700 font-medium focus:outline-none focus:border-blue-600 shrink-0"
@@ -155,6 +156,7 @@ export default function AuditLogTable({
             </select>
 
             <select
+              aria-label="Filtrar por acción"
               value={filtroAccion}
               onChange={(e) => setFiltroAccion(e.target.value)}
               className="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-700 font-medium focus:outline-none focus:border-blue-600 shrink-0"

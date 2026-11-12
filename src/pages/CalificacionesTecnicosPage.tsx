@@ -197,7 +197,7 @@ function ComentarioItem({ comentario }: { comentario: ComentarioCalificacion }) 
             <p className="text-sm font-semibold text-slate-800 truncate">
               {estudianteNombre}
             </p>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+            <div className="flex items-center gap-1.5 text-xs text-slate-600">
               <FontAwesomeIcon icon={faTicket} className="text-[10px]" />
               <span>{comentario.codigoTicket}</span>
               <span>·</span>
@@ -226,7 +226,7 @@ function ComentarioItem({ comentario }: { comentario: ComentarioCalificacion }) 
       )}
 
       {!comentario.motivo && !comentario.comentario && (
-        <p className="text-xs text-slate-400 italic mt-2">Sin comentarios adicionales</p>
+        <p className="text-xs text-slate-600 italic mt-2">Sin comentarios adicionales</p>
       )}
     </div>
   );
@@ -277,18 +277,18 @@ function TecnicoCard({
         <div className="flex items-center justify-between py-3 border-y border-slate-100 mb-4">
           <div className="flex items-center gap-2">
             <StarRating rating={tecnico.promedioCalificacion} size="text-sm" />
-            <span className="text-xs text-slate-400 font-medium">
+            <span className="text-xs text-slate-600 font-medium">
               ({tecnico.promedioCalificacion > 0 ? tecnico.promedioCalificacion.toFixed(1) : '0'} / 5)
             </span>
           </div>
-          <span className="text-xs font-semibold text-slate-500">
+          <span className="text-xs font-semibold text-slate-600">
             {tecnico.totalCalificaciones ?? 0} {tecnico.totalCalificaciones === 1 ? 'evaluación' : 'evaluaciones'}
           </span>
         </div>
 
         {tieneComentarios ? (
           <div className="space-y-2 mb-4">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
               Comentarios recientes
             </p>
             {ultimosComentarios.map((c) => (
@@ -304,9 +304,9 @@ function TecnicoCard({
                   </div>
                 </div>
                 {c.comentario ? (
-                  <p className="text-slate-500 italic line-clamp-2">&quot;{c.comentario}&quot;</p>
+                  <p className="text-slate-600 italic line-clamp-2">&quot;{c.comentario}&quot;</p>
                 ) : (
-                  <p className="text-slate-400 italic">
+                  <p className="text-slate-600 italic">
                     {c.motivo ? `Motivo: ${c.motivo}` : 'Sin comentario'}
                   </p>
                 )}
@@ -314,7 +314,7 @@ function TecnicoCard({
             ))}
           </div>
         ) : (
-          <p className="text-xs text-slate-400 italic py-4 text-center">
+          <p className="text-xs text-slate-600 italic py-4 text-center">
             Aún no tiene comentarios registrados
           </p>
         )}
@@ -409,12 +409,12 @@ function VistaTecnicoIndividual({ tecnico }: { tecnico: TecnicoCalificacion }) {
                 <span className="text-4xl font-extrabold text-slate-900">
                   {promedio > 0 ? promedio.toFixed(1) : '—'}
                 </span>
-                <span className="text-sm text-slate-400 font-medium">/ 5.0</span>
+                <span className="text-sm text-slate-600 font-medium">/ 5.0</span>
               </div>
               <div className="flex items-center lg:justify-end mt-1">
                 <StarRating rating={promedio} size="text-base" />
               </div>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-600 mt-1">
                 {total} {total === 1 ? 'evaluación' : 'evaluaciones'} en total
               </p>
             </div>
@@ -424,7 +424,7 @@ function VistaTecnicoIndividual({ tecnico }: { tecnico: TecnicoCalificacion }) {
         {/* 3 Metrics cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-slate-100">
           <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80">
-            <p className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">
+            <p className="text-xs uppercase tracking-wider font-semibold text-slate-600 mb-1">
               Promedio General
             </p>
             <div className="flex items-center gap-2">
@@ -432,25 +432,25 @@ function VistaTecnicoIndividual({ tecnico }: { tecnico: TecnicoCalificacion }) {
                 {promedio > 0 ? `${promedio.toFixed(1)} ★` : 'Sin datos'}
               </span>
             </div>
-            <p className="text-xs text-slate-500 mt-1">Calculado en base a tickets cerrados</p>
+            <p className="text-xs text-slate-600 mt-1">Calculado en base a tickets cerrados</p>
           </div>
 
           <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80">
-            <p className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">
+            <p className="text-xs uppercase tracking-wider font-semibold text-slate-600 mb-1">
               Tickets Evaluados
             </p>
             <span className="text-2xl font-bold text-slate-900">{total}</span>
-            <p className="text-xs text-slate-500 mt-1">Con encuesta de satisfacción</p>
+            <p className="text-xs text-slate-600 mt-1">Con encuesta de satisfacción</p>
           </div>
 
           <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80">
-            <p className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">
+            <p className="text-xs uppercase tracking-wider font-semibold text-slate-600 mb-1">
               Satisfacción de Usuarios
             </p>
-            <span className="text-2xl font-bold text-emerald-600">
+            <span className="text-2xl font-bold text-emerald-700">
               {total > 0 ? `${porcentajePositivas}%` : '—'}
             </span>
-            <p className="text-xs text-slate-500 mt-1">Calificaciones positivas (4 y 5 ★)</p>
+            <p className="text-xs text-slate-600 mt-1">Calificaciones positivas (4 y 5 ★)</p>
           </div>
         </div>
       </div>
@@ -504,8 +504,9 @@ function VistaTecnicoIndividual({ tecnico }: { tecnico: TecnicoCalificacion }) {
                   Filtrar Comentarios
                 </p>
                 <div className="space-y-2">
-                  <label className="block text-xs font-medium text-slate-600">Por motivo de calificación:</label>
+                  <label htmlFor="select-motivo-modal" className="block text-xs font-medium text-slate-600">Por motivo de calificación:</label>
                   <select
+                    id="select-motivo-modal"
                     value={selectedMotivo}
                     onChange={(e) => setSelectedMotivo(e.target.value)}
                     className="w-full px-3 py-2 text-xs rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
@@ -755,7 +756,7 @@ export default function CalificacionesTecnicosPage({
             {/* Stats summary */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3 items-start">
               <div className="col-span-2 xl:col-span-1 min-w-0 bg-white rounded-2xl border border-slate-200 p-4 xl:p-5 shadow-sm">
-                <p className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">
+                <p className="text-xs uppercase tracking-wider font-semibold text-slate-600 mb-1">
                   Promedio General
                 </p>
                 <div className="flex flex-wrap items-center gap-3">
@@ -766,13 +767,13 @@ export default function CalificacionesTecnicosPage({
                 </div>
               </div>
               <div className="min-w-0 bg-white rounded-2xl border border-slate-200 p-4 xl:p-5 shadow-sm">
-                <p className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">
+                <p className="text-xs uppercase tracking-wider font-semibold text-slate-600 mb-1">
                   Técnicos en el Equipo
                 </p>
                 <span className="text-3xl font-extrabold text-slate-900">{filtered.length}</span>
               </div>
               <div className="min-w-0 bg-white rounded-2xl border border-slate-200 p-4 xl:p-5 shadow-sm">
-                <p className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1">
+                <p className="text-xs uppercase tracking-wider font-semibold text-slate-600 mb-1">
                   Total Calificaciones
                 </p>
                 <span className="text-3xl font-extrabold text-slate-900">{totalComentarios}</span>
@@ -792,6 +793,7 @@ export default function CalificacionesTecnicosPage({
               <div className="flex items-center gap-2 min-w-45">
                 <FontAwesomeIcon icon={faFilter} className="text-slate-400 text-sm shrink-0" />
                 <select
+                  aria-label="Filtrar por motivo de calificación"
                   value={filterMotivo}
                   onChange={(e) => setFilterMotivo(e.target.value)}
                   className="flex-1 min-w-0 px-3 py-2 text-sm rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 cursor-pointer appearance-none"

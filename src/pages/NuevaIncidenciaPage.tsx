@@ -270,10 +270,11 @@ export default function NuevaIncidenciaPage() {
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
                   {/* Título */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+                    <label htmlFor="nueva-titulo" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
                       Título de la incidencia *
                     </label>
                     <input
+                      id="nueva-titulo"
                       type="text"
                       value={titulo}
                       onChange={(e) => setTitulo(e.target.value)}
@@ -285,10 +286,11 @@ export default function NuevaIncidenciaPage() {
                   {/* Categoría y Ubicación en 2 columnas */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+                      <label htmlFor="nueva-categoria" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
                         Categoría de la falla *
                       </label>
                       <select
+                        id="nueva-categoria"
                         value={categoriaId}
                         onChange={(e) => handleCategoriaChange(Number(e.target.value))}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-500 transition-colors"
@@ -305,10 +307,11 @@ export default function NuevaIncidenciaPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+                      <label htmlFor="nueva-ubicacion" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
                         Ubicación (Aula o Laboratorio) *
                       </label>
                       <select
+                        id="nueva-ubicacion"
                         value={ubicacionId}
                         onChange={(e) => setUbicacionId(Number(e.target.value))}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-500 transition-colors"
@@ -327,10 +330,11 @@ export default function NuevaIncidenciaPage() {
 
                   {/* Descripción */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+                    <label htmlFor="nueva-descripcion" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
                       Descripción detallada del problema *
                     </label>
                     <textarea
+                      id="nueva-descripcion"
                       rows={3}
                       value={descripcion}
                       onChange={(e) => setDescripcion(e.target.value)}
@@ -341,29 +345,30 @@ export default function NuevaIncidenciaPage() {
 
                   {/* Evidencia Fotográfica */}
                   <div>
-                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5 flex items-center justify-between">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <FontAwesomeIcon icon={faCamera} className="text-amber-500" />
+                        <FontAwesomeIcon icon={faCamera} className="text-amber-600" />
                         Evidencia fotográfica (Opcional)
                       </span>
-                      <span className="text-[11px] font-normal text-slate-500">JPG, PNG, WEBP (Máx. 10MB)</span>
-                    </label>
+                      <span className="text-[11px] font-normal text-slate-600">JPG, PNG, WEBP (Máx. 10MB)</span>
+                    </div>
 
                     {!previewUrl ? (
-                      <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-300 hover:border-amber-500/60 rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-all duration-200 group">
+                      <label htmlFor="nueva-evidencia" className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-300 hover:border-amber-600/60 rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-all duration-200 group">
                         <div className="flex flex-col items-center justify-center text-center px-4">
-                          <div className="w-9 h-9 rounded-full bg-slate-200 group-hover:bg-amber-500/20 flex items-center justify-center text-slate-500 group-hover:text-amber-500 transition-colors mb-1.5">
+                          <div className="w-9 h-9 rounded-full bg-slate-200 group-hover:bg-amber-500/20 flex items-center justify-center text-slate-600 group-hover:text-amber-800 transition-colors mb-1.5">
                             <FontAwesomeIcon icon={faCamera} className="text-sm" />
                           </div>
-                          <p className="text-xs text-slate-700 font-medium">
-                            <span className="text-amber-600 font-semibold underline decoration-amber-500/40 underline-offset-2">
+                          <p className="text-xs text-slate-800 font-medium">
+                            <span className="text-amber-800 font-semibold underline decoration-amber-700/50 underline-offset-2">
                               Haz clic para subir una foto
                             </span>{' '}
                             o arrastra aquí
                           </p>
-                          <p className="text-[11px] text-slate-500 mt-0.5">Captura el error, monitor o equipo afectado</p>
+                          <p className="text-[11px] text-slate-600 mt-0.5">Captura el error, monitor o equipo afectado</p>
                         </div>
                         <input
+                          id="nueva-evidencia"
                           ref={fileInputRef}
                           type="file"
                           accept="image/png,image/jpeg,image/webp,image/gif"

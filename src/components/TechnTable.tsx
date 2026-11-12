@@ -152,6 +152,7 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
 
                 <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto overscroll-x-contain pb-2 lg:contents">
                     <select
+                        aria-label="Filtrar por estado"
                         value={filterEstado}
                         onChange={e => setFilterEstado(e.target.value)}
                         className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
@@ -161,6 +162,7 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                         {hasInactivo && <option value="Inactivo">Inactivo</option>}
                     </select>
                     <select
+                        aria-label="Filtrar por especialidad"
                         value={filterEspecialidad}
                         onChange={e => setFilterEspecialidad(e.target.value)}
                         className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"

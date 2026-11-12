@@ -218,7 +218,7 @@ export default function CargaTecnicosPage() {
               </div>
             </div>
             <p className="text-2xl font-bold text-slate-900 mt-2">{stats.total}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">Especialistas registrados</p>
+            <p className="text-[11px] text-slate-600 mt-0.5">Especialistas registrados</p>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">
@@ -229,7 +229,7 @@ export default function CargaTecnicosPage() {
               </div>
             </div>
             <p className="text-2xl font-bold text-emerald-700 mt-2">{stats.disponibles}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">0 a 2 tickets activos</p>
+            <p className="text-[11px] text-slate-600 mt-0.5">0 a 2 tickets activos</p>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">
@@ -240,7 +240,7 @@ export default function CargaTecnicosPage() {
               </div>
             </div>
             <p className="text-2xl font-bold text-amber-700 mt-2">{stats.medias}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">3 a 4 tickets activos</p>
+            <p className="text-[11px] text-slate-600 mt-0.5">3 a 4 tickets activos</p>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">
@@ -251,18 +251,18 @@ export default function CargaTecnicosPage() {
               </div>
             </div>
             <p className="text-2xl font-bold text-rose-700 mt-2">{stats.saturados}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">5 o más tickets activos</p>
+            <p className="text-[11px] text-slate-600 mt-0.5">5 o más tickets activos</p>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Tickets Activos</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-600">Tickets Activos</span>
               <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-sm">
                 <FontAwesomeIcon icon={faClipboardList} />
               </div>
             </div>
             <p className="text-2xl font-bold text-slate-900 mt-2">{stats.totalActivos}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">En atención técnica</p>
+            <p className="text-[11px] text-slate-600 mt-0.5">En atención técnica</p>
           </div>
         </div>
 
@@ -281,6 +281,7 @@ export default function CargaTecnicosPage() {
 
           <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
             <select
+              aria-label="Filtrar por especialidad"
               value={filterEspecialidad}
               onChange={(e) => setFilterEspecialidad(e.target.value)}
               className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:border-blue-400 cursor-pointer"
@@ -294,6 +295,7 @@ export default function CargaTecnicosPage() {
             </select>
 
             <select
+              aria-label="Filtrar por estado de carga"
               value={filterCarga}
               onChange={(e) => setFilterCarga(e.target.value as LoadFilter)}
               className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:border-blue-400 cursor-pointer"

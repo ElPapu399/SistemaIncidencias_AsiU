@@ -173,49 +173,49 @@ export default function TallerEquiposPage() {
         {/* Banner de Métricas Rápidas */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
               Equipos Afectados
             </span>
             <div className="text-2xl font-bold text-amber-600 mt-1">
               {metricas.afectados}
             </div>
-            <p className="text-[11px] text-slate-500 mt-0.5">
+            <p className="text-[11px] text-slate-600 mt-0.5">
               Requieren atención técnica
             </p>
           </div>
 
           <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
               En Reparación
             </span>
             <div className="text-2xl font-bold text-orange-600 mt-1">
               {metricas.enReparacion}
             </div>
-            <p className="text-[11px] text-slate-500 mt-0.5">
+            <p className="text-[11px] text-slate-600 mt-0.5">
               Intervención en curso
             </p>
           </div>
 
           <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
               En Mantenimiento
             </span>
-            <div className="text-2xl font-bold text-amber-500 mt-1">
+            <div className="text-2xl font-bold text-amber-600 mt-1">
               {metricas.mantenimiento}
             </div>
-            <p className="text-[11px] text-slate-500 mt-0.5">
+            <p className="text-[11px] text-slate-600 mt-0.5">
               Preventivo o revisión
             </p>
           </div>
 
           <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
               Operativos
             </span>
             <div className="text-2xl font-bold text-emerald-600 mt-1">
               {metricas.operativos}
             </div>
-            <p className="text-[11px] text-slate-500 mt-0.5">
+            <p className="text-[11px] text-slate-600 mt-0.5">
               Disponibles en el campus
             </p>
           </div>
