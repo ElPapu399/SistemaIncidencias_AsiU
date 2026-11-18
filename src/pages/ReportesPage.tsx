@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { BarChart3, CheckCircle2, CircleAlert, Clock3, ShieldCheck, Star, TriangleAlert } from 'lucide-react';
+import { BarChart3, CheckCircle2, CircleAlert, Clock3, Download, LoaderCircle, ShieldCheck, Star, TriangleAlert } from 'lucide-react';
 import Header from '../components/dashboard/Header';
 import ReportDistributionCard from '../components/dashboard/ReportDistributionCard';
 import ReportMetricCard from '../components/dashboard/ReportMetricCard';
@@ -14,6 +14,7 @@ import type { Incident, Tecnico } from '../types/incident';
 import { calcularMetricasReportes } from '../utils/reportesMetrics';
 import { calcularGraficosReportes } from '../utils/reportesCharts';
 import { StatCardsGridSkeleton } from '../components/dashboard/SkeletonLoaders';
+import { descargarReporte } from '../utils/exportarReportes';
 
 export default function ReportesPage() {
   const [incidents, setIncidents] = useState<Incident[]>([]);
@@ -22,6 +23,9 @@ export default function ReportesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [intento, setIntento] = useState(0);
+  const [exportando, setExportando] = useState(false);
+  const [errorExportacion, setErrorExportacion] = useState('');
+  const [mensajeExportacion, setMensajeExportacion] = useState('');
 
   const [activeTab, setActiveTab] = useState<'metricas' | 'auditoria'>('metricas');
   const [auditLogs, setAuditLogs] = useState<AuditoriaLog[]>([]);
@@ -71,20 +75,57 @@ export default function ReportesPage() {
   const metricas = useMemo(() => calcularMetricasReportes(incidents), [incidents]);
   const decimal = new Intl.NumberFormat('es-PE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
+  const exportarReporte = async () => {
+    if (loading || error || exportando) return;
+    setExportando(true);
+    setErrorExportacion('');
+    setMensajeExportacion('');
+    try {
+      await descargarReporte({
+        total: incidents.length,
+        metricas,
+        graficos: { meses, categorias, distribucionEstados, rendimiento },
+      }, 'pdf');
+      setMensajeExportacion('Se ha iniciado la descarga del reporte PDF.');
+    } catch {
+      setErrorExportacion('No se pudo exportar el reporte. Inténtalo nuevamente.');
+    } finally {
+      setExportando(false);
+    }
+  };
+
   return (
     <>
       <Header title="Reportes" subtitle="Estadísticas del sistema de incidencias." />
       <main className="flex-1 space-y-6 bg-slate-100 p-6 text-left lg:p-8">
-        <div>
-          <h1 className="m-0! text-2xl! font-bold! tracking-normal! text-slate-900">
-            {activeTab === 'metricas' ? 'Reportes y estadísticas' : 'Bitácora de auditoría global'}
-          </h1>
-          <p className="mt-1 text-slate-500">
-            {activeTab === 'metricas'
-              ? 'Análisis y métricas de desempeño del sistema de incidencias'
-              : 'Historial cronológico de cambios de estado, asignaciones y taller'}
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="m-0! text-2xl! font-bold! tracking-normal! text-slate-900">
+              {activeTab === 'metricas' ? 'Reportes y estadísticas' : 'Bitácora de auditoría global'}
+            </h1>
+            <p className="mt-1 text-slate-500">
+              {activeTab === 'metricas'
+                ? 'Análisis y métricas de desempeño del sistema de incidencias'
+                : 'Historial cronológico de cambios de estado, asignaciones y taller'}
+            </p>
+          </div>
+          {activeTab === 'metricas' && (
+            <div className="ml-auto flex max-w-full flex-wrap items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={exportarReporte}
+                disabled={loading || !!error || exportando}
+                aria-busy={exportando}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+              >
+                {exportando ? <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Download className="h-4 w-4" aria-hidden="true" />}
+                {exportando ? 'Exportando…' : 'Exportar reporte (PDF)'}
+              </button>
+            </div>
+          )}
         </div>
+        {activeTab === 'metricas' && errorExportacion && <p role="alert" className="text-sm text-red-700">{errorExportacion}</p>}
+        <p role="status" className="sr-only">{mensajeExportacion}</p>
 
         {/* Selector de Pestañas */}
         <div className="border-b border-slate-200">
