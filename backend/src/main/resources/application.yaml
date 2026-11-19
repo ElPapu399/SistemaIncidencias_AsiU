@@ -34,6 +34,9 @@ spring:
           starttls:
             enable: true
 
+brevo:
+  api-key: ${BREVO_API_KEY:}
+
 resend:
   api-key: unused
 

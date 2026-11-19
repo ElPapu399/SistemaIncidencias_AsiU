@@ -1,5 +1,6 @@
 package com.proyecto.incidenciasback.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.proyecto.incidenciasback.model.Incidencia;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
@@ -10,7 +11,14 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmailService {
@@ -18,6 +26,14 @@ public class EmailService {
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
     private final JavaMailSender mailSender;
+    private final ObjectMapper objectMapper;
+    private final HttpClient httpClient;
+
+    @Value("${brevo.api-key:}")
+    private String brevoApiKey;
+
+    @Value("${spring.mail.password:}")
+    private String mailPassword;
 
     @Value("${app.mail.from:${spring.mail.username:soporte.asiu@gmail.com}}")
     private String fromEmail;
@@ -25,8 +41,14 @@ public class EmailService {
     @Value("${app.frontend.url:https://sistema-incidencias-asiu.onrender.com}")
     private String frontendUrl;
 
-    public EmailService(JavaMailSender mailSender) {
+    public EmailService(JavaMailSender mailSender, ObjectMapper objectMapper) {
         this.mailSender = mailSender;
+        this.objectMapper = objectMapper != null ? objectMapper : new ObjectMapper();
+        this.httpClient = HttpClient.newHttpClient();
+    }
+
+    public EmailService(JavaMailSender mailSender) {
+        this(mailSender, new ObjectMapper());
     }
 
     @Async
@@ -138,6 +160,56 @@ public class EmailService {
     }
 
     private void enviar(String destinatario, String asunto, String html) {
+        String apiKey = (brevoApiKey != null && !brevoApiKey.isBlank()) ? brevoApiKey.trim() : "";
+        if (apiKey.isBlank() && mailPassword != null && mailPassword.trim().startsWith("xkeysib-")) {
+            apiKey = mailPassword.trim();
+        }
+
+        // Si tenemos clave de API de Brevo, usamos HTTP (puerto 443 HTTPS - nunca bloqueado en Render/Railway)
+        if (!apiKey.isBlank()) {
+            enviarViaBrevoHttp(destinatario, asunto, html, apiKey);
+            return;
+        }
+
+        // Si no hay API key, intentamos SMTP tradicional
+        enviarViaSmtp(destinatario, asunto, html);
+    }
+
+    private void enviarViaBrevoHttp(String destinatario, String asunto, String html, String apiKey) {
+        try {
+            if (fromEmail == null || fromEmail.isBlank()) {
+                log.warn("No se pudo enviar correo a {}: remitente 'app.mail.from' no configurado", destinatario);
+                return;
+            }
+            Map<String, Object> payload = Map.of(
+                    "sender", Map.of("name", "Sistema ASIU", "email", fromEmail.trim()),
+                    "to", List.of(Map.of("email", destinatario.trim())),
+                    "subject", asunto,
+                    "htmlContent", html
+            );
+            String json = objectMapper.writeValueAsString(payload);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.brevo.com/v3/smtp/email"))
+                    .header("api-key", apiKey)
+                    .header("Content-Type", "application/json")
+                    .header("Accept", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                log.info("Correo enviado con éxito vía Brevo API a {}: {}", destinatario, asunto);
+            } else {
+                log.error("Brevo API respondió con error ({}) al enviar a {}: {}", response.statusCode(), destinatario, response.body());
+            }
+        } catch (Exception e) {
+            log.error("Error al conectar con Brevo API para {} ({}): {}", destinatario, asunto, e.getMessage());
+        }
+    }
+
+    private void enviarViaSmtp(String destinatario, String asunto, String html) {
         try {
             if (fromEmail == null || fromEmail.isBlank()) {
                 log.warn("No se pudo enviar correo a {}: remitente 'app.mail.from' no configurado", destinatario);
@@ -150,9 +222,9 @@ public class EmailService {
             helper.setSubject(asunto);
             helper.setText(html, true);
             mailSender.send(message);
-            log.info("Correo enviado exitosamente a {}: {}", destinatario, asunto);
+            log.info("Correo enviado exitosamente vía SMTP a {}: {}", destinatario, asunto);
         } catch (Exception e) {
-            log.error("Error al enviar correo a {} (asunto: '{}'): {}", destinatario, asunto, e.getMessage());
+            log.error("Error al enviar correo vía SMTP a {} ({}): {}", destinatario, asunto, e.getMessage());
         }
     }
 }
