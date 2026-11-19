@@ -443,13 +443,22 @@ const Login = () => {
                     />
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={goToLogin}
-                    className="w-full text-sm text-slate-300 hover:text-white font-medium cursor-pointer"
-                  >
-                    Volver al inicio de sesión
-                  </button>
+                  <div className="flex flex-col gap-2.5 pt-1 text-center">
+                    <button
+                      type="button"
+                      onClick={goToRecuperar}
+                      className="text-xs text-amber-400 hover:text-amber-300 font-medium cursor-pointer underline underline-offset-2"
+                    >
+                      ¿No recibiste el código? Solicitar otro
+                    </button>
+                    <button
+                      type="button"
+                      onClick={goToLogin}
+                      className="w-full text-sm text-slate-300 hover:text-white font-medium cursor-pointer"
+                    >
+                      Volver al inicio de sesión
+                    </button>
+                  </div>
                 </form>
               )}
             </div>
