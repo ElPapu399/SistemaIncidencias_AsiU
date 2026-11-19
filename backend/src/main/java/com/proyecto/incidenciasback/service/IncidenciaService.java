@@ -34,6 +34,7 @@ public class IncidenciaService {
         private final ArchivoAdjuntoRepository archivoAdjuntoRepository;
         private final AuthHelper authHelper;
         private final NotificacionService notificacionService;
+        private final EmailService emailService;
 
         public IncidenciaService(IncidenciaRepository incidenciaRepository,
                         UsuarioRepository usuarioRepository,
@@ -44,7 +45,8 @@ public class IncidenciaService {
                         HistorialEstadoRepository historialEstadoRepository,
                         ArchivoAdjuntoRepository archivoAdjuntoRepository,
                         AuthHelper authHelper,
-                        NotificacionService notificacionService) {
+                        NotificacionService notificacionService,
+                        EmailService emailService) {
                 this.incidenciaRepository = incidenciaRepository;
                 this.usuarioRepository = usuarioRepository;
                 this.categoriaRepository = categoriaRepository;
@@ -55,6 +57,7 @@ public class IncidenciaService {
                 this.archivoAdjuntoRepository = archivoAdjuntoRepository;
                 this.authHelper = authHelper;
                 this.notificacionService = notificacionService;
+                this.emailService = emailService;
         }
 
         @Transactional(readOnly = true)
@@ -308,6 +311,10 @@ public class IncidenciaService {
                                         "Actualización de tu ticket",
                                         detalle,
                                         incidencia);
+                }
+
+                if ("Resuelta".equals(nuevoEstado) && !estadoAnterior.equals(nuevoEstado)) {
+                        emailService.enviarCorreoResolucionIncidencia(incidencia);
                 }
 
                 return toResponse(incidencia);

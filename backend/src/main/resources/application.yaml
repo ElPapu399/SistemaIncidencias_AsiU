@@ -22,8 +22,20 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 resend:
-  api-key: ${RESEND_API_KEY:re_placeholder}
+  api-key: unused
 
 server:
   port: ${PORT:8080}
@@ -34,7 +46,9 @@ app:
     secret: ${JWT_SECRET:AsIU-SistemaIncidencias-JWT-SecretKey-2026-MinLength32!}
     expiration-ms: ${JWT_EXPIRATION:1800000}
   mail:
-    from: ${MAIL_FROM:onboarding@resend.dev}
+    from: ${MAIL_FROM:${MAIL_USERNAME:soporte.asiu@gmail.com}}
+  frontend:
+    url: ${FRONTEND_URL:https://sistema-incidencias-asiu.onrender.com}
 
 cors:
   allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:4173}
