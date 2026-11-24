@@ -1,3 +1,5 @@
+import { useSearchParams } from 'react-router-dom';
+import { ratingLinkResult } from '../utils/ratingLink';
 import Button, { ButtonLink } from '../components/Button';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import {
@@ -40,6 +42,7 @@ interface IncidenciasPageProps {
 }
 
 export default function IncidenciasPage({ title, description, soloMisIncidencias = false }: IncidenciasPageProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [solicitudesPendientes, setSolicitudesPendientes] = useState<SolicitudReasignacion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -134,6 +137,16 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
 
   const closeModal = useCallback(() => { setActiveModal(null); setSelectedIncident(null); }, []);
 
+  const ratingId = searchParams.get('calificar');
+  const ratingLink = ratingId !== null && !loading && !error
+    ? ratingLinkResult(ratingId, incidents, usuario?.id, currentUserRole)
+    : null;
+  const clearRatingLink = () => {
+    const next = new URLSearchParams(searchParams);
+    next.delete('calificar');
+    setSearchParams(next, { replace: true });
+  };
+
   const pendingIncidentIds = useMemo(
     () => new Set(solicitudesPendientes.map((s) => s.incidenciaId)),
     [solicitudesPendientes]
@@ -224,6 +237,12 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
       <Header title={pageTitle} subtitle={pageSubtitle} />
 
       <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-(--app-bg)">
+        {ratingLink?.message && (
+          <div role="status" className="rounded-xl border border-(--tone-amber-border-300) bg-(--tone-amber-bg-50) p-4 text-left text-sm text-(--tone-amber-text-800)">
+            <p>{ratingLink.message}</p>
+            <Button variant="neutral" appearance="text" size="custom" onClick={clearRatingLink} className="mt-2 underline">Entendido</Button>
+          </div>
+        )}
         {/* Header section */}
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1 text-left">
@@ -357,7 +376,15 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
       <ChangeStatusModal isOpen={activeModal === 'status'} incident={selectedIncident} currentUserRole={currentUserRole} onClose={closeModal} onUpdated={recargar} />
       <RequestReassignModal isOpen={activeModal === 'reassign'} incident={selectedIncident} onClose={closeModal} onRequested={recargar} />
       <ManageReassignmentsModal isOpen={activeModal === 'manageReassign'} onClose={closeModal} onProcessed={recargar} />
-      <RateIncidentModal isOpen={activeModal === 'rate'} incident={selectedIncident} onClose={closeModal} onRated={recargar} />
+      {(ratingLink?.incident || activeModal === 'rate') && (
+        <RateIncidentModal
+          key={(ratingLink?.incident || selectedIncident)?.numericId}
+          isOpen
+          incident={ratingLink?.incident || selectedIncident}
+          onClose={() => { if (ratingId !== null) clearRatingLink(); closeModal(); }}
+          onRated={() => { if (ratingId !== null) clearRatingLink(); recargar(); }}
+        />
+      )}
 
       {/* Self-assign confirmation modal */}
       {activeModal === 'selfAssign' && selectedIncident && (

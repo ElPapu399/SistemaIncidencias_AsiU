@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import InputBox from '../components/InputBox';
 import Button from '../components/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,6 +15,8 @@ import {
 import { API_BASE } from '../config/api';
 import { saveSession, isLoggedIn, onSessionChange } from '../utils/auth';
 
+import { postLoginDestination } from '../utils/ratingLink';
+
 type AuthView = 'login' | 'recuperar' | 'restablecer';
 
 const parseApiError = async (response: Response, fallback: string) => {
@@ -28,6 +30,8 @@ const parseApiError = async (response: Response, fallback: string) => {
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const destination = postLoginDestination(location.search);
   const [view, setView] = useState<AuthView>('login');
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
@@ -40,17 +44,17 @@ const Login = () => {
 
   useEffect(() => {
     if (isLoggedIn()) {
-      navigate('/dashboard', { replace: true });
+      navigate(destination, { replace: true });
     }
 
     const unsubscribe = onSessionChange((user) => {
       if (user && user.token) {
-        navigate('/dashboard', { replace: true });
+        navigate(destination, { replace: true });
       }
     });
 
     return unsubscribe;
-  }, [navigate]);
+  }, [navigate, destination]);
 
   const resetMessages = () => {
     setError('');
@@ -89,7 +93,7 @@ const Login = () => {
       if (response.ok) {
         const usuario = await response.json();
         saveSession(usuario);
-        navigate('/dashboard');
+        navigate(destination, { replace: true });
       } else {
         setError(await parseApiError(response, 'Correo o contraseña incorrectos'));
       }

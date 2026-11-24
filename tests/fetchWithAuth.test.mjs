@@ -6,11 +6,11 @@ import ts from 'typescript';
 
 // Ejecuta el código TypeScript real con HTTP y almacenamiento aislados.
 // No envía peticiones al servidor ni utiliza la sesión del usuario.
-async function crearEntorno(status, body = {}) {
+async function crearEntorno(status, body = {}, search = '') {
   let logoutCalls = 0;
   let request;
   const response = new Response(JSON.stringify(body), { status });
-  const location = { pathname: '/dashboard/configuracion', href: '/dashboard/configuracion' };
+  const location = { pathname: '/dashboard/configuracion', href: '/dashboard/configuracion', search };
   const context = vm.createContext({
     Headers, FormData,
     window: { location },
@@ -69,4 +69,10 @@ test('adjunta el token de autenticación y conserva el cuerpo y sus cabeceras', 
   assert.equal(request.options.headers.get('Content-Type'), 'application/json');
   assert.equal(request.options.body, body);
   assert.equal(entorno.logoutCalls(), 0);
+});
+
+test('401 conserva el destino de calificación para volver después del login', async () => {
+  const env = await crearEntorno(401, {}, '?calificar=42');
+  await assert.rejects(() => env.fetchWithAuth('/incidencias'));
+  assert.equal(env.location.href, '/?redirect=' + encodeURIComponent('/dashboard/configuracion?calificar=42'));
 });

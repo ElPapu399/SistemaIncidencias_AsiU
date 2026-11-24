@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "test:auth": "node --experimental-vm-modules --test tests/fetchWithAuth.test.mjs",
+    "test:auth": "node --experimental-vm-modules --test tests/fetchWithAuth.test.mjs tests/ratingLink.test.mjs",
     "test:reportes": "node --experimental-strip-types --test tests/reportesMetrics.test.mjs tests/reportesCharts.test.mjs tests/exportarReportes.test.mjs",
     "test:sorting": "node --experimental-strip-types --test tests/tableSorting.test.mjs",
     "test": "npm run test:auth && npm run test:reportes && npm run test:sorting",

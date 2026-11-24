@@ -3,6 +3,11 @@ package com.proyecto.incidenciasback.service;
 import com.proyecto.incidenciasback.model.Incidencia;
 import com.proyecto.incidenciasback.model.Usuario;
 import jakarta.mail.Session;
+import jakarta.mail.Part;
+import jakarta.mail.Multipart;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -75,6 +80,32 @@ class EmailServiceTest {
         emailService.enviarCorreoResolucionIncidencia(incidencia);
 
         verify(mailSender, times(1)).send(any(MimeMessage.class));
+    }
+
+    private String extraerHtml(Part part) throws Exception {
+        if (part.isMimeType("text/html")) return (String) part.getContent();
+        if (part.getContent() instanceof Multipart multipart) {
+            StringBuilder html = new StringBuilder();
+            for (int i = 0; i < multipart.getCount(); i++) html.append(extraerHtml(multipart.getBodyPart(i)));
+            return html.toString();
+        }
+        return "";
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"http://localhost:5173", "https://sistema-incidencias-asiu.onrender.com/"})
+    void correoApuntaALaIncidenciaEnElEntornoConfigurado(String frontend) throws Exception {
+        ReflectionTestUtils.setField(emailService, "frontendUrl", frontend);
+        MimeMessage message = crearMimeMessageMock();
+        when(mailSender.createMimeMessage()).thenReturn(message);
+        Usuario estudiante = new Usuario();
+        estudiante.setCorreo("estudiante@example.com");
+        Incidencia incidencia = new Incidencia();
+        incidencia.setId(42);
+        incidencia.setEstudiante(estudiante);
+        emailService.enviarCorreoResolucionIncidencia(incidencia);
+        message.saveChanges();
+        assertTrue(extraerHtml(message).contains(frontend.replaceAll("/+$", "") + "/dashboard/mis-incidencias?calificar=42"));
     }
 
     @Test

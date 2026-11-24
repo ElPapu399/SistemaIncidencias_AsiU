@@ -6,6 +6,9 @@ import com.proyecto.incidenciasback.repository.*;
 import com.proyecto.incidenciasback.security.AuthHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.Year;
@@ -314,7 +317,19 @@ public class IncidenciaService {
                 }
 
                 if ("Resuelta".equals(nuevoEstado) && !estadoAnterior.equals(nuevoEstado)) {
-                        emailService.enviarCorreoResolucionIncidencia(incidencia);
+                        // El correo solo sale cuando la resolución quedó confirmada en la BD.
+                        TransactionSynchronizationManager.registerSynchronization(
+                                        new TransactionSynchronization() {
+                                                @Override
+                                                public void afterCommit() {
+                                                        try {
+                                                                emailService.enviarCorreoResolucionIncidencia(incidencia);
+                                                        } catch (RuntimeException ex) {
+                                                                LoggerFactory.getLogger(IncidenciaService.class)
+                                                                                .error("No se pudo enviar el correo de resolución de la incidencia {}", incidenciaId, ex);
+                                                        }
+                                                }
+                                        });
                 }
 
                 return toResponse(incidencia);

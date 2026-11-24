@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/dashboard/Sidebar';
 import { isLoggedIn, logout, onSessionChange, getTimeUntilExpiration } from '../utils/auth';
 
@@ -11,17 +11,19 @@ export interface MenuContext {
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const loginUrl = `/?redirect=${encodeURIComponent(location.pathname + location.search + location.hash)}`;
   const [menuAbierto, setMenuAbierto] = useState(false);
 
   useEffect(() => {
     if (!isLoggedIn()) {
-      navigate('/', { replace: true });
+      navigate(loginUrl, { replace: true });
       return;
     }
 
     const unsubscribeSession = onSessionChange((user) => {
       if (!user) {
-        navigate('/', { replace: true });
+        navigate(loginUrl, { replace: true });
       }
     });
 
@@ -31,14 +33,14 @@ export default function DashboardLayout() {
     if (msRemaining !== null) {
       expirationTimer = setTimeout(() => {
         logout();
-        navigate('/', { replace: true });
+        navigate(loginUrl, { replace: true });
       }, msRemaining);
     }
 
     const interval = setInterval(() => {
       if (!isLoggedIn()) {
         logout();
-        navigate('/', { replace: true });
+        navigate(loginUrl, { replace: true });
       }
     }, 15000);
 
@@ -47,7 +49,7 @@ export default function DashboardLayout() {
       if (expirationTimer) clearTimeout(expirationTimer);
       clearInterval(interval);
     };
-  }, [navigate]);
+  }, [navigate, loginUrl]);
 
   if (!isLoggedIn()) {
     return null;

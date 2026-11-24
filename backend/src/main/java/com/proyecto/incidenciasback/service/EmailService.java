@@ -77,7 +77,6 @@ public class EmailService {
     enviar(destinatario, "ASIU – Código de recuperación de contraseña", html);
   }
 
-  @Async
   public void enviarCorreoResolucionIncidencia(Incidencia incidencia) {
     if (incidencia.getEstudiante() == null || incidencia.getEstudiante().getCorreo() == null) {
       log.warn("No se pudo enviar correo de resolución: estudiante o correo nulo para incidencia {}",
@@ -105,7 +104,7 @@ public class EmailService {
 
     String calificarUrl = (frontendUrl != null ? frontendUrl.replaceAll("/+$", "")
         : "https://sistema-incidencias-asiu.onrender.com")
-        + "/dashboard/mis-incidencias";
+        + "/dashboard/mis-incidencias?calificar=" + incidencia.getId();
 
     String html = """
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">

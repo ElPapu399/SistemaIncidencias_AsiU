@@ -7,6 +7,8 @@
 --  * 'Cerrada': Incidencia cerrada por el alumno CON calificación y comentario.
 -- ==============================================================
 
+USE campusincidencias;
+
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- 0. CREACIÓN DE TABLAS (SI NO EXISTEN)

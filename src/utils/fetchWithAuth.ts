@@ -30,7 +30,11 @@ export async function fetchWithAuth(
   if (response.status === 401) {
     logout();
     if (window.location.pathname !== '/') {
-      window.location.href = '/';
+      const search = window.location.search || '';
+      const destination = window.location.pathname + search;
+      window.location.href = /[?&]calificar=/.test(search)
+        ? `/?redirect=${encodeURIComponent(destination)}`
+        : '/';
     }
     throw new Error('Sesión expirada o credenciales inválidas. Redirigiendo al login...');
   }

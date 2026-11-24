@@ -1,6 +1,8 @@
 spring:
   application:
     name: incidenciasback
+  profiles:
+    default: local
 
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:campus_incidencias_db}?useSSL=${DB_USE_SSL:false}&allowPublicKeyRetrieval=true&serverTimezone=America/Lima
@@ -50,8 +52,29 @@ app:
     expiration-ms: ${JWT_EXPIRATION:1800000}
   mail:
     from: ${MAIL_FROM:${MAIL_USERNAME:soporte.asiu@gmail.com}}
-  frontend:
-    url: ${FRONTEND_URL:https://sistema-incidencias-asiu.onrender.com}
 
 cors:
   allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:4173}
+
+---
+# LOCAL: perfil predeterminado. Los enlaces del correo abren el frontend local.
+spring:
+  config:
+    import: "optional:file:./backend/.env[.properties],optional:file:./.env[.properties]"
+    activate:
+      on-profile: local
+
+app:
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:5173}
+
+---
+# DESPLEGADO: configurar SPRING_PROFILES_ACTIVE=prod en Render.
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+app:
+  frontend:
+    url: ${FRONTEND_URL:https://sistema-incidencias-asiu.onrender.com}
