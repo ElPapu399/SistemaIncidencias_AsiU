@@ -47,6 +47,9 @@ server:
 
 app:
   upload-dir: ./uploads
+  storage:
+    provider: ${STORAGE_PROVIDER:local}
+    bucket: ${GCS_BUCKET:}
   jwt:
     secret: ${JWT_SECRET:AsIU-SistemaIncidencias-JWT-SecretKey-2026-MinLength32!}
     expiration-ms: ${JWT_EXPIRATION:1800000}
@@ -76,5 +79,7 @@ spring:
       on-profile: prod
 
 app:
+  storage:
+    provider: ${STORAGE_PROVIDER:gcs}
   frontend:
     url: ${FRONTEND_URL:https://sistema-incidencias-asiu.onrender.com}

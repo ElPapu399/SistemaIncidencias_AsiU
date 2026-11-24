@@ -40,31 +40,27 @@ public class ArchivoAdjuntoController {
     public ResponseEntity<Resource> descargarArchivo(
             @PathVariable Integer incidenciaId,
             @PathVariable String filename) {
-        try {
-            Resource resource = archivoAdjuntoService.cargarArchivo(incidenciaId, filename);
-            String lowerName = filename.toLowerCase();
-            String contentType = "application/octet-stream";
+        Resource resource = archivoAdjuntoService.cargarArchivo(incidenciaId, filename);
+        String lowerName = filename.toLowerCase();
+        String contentType = "application/octet-stream";
 
-            if (lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg")) {
-                contentType = "image/jpeg";
-            } else if (lowerName.endsWith(".png")) {
-                contentType = "image/png";
-            } else if (lowerName.endsWith(".gif")) {
-                contentType = "image/gif";
-            } else if (lowerName.endsWith(".webp")) {
-                contentType = "image/webp";
-            } else if (lowerName.endsWith(".svg")) {
-                contentType = "image/svg+xml";
-            } else if (lowerName.endsWith(".pdf")) {
-                contentType = "application/pdf";
-            }
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
-                    .body(resource);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+        if (lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg")) {
+            contentType = "image/jpeg";
+        } else if (lowerName.endsWith(".png")) {
+            contentType = "image/png";
+        } else if (lowerName.endsWith(".gif")) {
+            contentType = "image/gif";
+        } else if (lowerName.endsWith(".webp")) {
+            contentType = "image/webp";
+        } else if (lowerName.endsWith(".svg")) {
+            contentType = "image/svg+xml";
+        } else if (lowerName.endsWith(".pdf")) {
+            contentType = "application/pdf";
         }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                .body(resource);
     }
 }

@@ -20,6 +20,12 @@
 	</properties>
 
 	<dependencies>
+		<!-- Adjuntos persistentes en el bucket privado de Google Cloud Storage -->
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-storage</artifactId>
+			<version>2.64.1</version>
+		</dependency>
 		<!-- Web MVC (REST APIs) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
@@ -17,6 +18,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleAuthenticationException(AuthenticationException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", ex.getMessage() != null ? ex.getMessage() : "No autorizado"));
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, String>> handleResponseStatusException(ResponseStatusException ex) {
+        return ResponseEntity.status(ex.getStatusCode())
+                .body(Map.of("error", ex.getReason() != null ? ex.getReason() : "Error al procesar la solicitud"));
     }
 
     @ExceptionHandler(RuntimeException.class)

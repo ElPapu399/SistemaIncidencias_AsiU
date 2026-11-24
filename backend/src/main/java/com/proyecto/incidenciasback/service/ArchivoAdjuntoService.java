@@ -7,18 +7,13 @@ import com.proyecto.incidenciasback.model.Usuario;
 import com.proyecto.incidenciasback.repository.ArchivoAdjuntoRepository;
 import com.proyecto.incidenciasback.repository.IncidenciaRepository;
 import com.proyecto.incidenciasback.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Value;
+import com.proyecto.incidenciasback.storage.AdjuntoStorage;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -29,22 +24,16 @@ public class ArchivoAdjuntoService {
     private final ArchivoAdjuntoRepository archivoAdjuntoRepository;
     private final IncidenciaRepository incidenciaRepository;
     private final UsuarioRepository usuarioRepository;
-    private final Path uploadDir;
+    private final AdjuntoStorage storage;
 
     public ArchivoAdjuntoService(ArchivoAdjuntoRepository archivoAdjuntoRepository,
                                   IncidenciaRepository incidenciaRepository,
                                   UsuarioRepository usuarioRepository,
-                                  @Value("${app.upload-dir:./uploads}") String uploadPath) {
+                                  AdjuntoStorage storage) {
         this.archivoAdjuntoRepository = archivoAdjuntoRepository;
         this.incidenciaRepository = incidenciaRepository;
         this.usuarioRepository = usuarioRepository;
-        this.uploadDir = Paths.get(uploadPath).toAbsolutePath().normalize();
-
-        try {
-            Files.createDirectories(this.uploadDir);
-        } catch (IOException e) {
-            throw new RuntimeException("No se pudo crear el directorio de uploads: " + uploadPath, e);
-        }
+        this.storage = storage;
     }
 
     public ArchivoAdjuntoResponse subirArchivo(Integer incidenciaId, Integer usuarioId, MultipartFile file) {
@@ -64,9 +53,6 @@ public class ArchivoAdjuntoService {
         }
 
         try {
-            Path incidenciaDir = this.uploadDir.resolve("incidencias").resolve(String.valueOf(incidenciaId));
-            Files.createDirectories(incidenciaDir);
-
             String originalFilename = file.getOriginalFilename();
             String extension = "";
             if (originalFilename != null && originalFilename.contains(".")) {
@@ -74,8 +60,10 @@ public class ArchivoAdjuntoService {
             }
             String uniqueFilename = UUID.randomUUID().toString() + extension;
 
-            Path targetPath = incidenciaDir.resolve(uniqueFilename);
-            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+            String nombre = nombreObjeto(incidenciaId, uniqueFilename);
+            try (var contenido = file.getInputStream()) {
+                storage.guardar(nombre, contenido, file.getContentType());
+            }
 
             ArchivoAdjunto adjunto = new ArchivoAdjunto();
             adjunto.setIncidencia(incidencia);
@@ -86,7 +74,18 @@ public class ArchivoAdjuntoService {
             adjunto.setSubidoPor(usuario);
             adjunto.setFechaSubida(LocalDateTime.now());
 
-            archivoAdjuntoRepository.save(adjunto);
+            try {
+                archivoAdjuntoRepository.save(adjunto);
+            } catch (RuntimeException e) {
+                // No dejar archivos huérfanos si la referencia no pudo guardarse.
+                try {
+                    storage.eliminar(nombre);
+                } catch (RuntimeException cleanupError) {
+                    LoggerFactory.getLogger(ArchivoAdjuntoService.class)
+                            .warn("No se pudo limpiar un adjunto sin referencia: {}", nombre, cleanupError);
+                }
+                throw e;
+            }
 
             return toResponse(adjunto);
 
@@ -102,23 +101,16 @@ public class ArchivoAdjuntoService {
                 .toList();
     }
 
-    public Resource cargarArchivo(Integer incidenciaId, String filename) {
-        try {
-            Path filePath = this.uploadDir
-                    .resolve("incidencias")
-                    .resolve(String.valueOf(incidenciaId))
-                    .resolve(filename)
-                    .normalize();
-
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists() && resource.isReadable()) {
-                return resource;
-            } else {
-                throw new RuntimeException("Archivo no encontrado: " + filename);
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Archivo no encontrado: " + filename, e);
+    private String nombreObjeto(Integer incidenciaId, String filename) {
+        if (incidenciaId == null || incidenciaId <= 0 || filename == null
+                || !filename.matches("[A-Za-z0-9][A-Za-z0-9._-]*") || filename.contains("..")) {
+            throw new IllegalArgumentException("Ruta de adjunto no válida");
         }
+        return "incidencias/" + incidenciaId + "/" + filename;
+    }
+
+    public Resource cargarArchivo(Integer incidenciaId, String filename) {
+        return storage.cargar(nombreObjeto(incidenciaId, filename));
     }
 
     private ArchivoAdjuntoResponse toResponse(ArchivoAdjunto a) {
