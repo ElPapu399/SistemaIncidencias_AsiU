@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface IncidenciaRepository extends JpaRepository<Incidencia, Integer> {
+    boolean existsByUbicacionId(Integer ubicacionId);
 
     @EntityGraph(attributePaths = {"estudiante", "tecnico", "categoria", "categoria.especialidad", "prioridad", "ubicacion", "equipo"})
     List<Incidencia> findAll();

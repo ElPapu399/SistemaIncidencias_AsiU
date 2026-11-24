@@ -1,3 +1,4 @@
+import Button from '../components/Button';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -145,40 +146,40 @@ export default function MiRendimientoPage() {
         subtitle="Métricas personales de productividad, tiempos de atención y satisfacción."
       />
 
-      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-100 text-left">
+      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-(--app-bg) text-left">
         {/* Encabezado del Técnico */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-(--surface) rounded-2xl p-5 border border-(--border-color) shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">
+            <span className="text-xs font-bold uppercase tracking-wider text-(--tone-blue-text-600) bg-(--tone-blue-bg-50) px-2.5 py-1 rounded-md border border-(--tone-blue-border-200)">
               Técnico Especialista
             </span>
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-2">
+            <h2 className="text-xl sm:text-2xl font-bold text-(--text-primary) mt-2">
               Rendimiento Operativo de {usuario?.nombre} {usuario?.apellido}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            <p className="text-xs sm:text-sm text-(--text-secondary) mt-0.5">
               Resumen acumulado de incidencias asignadas y resueltas en laboratorios.
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-500">
+            <span className="text-xs font-semibold text-(--text-secondary)">
               Tasa de resolución:
             </span>
-            <span className="text-base font-extrabold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200">
+            <span className="text-base font-extrabold text-(--tone-emerald-text-600) bg-(--tone-emerald-bg-50) px-3 py-1 rounded-xl border border-(--tone-emerald-border-200)">
               {tasaResolucion}%
             </span>
           </div>
         </div>
 
         {error && (
-          <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs sm:text-sm flex items-center justify-between">
+          <div className="p-4 bg-(--tone-rose-bg-50) border border-(--tone-rose-border-200) text-(--tone-rose-text-700) rounded-2xl text-xs sm:text-sm flex items-center justify-between">
             <span>{error}</span>
-            <button
+            <Button variant="neutral" appearance="text" size="custom"
               type="button"
               onClick={cargarDatos}
               className="font-bold underline cursor-pointer"
             >
               Reintentar
-            </button>
+            </Button>
           </div>
         )}
 
@@ -188,81 +189,81 @@ export default function MiRendimientoPage() {
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Tickets Resueltos */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
+            <div className="bg-(--surface) rounded-2xl p-5 border border-(--border-color) shadow-xs flex flex-col justify-between">
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                  <span className="text-xs font-bold uppercase tracking-wider text-(--text-secondary)">
                     Resueltos
                   </span>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-(--tone-emerald-text-600) mt-1">
                     {resueltas.length}
                   </div>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                <div className="w-10 h-10 rounded-xl bg-(--tone-emerald-bg-50) text-(--tone-emerald-text-600) flex items-center justify-center text-lg">
                   <FontAwesomeIcon icon={faCheckCircle} />
                 </div>
               </div>
-              <p className="text-[11px] text-slate-500 mt-3">
+              <p className="text-[11px] text-(--text-secondary) mt-3">
                 {resueltas.length} de {incidencias.length} tickets asignados
               </p>
             </div>
 
             {/* En Atención */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
+            <div className="bg-(--surface) rounded-2xl p-5 border border-(--border-color) shadow-xs flex flex-col justify-between">
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                  <span className="text-xs font-bold uppercase tracking-wider text-(--text-secondary)">
                     En Atención
                   </span>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-blue-600 mt-1">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-(--tone-blue-text-600) mt-1">
                     {enAtencion.length}
                   </div>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                <div className="w-10 h-10 rounded-xl bg-(--tone-blue-bg-50) text-(--tone-blue-text-600) flex items-center justify-center text-lg">
                   <FontAwesomeIcon icon={faClock} />
                 </div>
               </div>
-              <p className="text-[11px] text-slate-500 mt-3">
+              <p className="text-[11px] text-(--text-secondary) mt-3">
                 Tickets actualmente en proceso
               </p>
             </div>
 
             {/* Tiempo Promedio */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
+            <div className="bg-(--surface) rounded-2xl p-5 border border-(--border-color) shadow-xs flex flex-col justify-between">
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                  <span className="text-xs font-bold uppercase tracking-wider text-(--text-secondary)">
                     Tiempo Promedio
                   </span>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-purple-600 mt-1">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-(--tone-purple-text-600) mt-1">
                     {tiempoPromedioHoras ? `${tiempoPromedioHoras} h` : '—'}
                   </div>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
+                <div className="w-10 h-10 rounded-xl bg-(--tone-purple-bg-50) text-(--tone-purple-text-600) flex items-center justify-center text-lg">
                   <FontAwesomeIcon icon={faBolt} />
                 </div>
               </div>
-              <p className="text-[11px] text-slate-500 mt-3">
+              <p className="text-[11px] text-(--text-secondary) mt-3">
                 Por ticket resuelto
               </p>
             </div>
 
             {/* Calificación Promedio */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
+            <div className="bg-(--surface) rounded-2xl p-5 border border-(--border-color) shadow-xs flex flex-col justify-between">
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                  <span className="text-xs font-bold uppercase tracking-wider text-(--text-secondary)">
                     Satisfacción
                   </span>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-amber-500 mt-1">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-(--tone-amber-text-500) mt-1">
                     {promedioCalificacion ? `${promedioCalificacion} ★` : '—'}
                   </div>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center text-lg">
+                <div className="w-10 h-10 rounded-xl bg-(--tone-amber-bg-50) text-(--tone-amber-text-500) flex items-center justify-center text-lg">
                   <FontAwesomeIcon icon={faStar} />
                 </div>
               </div>
-              <p className="text-[11px] text-slate-500 mt-3">
+              <p className="text-[11px] text-(--text-secondary) mt-3">
                 {calificados.length} {calificados.length === 1 ? 'evaluación' : 'evaluaciones'} de alumnos
               </p>
             </div>
@@ -272,16 +273,16 @@ export default function MiRendimientoPage() {
         {/* Sección de Desglose de Categorías y Estados */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Desglose de Categorías Atendidas */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-(--surface) rounded-2xl p-5 border border-(--border-color) shadow-xs space-y-4">
             <div className="flex items-center gap-2">
-              <FontAwesomeIcon icon={faChartPie} className="text-blue-600 text-sm" />
-              <h3 className="text-sm font-bold text-slate-900">
+              <FontAwesomeIcon icon={faChartPie} className="text-(--tone-blue-text-600) text-sm" />
+              <h3 className="text-sm font-bold text-(--text-primary)">
                 Fallas Atendidas por Categoría
               </h3>
             </div>
 
             {categoriasAtendidas.length === 0 ? (
-              <p className="text-xs text-slate-400 py-6 text-center">
+              <p className="text-xs text-(--text-secondary) py-6 text-center">
                 Aún no tienes tickets asignados para clasificar.
               </p>
             ) : (
@@ -289,12 +290,12 @@ export default function MiRendimientoPage() {
                 {categoriasAtendidas.map((cat) => (
                   <div key={cat.nombre} className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-slate-700">{cat.nombre}</span>
-                      <span className="font-mono text-slate-500">
+                      <span className="font-semibold text-(--text-primary)">{cat.nombre}</span>
+                      <span className="font-mono text-(--text-secondary)">
                         {cat.cantidad} ({cat.porcentaje}%)
                       </span>
                     </div>
-                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-(--surface-muted) rounded-full overflow-hidden">
                       <div
                         className="h-full bg-blue-600 rounded-full transition-all duration-300"
                         style={{ width: `${cat.porcentaje}%` }}
@@ -307,41 +308,41 @@ export default function MiRendimientoPage() {
           </div>
 
           {/* Resumen del Flujo de Trabajo */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-(--surface) rounded-2xl p-5 border border-(--border-color) shadow-xs space-y-4">
             <div className="flex items-center gap-2">
-              <FontAwesomeIcon icon={faWrench} className="text-purple-600 text-sm" />
-              <h3 className="text-sm font-bold text-slate-900">
+              <FontAwesomeIcon icon={faWrench} className="text-(--tone-purple-text-600) text-sm" />
+              <h3 className="text-sm font-bold text-(--text-primary)">
                 Distribución de tus Tickets
               </h3>
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-100 text-xs">
+              <div className="flex items-center justify-between p-3 rounded-xl bg-(--tone-emerald-bg-50) border border-(--tone-emerald-border-100) text-xs">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                  <span className="font-bold text-emerald-900">Resueltas / Cerradas</span>
+                  <span className="font-bold text-(--tone-emerald-text-900)">Resueltas / Cerradas</span>
                 </div>
-                <span className="font-extrabold text-emerald-700 text-sm">
+                <span className="font-extrabold text-(--tone-emerald-text-700) text-sm">
                   {resueltas.length}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-xl bg-blue-50 border border-blue-100 text-xs">
+              <div className="flex items-center justify-between p-3 rounded-xl bg-(--tone-blue-bg-50) border border-(--tone-blue-border-100) text-xs">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                  <span className="font-bold text-blue-900">En Atención Activa</span>
+                  <span className="font-bold text-(--tone-blue-text-900)">En Atención Activa</span>
                 </div>
-                <span className="font-extrabold text-blue-700 text-sm">
+                <span className="font-extrabold text-(--tone-blue-text-700) text-sm">
                   {enAtencion.length}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-xl bg-amber-50 border border-amber-100 text-xs">
+              <div className="flex items-center justify-between p-3 rounded-xl bg-(--tone-amber-bg-50) border border-(--tone-amber-border-100) text-xs">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                  <span className="font-bold text-amber-900">Total Histórico Asignado</span>
+                  <span className="font-bold text-(--tone-amber-text-900)">Total Histórico Asignado</span>
                 </div>
-                <span className="font-extrabold text-amber-800 text-sm">
+                <span className="font-extrabold text-(--tone-amber-text-800) text-sm">
                   {incidencias.length}
                 </span>
               </div>
@@ -350,15 +351,15 @@ export default function MiRendimientoPage() {
         </div>
 
         {/* Últimas Atenciones Resueltas */}
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-          <div className="p-5 border-b border-slate-200 flex items-center justify-between">
+        <div className="bg-(--surface) rounded-2xl border border-(--border-color) overflow-hidden shadow-xs">
+          <div className="p-5 border-b border-(--border-color) flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <FontAwesomeIcon icon={faCircleCheck} className="text-emerald-600 text-sm" />
-              <h3 className="text-sm font-bold text-slate-900">
+              <FontAwesomeIcon icon={faCircleCheck} className="text-(--tone-emerald-text-600) text-sm" />
+              <h3 className="text-sm font-bold text-(--text-primary)">
                 Últimas Atenciones Cerradas con Éxito
               </h3>
             </div>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-(--text-secondary)">
               {ultimasResueltas.length} más recientes
             </span>
           </div>
@@ -366,13 +367,13 @@ export default function MiRendimientoPage() {
           {loading ? (
             <TableSkeleton rows={3} showFilters={false} />
           ) : ultimasResueltas.length === 0 ? (
-            <div className="text-center py-12 text-slate-400 text-xs">
+            <div className="text-center py-12 text-(--text-secondary) text-xs">
               Aún no tienes tickets cerrados registrados.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs sm:text-sm">
-                <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
+                <thead className="bg-(--surface-subtle) text-(--text-secondary) font-semibold border-b border-(--border-color) text-xs uppercase tracking-wider">
                   <tr>
                     <th className="px-5 py-3">Ticket</th>
                     <th className="px-5 py-3">Problema y Categoría</th>
@@ -382,43 +383,43 @@ export default function MiRendimientoPage() {
                     <th className="px-5 py-3">Fecha de Cierre</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
+                <tbody className="divide-y divide-(--border-color) text-(--text-primary)">
                   {ultimasResueltas.map((inc) => (
-                    <tr key={inc.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="px-5 py-3 font-mono font-bold text-slate-800 text-xs">
+                    <tr key={inc.id} className="hover:bg-(--surface-subtle)/70 transition-colors">
+                      <td className="px-5 py-3 font-mono font-bold text-(--text-primary) text-xs">
                         <div className="flex items-center gap-1.5">
-                          <FontAwesomeIcon icon={faTicket} className="text-slate-400 text-[11px]" />
+                          <FontAwesomeIcon icon={faTicket} className="text-(--text-secondary) text-[11px]" />
                           <span>{inc.id}</span>
                         </div>
                       </td>
 
                       <td className="px-5 py-3">
-                        <div className="font-semibold text-slate-900">{inc.title}</div>
-                        <div className="text-[11px] text-slate-400">{inc.category}</div>
+                        <div className="font-semibold text-(--text-primary)">{inc.title}</div>
+                        <div className="text-[11px] text-(--text-secondary)">{inc.category}</div>
                       </td>
 
-                      <td className="px-5 py-3 text-xs text-slate-600">
+                      <td className="px-5 py-3 text-xs text-(--text-secondary)">
                         {inc.location || 'Campus'}
                       </td>
 
-                      <td className="px-5 py-3 text-xs font-mono font-semibold text-purple-700">
+                      <td className="px-5 py-3 text-xs font-mono font-semibold text-(--tone-purple-text-700)">
                         {calcularTiempoResolucion(inc)}
                       </td>
 
                       <td className="px-5 py-3 text-xs whitespace-nowrap">
                         {typeof inc.calificacion === 'number' ? (
-                          <span className="inline-flex items-center gap-1 font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                          <span className="inline-flex items-center gap-1 font-bold text-(--tone-amber-text-600) bg-(--tone-amber-bg-50) px-2 py-0.5 rounded border border-(--tone-amber-border-200)">
                             <FontAwesomeIcon icon={faStar} className="text-[10px]" />
                             {inc.calificacion}/5
                           </span>
                         ) : (
-                          <span className="text-slate-400 italic text-[11px]">
+                          <span className="text-(--text-secondary) italic text-[11px]">
                             Sin calificar
                           </span>
                         )}
                       </td>
 
-                      <td className="px-5 py-3 text-xs text-slate-400 font-mono whitespace-nowrap">
+                      <td className="px-5 py-3 text-xs text-(--text-secondary) font-mono whitespace-nowrap">
                         {formatDate(inc.closedAt || inc.updatedAt || inc.createdAt)}
                       </td>
                     </tr>

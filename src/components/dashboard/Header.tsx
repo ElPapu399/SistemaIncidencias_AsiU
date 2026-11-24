@@ -1,8 +1,10 @@
+import Button from '../Button';
 import { Menu, User } from 'lucide-react';
 import { useOutletContext } from 'react-router-dom';
 import type { MenuContext } from '../../layouts/DashboardLayout';
 import { getCurrentUser } from '../../utils/auth';
 import NotificationsMenu from './NotificationsMenu';
+import ThemeToggle from '../../dashboard/ThemeToggle';
 
 interface HeaderProps {
   title: string;
@@ -28,41 +30,42 @@ export default function Header({ title, subtitle, nombreUsuario }: HeaderProps) 
     : '';
 
   return (
-    <header className="sticky top-0 z-30 h-20 shrink-0 border-b border-slate-200 bg-white backdrop-blur-xl flex items-center justify-between px-6">
+    <header className="sticky top-0 z-30 h-20 shrink-0 border-b border-(--border-color) bg-(--surface) backdrop-blur-xl flex items-center justify-between px-6">
       <div className="flex min-w-0 items-center gap-3">
-        <button
+        <Button variant="neutral" appearance="text" size="custom"
           type="button"
           onClick={abrirMenu}
           aria-label="Abrir menú"
           aria-expanded={menuAbierto}
           aria-controls="sidebar"
-          className="shrink-0 rounded-lg p-2 text-slate-700 hover:bg-slate-100 md:hidden"
+          className="shrink-0 rounded-lg p-2 md:hidden"
         >
           <Menu className="h-6 w-6" aria-hidden="true" />
-        </button>
+        </Button>
 
         <div className="min-w-0 text-left">
-          <h2 className="text-lg font-bold text-slate-900">
+          <h2 className="text-lg font-bold text-(--text-primary)">
             {title}
           </h2>
           {subtitle && (
-            <p className="hidden sm:block text-xs text-slate-500">
+            <p className="hidden sm:block text-xs text-(--text-secondary)">
               {subtitle}
             </p>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+        <ThemeToggle/>
         <NotificationsMenu />
 
-        <div data-tour="header-user-info" className="flex items-center gap-3 pl-4 border-l border-slate-200">
-          <div className="w-9 h-9 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-sm">
+        <div data-tour="header-user-info" className="flex items-center gap-3 pl-4 border-l border-(--border-color)">
+          <div data-tour="header-user-avatar" className="w-9 h-9 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-sm">
             <User className="text-white h-4 w-4" />
           </div>
           <div className="hidden md:block text-left">
-            <p className="text-sm font-semibold text-slate-800">{nombreUsuario ?? usuario?.nombre ?? 'Usuario'}</p>
-            <p className="text-xs text-slate-500">{roleDisplay}</p>
+            <p className="text-sm font-semibold text-(--text-primary)">{nombreUsuario ?? usuario?.nombre ?? 'Usuario'}</p>
+            <p className="text-xs text-(--text-secondary)">{roleDisplay}</p>
           </div>
         </div>
       </div>

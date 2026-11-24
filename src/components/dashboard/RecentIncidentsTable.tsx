@@ -61,15 +61,15 @@ export default function RecentIncidentsTable({ incidents }: RecentIncidentsTable
   }, [visibleIncidents, sortField, sortDirection]);
 
   return (
-    <div className="bg-white backdrop-blur-xl border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-      <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+    <div className="bg-(--surface) backdrop-blur-xl border border-(--border-color) rounded-2xl overflow-hidden shadow-sm">
+      <div className="px-6 py-4 border-b border-(--border-color) flex items-center justify-between">
         <div className="text-left">
-          <h3 className="text-base font-semibold text-slate-900">Incidencias recientes</h3>
-          <p className="text-xs text-slate-500 mt-0.5">Últimas reportadas en el campus (haz clic en los cabezales para ordenar)</p>
+          <h3 className="text-base font-semibold text-(--text-primary)">Incidencias recientes</h3>
+          <p className="text-xs text-(--text-secondary) mt-0.5">Últimas reportadas en el campus (haz clic en los cabezales para ordenar)</p>
         </div>
         <Link
           to="/dashboard/incidencias"
-          className="text-xs font-semibold text-amber-600 hover:text-amber-700 transition-colors"
+          className="text-xs font-semibold text-(--tone-amber-text-600) hover:text-(--tone-amber-text-700) transition-colors"
         >
           Ver todas →
         </Link>
@@ -77,21 +77,21 @@ export default function RecentIncidentsTable({ incidents }: RecentIncidentsTable
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
-          <thead className="bg-slate-100">
-            <tr className="border-b border-slate-200 text-slate-600">
-              <SortableHeader label="ID" field="id" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-amber-600" />
-              <SortableHeader label="Título" field="title" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-amber-600" />
-              <SortableHeader label="Categoría" field="category" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-amber-600" />
-              <SortableHeader label="Prioridad" field="priority" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-amber-600" />
-              <SortableHeader label="Estado" field="status" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-amber-600" />
-              <SortableHeader label="Asignado" field="assignee" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-amber-600" />
-              <SortableHeader label="Fecha" field="createdAt" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-amber-600" />
+          <thead className="bg-(--surface-muted)">
+            <tr className="border-b border-(--border-color) text-(--text-secondary)">
+              <SortableHeader label="ID" field="id" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-(--tone-amber-text-600)" />
+              <SortableHeader label="Título" field="title" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-(--tone-amber-text-600)" />
+              <SortableHeader label="Categoría" field="category" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-(--tone-amber-text-600)" />
+              <SortableHeader label="Prioridad" field="priority" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-(--tone-amber-text-600)" />
+              <SortableHeader label="Estado" field="status" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-(--tone-amber-text-600)" />
+              <SortableHeader label="Asignado" field="assignee" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-(--tone-amber-text-600)" />
+              <SortableHeader label="Fecha" field="createdAt" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-3" activeColorClass="text-(--tone-amber-text-600)" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-xs">
+          <tbody className="divide-y divide-(--border-color) text-xs">
             {sortedIncidents.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-8 text-center text-slate-500">
+                <td colSpan={7} className="px-6 py-8 text-center text-(--text-secondary)">
                   No hay incidencias para mostrar.
                 </td>
               </tr>
@@ -99,12 +99,12 @@ export default function RecentIncidentsTable({ incidents }: RecentIncidentsTable
               sortedIncidents.slice(0, 4).map((incident) => (
                 <tr
                   key={incident.id}
-                  className="hover:bg-slate-50/80 transition-colors"
+                  className="hover:bg-(--surface-subtle)/80 transition-colors"
                 >
-                  <td className="px-6 py-4 font-mono font-bold text-xs text-amber-600">{incident.id}</td>
+                  <td className="px-6 py-4 font-mono font-bold text-xs text-(--tone-amber-text-600)">{incident.id}</td>
                   <td className="px-6 py-4 text-left">
-                    <p className="text-slate-900 font-semibold max-w-xs truncate">{incident.title}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{incident.location}</p>
+                    <p className="text-(--text-primary) font-semibold max-w-xs truncate">{incident.title}</p>
+                    <p className="text-xs text-(--text-secondary) mt-0.5">{incident.location}</p>
                   </td>
                   <td className="px-6 py-4">
                     <CategoryLabel category={incident.category} />
@@ -115,8 +115,8 @@ export default function RecentIncidentsTable({ incidents }: RecentIncidentsTable
                   <td className="px-6 py-4">
                     <StatusBadge status={incident.status} />
                   </td>
-                  <td className="px-6 py-4 text-slate-600">{incident.assignee}</td>
-                  <td className="px-6 py-4 text-slate-500 whitespace-nowrap">{formatDate(incident.createdAt)}</td>
+                  <td className="px-6 py-4 text-(--text-secondary)">{incident.assignee}</td>
+                  <td className="px-6 py-4 text-(--text-secondary) whitespace-nowrap">{formatDate(incident.createdAt)}</td>
                 </tr>
               ))
             )}

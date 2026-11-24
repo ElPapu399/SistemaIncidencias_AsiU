@@ -1,3 +1,4 @@
+import Button from '../Button';
 import { useState } from 'react';
 import { Star, X, MessageSquare, Send, AlertCircle, ThumbsUp } from 'lucide-react';
 import type { Incident } from '../../types/incident';
@@ -95,45 +96,45 @@ export default function RateIncidentModal({ isOpen, incident, onClose, onRated }
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
 
-      <div className="relative bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden z-10 max-h-[90vh] flex flex-col">
+      <div className="relative bg-(--surface) rounded-2xl shadow-2xl border border-(--border-color) w-full max-w-lg overflow-hidden z-10 max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className={`px-6 py-5 border-b border-slate-200 transition-colors ${
-          isNegative ? 'bg-gradient-to-r from-red-50 to-orange-50' : 'bg-gradient-to-r from-amber-50 to-orange-50'
+        <div className={`px-6 py-5 border-b border-(--border-color) transition-colors ${
+          isNegative ? 'bg-gradient-to-r from-(--tone-red-bg-50) to-(--tone-orange-bg-50)' : 'bg-gradient-to-r from-(--tone-amber-bg-50) to-(--tone-orange-bg-50)'
         }`}>
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold text-amber-600 bg-amber-100 px-2.5 py-0.5 rounded-lg border border-amber-200">
+                <span className="font-mono text-xs font-bold text-(--tone-amber-text-600) bg-(--tone-amber-bg-100) px-2.5 py-0.5 rounded-lg border border-(--tone-amber-border-200)">
                   {incident.id}
                 </span>
               </div>
-              <h3 className="text-base font-bold text-slate-900 mt-1.5">Calificar Atención</h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h3 className="text-base font-bold text-(--text-primary) mt-1.5">Calificar Atención</h3>
+              <p className="text-xs text-(--text-secondary) mt-0.5">
                 Tu opinión nos ayuda a medir y mejorar la calidad de soporte universitario
               </p>
             </div>
-            <button
+            <Button variant="cancel" appearance="soft" size="custom"
               type="button"
               onClick={handleClose}
-              className="w-8 h-8 rounded-xl bg-white/80 hover:bg-white text-slate-500 hover:text-slate-900 flex items-center justify-center transition-colors cursor-pointer shrink-0 border border-slate-200"
+              className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors cursor-pointer shrink-0 border"
               title="Cerrar"
             >
               <X className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Body */}
         <div className="p-6 space-y-5 overflow-y-auto">
           {/* Incident title */}
-          <div className="bg-slate-50 border border-slate-200/70 rounded-xl p-3">
-            <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Incidencia</p>
-            <p className="text-sm text-slate-800 font-medium mt-0.5">{incident.title}</p>
+          <div className="bg-(--surface-subtle) border border-(--border-color)/70 rounded-xl p-3">
+            <p className="text-xs text-(--text-secondary) font-semibold uppercase tracking-wider">Incidencia</p>
+            <p className="text-sm text-(--text-primary) font-medium mt-0.5">{incident.title}</p>
           </div>
 
           {/* Star Rating */}
           <div className="text-center">
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Tu calificación</p>
+            <p className="text-xs font-bold text-(--text-secondary) uppercase tracking-wider mb-3">Tu calificación</p>
             <div className="flex items-center justify-center gap-1.5">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -149,11 +150,11 @@ export default function RateIncidentModal({ isOpen, incident, onClose, onRated }
                     className={`w-9 h-9 transition-colors duration-150 ${
                       star <= activeRating
                         ? activeRating <= 2
-                          ? 'fill-red-400 text-red-400'
+                          ? 'fill-red-400 text-(--tone-red-text-400)'
                           : activeRating === 3
-                            ? 'fill-amber-400 text-amber-400'
-                            : 'fill-emerald-400 text-emerald-400'
-                        : 'fill-transparent text-slate-300 hover:text-amber-300'
+                            ? 'fill-amber-400 text-(--tone-amber-text-400)'
+                            : 'fill-emerald-400 text-(--tone-emerald-text-400)'
+                        : 'fill-transparent text-(--text-secondary) hover:text-(--tone-amber-text-300)'
                     }`}
                   />
                 </button>
@@ -161,7 +162,7 @@ export default function RateIncidentModal({ isOpen, incident, onClose, onRated }
             </div>
             {activeRating > 0 && (
               <p className={`mt-2 text-sm font-semibold transition-colors ${
-                activeRating <= 2 ? 'text-red-500' : activeRating === 3 ? 'text-amber-500' : 'text-emerald-600'
+                activeRating <= 2 ? 'text-(--tone-red-text-500)' : activeRating === 3 ? 'text-(--tone-amber-text-500)' : 'text-(--tone-emerald-text-600)'
               }`}>
                 {STAR_LABELS[activeRating - 1]}
               </p>
@@ -170,14 +171,14 @@ export default function RateIncidentModal({ isOpen, incident, onClose, onRated }
 
           {/* Motivos condicionales para calificación baja / regular */}
           {(isNegative || isNeutral) && (
-            <div className="p-4 bg-red-50/60 border border-red-200/80 rounded-xl space-y-2.5 transition-all">
-              <div className="flex items-center gap-2 text-red-800">
-                <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+            <div className="p-4 bg-(--tone-red-bg-50)/60 border border-(--tone-red-border-200)/80 rounded-xl space-y-2.5 transition-all">
+              <div className="flex items-center gap-2 text-(--tone-red-text-800)">
+                <AlertCircle className="w-4 h-4 shrink-0 text-(--tone-red-text-500)" />
                 <span className="text-xs font-bold uppercase tracking-wider">
-                  ¿Cuál fue el motivo principal? {isNegative && <span className="text-red-600 font-semibold">*</span>}
+                  ¿Cuál fue el motivo principal? {isNegative && <span className="text-(--tone-red-text-600) font-semibold">*</span>}
                 </span>
               </div>
-              <p className="text-xs text-red-700/80">
+              <p className="text-xs text-(--tone-red-text-700)/80">
                 Selecciona la razón para que el equipo pueda auditar el caso:
               </p>
               <div className="flex flex-wrap gap-2 pt-1">
@@ -191,7 +192,7 @@ export default function RateIncidentModal({ isOpen, incident, onClose, onRated }
                       className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer border ${
                         isSelected
                           ? 'bg-red-600 text-white border-red-600 shadow-sm'
-                          : 'bg-white text-slate-700 border-red-200 hover:border-red-300 hover:bg-red-50/50'
+                          : 'bg-(--surface) text-(--text-primary) border-(--tone-red-border-200) hover:border-(--tone-red-border-300) hover:bg-(--tone-red-bg-50)/50'
                       }`}
                     >
                       {motivo}
@@ -204,9 +205,9 @@ export default function RateIncidentModal({ isOpen, incident, onClose, onRated }
 
           {/* Motivos positivos opcionales */}
           {isPositive && (
-            <div className="p-3.5 bg-emerald-50/60 border border-emerald-200/80 rounded-xl space-y-2 transition-all">
-              <div className="flex items-center gap-2 text-emerald-800">
-                <ThumbsUp className="w-3.5 h-3.5 shrink-0 text-emerald-600" />
+            <div className="p-3.5 bg-(--tone-emerald-bg-50)/60 border border-(--tone-emerald-border-200)/80 rounded-xl space-y-2 transition-all">
+              <div className="flex items-center gap-2 text-(--tone-emerald-text-800)">
+                <ThumbsUp className="w-3.5 h-3.5 shrink-0 text-(--tone-emerald-text-600)" />
                 <span className="text-xs font-bold uppercase tracking-wider">¿Qué destacó positivamente?</span>
               </div>
               <div className="flex flex-wrap gap-2 pt-1">
@@ -220,7 +221,7 @@ export default function RateIncidentModal({ isOpen, incident, onClose, onRated }
                       className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer border ${
                         isSelected
                           ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                          : 'bg-white text-slate-700 border-emerald-200 hover:border-emerald-300 hover:bg-emerald-50/50'
+                          : 'bg-(--surface) text-(--text-primary) border-(--tone-emerald-border-200) hover:border-(--tone-emerald-border-300) hover:bg-(--tone-emerald-bg-50)/50'
                       }`}
                     >
                       {motivo}
@@ -233,7 +234,7 @@ export default function RateIncidentModal({ isOpen, incident, onClose, onRated }
 
           {/* Comment */}
           <div>
-            <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+            <label className="flex items-center gap-1.5 text-xs font-bold text-(--text-secondary) uppercase tracking-wider mb-2">
               <MessageSquare className="w-3.5 h-3.5" />
               {isNegative ? 'Comentario adicional' : 'Comentario (opcional)'}
             </label>
@@ -249,14 +250,14 @@ export default function RateIncidentModal({ isOpen, incident, onClose, onRated }
                     ? '¿Tienes algún mensaje de agradecimiento o felicitación para el técnico?'
                     : 'Cuéntanos tu experiencia con la atención recibida...'
               }
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 resize-none transition-all"
+              className="w-full px-4 py-3 bg-(--surface-subtle) border border-(--border-color) rounded-xl text-sm text-(--text-primary) placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 resize-none transition-all"
             />
-            <p className="text-right text-[10px] text-slate-400 mt-1">{comment.length}/500</p>
+            <p className="text-right text-[10px] text-(--text-secondary) mt-1">{comment.length}/500</p>
           </div>
 
           {/* Error */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-2.5 text-xs font-medium flex items-center gap-2">
+            <div className="bg-(--tone-red-bg-50) border border-(--tone-red-border-200) text-(--tone-red-text-700) rounded-xl px-4 py-2.5 text-xs font-medium flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
@@ -264,32 +265,28 @@ export default function RateIncidentModal({ isOpen, incident, onClose, onRated }
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3 shrink-0">
-          <button
+        <div className="px-6 py-4 bg-(--surface-subtle) border-t border-(--border-color) flex items-center justify-end gap-3 shrink-0">
+          <Button variant="cancel" appearance="soft" size="custom"
             type="button"
             onClick={handleClose}
             disabled={submitting}
-            className="px-4 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-50"
+            className="px-4 py-2 text-xs font-bold border rounded-xl transition-colors cursor-pointer disabled:opacity-50"
           >
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button variant="info" appearance="solid" size="custom"
             type="button"
             onClick={handleSubmit}
             disabled={submitting || rating === 0}
-            className={`inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer disabled:cursor-not-allowed ${
-              isNegative
-                ? 'bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white'
-                : 'bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 text-white'
-            }`}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer disabled:cursor-not-allowed"
           >
             {submitting ? (
-              <span className="animate-spin w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full" />
+              <span className="animate-spin w-3.5 h-3.5 border-2 border-(--border-color)/30 border-t-white rounded-full" />
             ) : (
               <Send className="w-3.5 h-3.5" />
             )}
             <span>{submitting ? 'Enviando...' : 'Enviar Calificación'}</span>
-          </button>
+          </Button>
         </div>
       </div>
     </div>

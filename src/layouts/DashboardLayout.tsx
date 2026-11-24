@@ -6,6 +6,7 @@ import { isLoggedIn, logout, onSessionChange, getTimeUntilExpiration } from '../
 export interface MenuContext {
   menuAbierto: boolean;
   abrirMenu: () => void;
+  cambiarMenu: (abierto: boolean) => void;
 }
 
 export default function DashboardLayout() {
@@ -53,7 +54,7 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex">
+    <div className="min-h-screen bg-(--app-bg) flex">
       {menuAbierto && (
         <button
           type="button"
@@ -66,7 +67,7 @@ export default function DashboardLayout() {
       <div
         id="sidebar"
         className={`
-            fixed inset-y-0 left-0 z-50 w-64 h-dvh bg-slate-950
+            fixed inset-y-0 left-0 z-50 w-64 h-dvh bg-(--sidebar-bg)
             md:sticky md:top-0 md:z-auto md:block md:shrink-0
             ${menuAbierto ? 'block' : 'hidden'}
           `}
@@ -74,11 +75,12 @@ export default function DashboardLayout() {
         <Sidebar onClose={() => setMenuAbierto(false)} />
       </div>
 
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-100 min-h-screen">
+      <div className="flex-1 flex flex-col min-w-0 bg-(--app-bg) min-h-screen">
         <Outlet
           context={{
             menuAbierto,
             abrirMenu: () => setMenuAbierto(true),
+            cambiarMenu: setMenuAbierto,
           } satisfies MenuContext}
         />
       </div>

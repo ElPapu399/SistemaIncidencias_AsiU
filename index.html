@@ -9,6 +9,18 @@
       content="ASIU — Sistema de Gestión de Incidencias Universitarias. Reporte, asignación por especialidad y seguimiento técnico de fallas en laboratorios y campus."
     />
     <meta name="theme-color" content="#0f172a" />
+    <script>
+      // Aplica la preferencia antes de pintar para evitar un destello del otro tema.
+      (() => {
+        let preference = 'system';
+        try { preference = localStorage.getItem('asiu-theme') || 'system'; } catch { /* Almacenamiento no disponible. */ }
+        const theme = preference === 'light' || preference === 'dark'
+          ? preference
+          : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = theme;
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#0f172a' : '#f1f5f9');
+      })();
+    </script>
     <meta property="og:title" content="ASIU — Sistema de Incidencias Universitarias" />
     <meta
       property="og:description"

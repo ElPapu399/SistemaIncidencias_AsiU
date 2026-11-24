@@ -1,3 +1,4 @@
+import Button from '../Button';
 import { useState } from 'react';
 import { ArrowRightLeft, X, Loader2 } from 'lucide-react';
 import type { Incident } from '../../types/incident';
@@ -64,59 +65,59 @@ export default function RequestReassignModal({
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
 
       {/* Modal Card */}
-      <div className="relative bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden z-10">
+      <div className="relative bg-(--surface) border border-(--border-color) rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden z-10">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-(--border-color)">
           <div>
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <ArrowRightLeft className="w-5 h-5 text-violet-500" />
+            <h3 className="text-lg font-bold text-(--text-primary) flex items-center gap-2">
+              <ArrowRightLeft className="w-5 h-5 text-(--tone-violet-text-500)" />
               Solicitar Reasignación
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Ticket: <span className="font-mono text-amber-600 font-semibold">{incident.id}</span> — {incident.title}
+            <p className="text-xs text-(--text-secondary) mt-0.5">
+              Ticket: <span className="font-mono text-(--tone-amber-text-600) font-semibold">{incident.id}</span> — {incident.title}
             </p>
           </div>
-          <button
+          <Button variant="cancel" appearance="soft" size="custom"
             onClick={handleClose}
             aria-label="Cerrar modal"
-            className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
 
         {/* Body */}
         <div className="p-6 space-y-4">
           {/* Info de contexto */}
-          <div className="bg-violet-50 p-3.5 rounded-xl border border-violet-200 text-xs space-y-1">
+          <div className="bg-(--tone-violet-bg-50) p-3.5 rounded-xl border border-(--tone-violet-border-200) text-xs space-y-1">
             <p>
-              <strong className="text-slate-600">Categoría:</strong>{' '}
-              <span className="text-slate-800 font-semibold">{incident.category}</span>
+              <strong className="text-(--text-secondary)">Categoría:</strong>{' '}
+              <span className="text-(--text-primary) font-semibold">{incident.category}</span>
             </p>
             <p>
-              <strong className="text-slate-600">Especialidad:</strong>{' '}
-              <span className="text-violet-600 font-semibold">{incident.especialidad || 'General'}</span>
+              <strong className="text-(--text-secondary)">Especialidad:</strong>{' '}
+              <span className="text-(--tone-violet-text-600) font-semibold">{incident.especialidad || 'General'}</span>
             </p>
             <p>
-              <strong className="text-slate-600">Ubicación:</strong>{' '}
-              <span className="text-slate-800 font-semibold">{incident.location}</span>
+              <strong className="text-(--text-secondary)">Ubicación:</strong>{' '}
+              <span className="text-(--text-primary) font-semibold">{incident.location}</span>
             </p>
           </div>
 
           {/* Aviso */}
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800">
+          <div className="bg-(--tone-amber-bg-50) border border-(--tone-amber-border-200) rounded-xl p-3 text-xs text-(--tone-amber-text-800)">
             <strong>Nota:</strong> Al solicitar reasignación, un técnico de soporte o administrador
             revisará tu solicitud y decidirá si aprueba o rechaza la reasignación.
           </div>
 
           {success ? (
-            <div className="text-emerald-600 text-sm bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-4 text-center font-semibold">
+            <div className="text-(--tone-emerald-text-600) text-sm bg-(--tone-emerald-bg-50) border border-(--tone-emerald-border-200) rounded-xl px-4 py-4 text-center font-semibold">
               ✅ Solicitud enviada correctamente. El administrador será notificado.
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-1.5">
                   Motivo de la reasignación *
                 </label>
                 <textarea
@@ -124,30 +125,30 @@ export default function RequestReassignModal({
                   value={motivo}
                   onChange={(e) => setMotivo(e.target.value)}
                   placeholder="Explica por qué necesitas ser reasignado de esta incidencia. Ej: No cuento con la especialidad requerida, necesito herramientas específicas, etc."
-                  className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-violet-500 transition-colors resize-none"
+                  className="w-full bg-(--surface) border border-(--border-color) rounded-xl px-4 py-2.5 text-sm text-(--text-primary) placeholder:text-(--text-secondary) focus:outline-none focus:border-violet-500 transition-colors resize-none"
                   required
                 />
               </div>
 
               {error && (
-                <div className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                <div className="text-(--tone-red-text-600) text-sm bg-(--tone-red-bg-50) border border-(--tone-red-border-200) rounded-xl px-4 py-3">
                   {error}
                 </div>
               )}
 
               {/* Actions */}
-              <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-200">
-                <button
+              <div className="flex items-center justify-end gap-3 pt-2 border-t border-(--border-color)">
+                <Button variant="cancel" appearance="soft" size="custom"
                   type="button"
                   onClick={handleClose}
-                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-white hover:bg-red-500/80 transition-colors"
+                  className="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors"
                 >
                   Cancelar
-                </button>
-                <button
+                </Button>
+                <Button variant="assignment" appearance="solid" size="custom"
                   type="submit"
                   disabled={loading || !motivo.trim()}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-violet-500/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {loading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -157,7 +158,7 @@ export default function RequestReassignModal({
                       Enviar Solicitud
                     </>
                   )}
-                </button>
+                </Button>
               </div>
             </form>
           )}

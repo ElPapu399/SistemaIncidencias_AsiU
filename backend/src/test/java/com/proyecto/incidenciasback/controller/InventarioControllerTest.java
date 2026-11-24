@@ -30,6 +30,7 @@ class InventarioControllerTest {
     @MockBean EquipoRepository equipos;
     @MockBean UbicacionRepository ubicaciones;
     @MockBean UsuarioRepository usuarios;
+    @MockBean IncidenciaRepository incidencias;
     @MockBean HistorialEquipoRepository historial;
     @MockBean AuthHelper auth;
     @MockBean JwtUtil jwt;
@@ -169,6 +170,65 @@ class InventarioControllerTest {
                 .andExpect(status().isCreated()).andExpect(jsonPath("$.id").value(30))
                 .andExpect(jsonPath("$.cantidadPCs").value(0)).andExpect(jsonPath("$.cantidadEquipos").value(0))
                 .andExpect(jsonPath("$.encargado").value("Carlos Mendoza"));
+    }
+
+    @Test void eliminaLaboratorioVacioSinEliminarEquiposNiIncidencias() throws Exception {
+        Ubicacion lab = laboratorio();
+        when(ubicaciones.findById(9)).thenReturn(Optional.of(lab));
+        mvc.perform(delete("/api/laboratorios/9").header("Authorization", "Bearer token"))
+                .andExpect(status().isNoContent()).andExpect(content().string(""));
+        verify(ubicaciones).delete(lab);
+        verify(ubicaciones).flush();
+        verify(equipos, never()).delete(any());
+        verify(incidencias, never()).delete(any());
+    }
+
+    @Test void noEliminaLaboratoriosConEquiposAunqueNoTenganIncidencias() throws Exception {
+        when(ubicaciones.findById(9)).thenReturn(Optional.of(laboratorio()));
+        when(equipos.existsByUbicacionId(9)).thenReturn(true);
+        mvc.perform(delete("/api/laboratorios/9").header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.error").value(
+                        "No se puede eliminar el laboratorio porque tiene equipos o incidencias asociados."));
+        verify(ubicaciones, never()).delete(any());
+    }
+
+    @Test void noEliminaLaboratoriosConIncidenciasInclusoSinEquipos() throws Exception {
+        when(ubicaciones.findById(9)).thenReturn(Optional.of(laboratorio()));
+        when(incidencias.existsByUbicacionId(9)).thenReturn(true);
+        mvc.perform(delete("/api/laboratorios/9").header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest());
+        verify(ubicaciones, never()).delete(any());
+    }
+
+    @Test void rechazaEliminarUbicacionesQueNoSonLaboratoriosYIdsInexistentes() throws Exception {
+        Ubicacion aula = laboratorio(); aula.setTipo("Aula");
+        when(ubicaciones.findById(9)).thenReturn(Optional.of(aula));
+        mvc.perform(delete("/api/laboratorios/9").header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(delete("/api/laboratorios/999").header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest());
+        verify(ubicaciones, never()).delete(any());
+    }
+
+    @Test void soloAdminPuedeEliminarLaboratorios() throws Exception {
+        for (String rol : List.of("ESTUDIANTE", "TECNICO_GENERAL", "TECNICO_ESPECIALISTA")) {
+            sesion(rol);
+            mvc.perform(delete("/api/laboratorios/9").header("Authorization", "Bearer token"))
+                    .andExpect(status().isForbidden());
+        }
+        mvc.perform(delete("/api/laboratorios/9")).andExpect(status().isUnauthorized());
+        verifyNoInteractions(ubicaciones);
+    }
+
+    @Test void unaRelacionCreadaDuranteLaEliminacionSeInformaSinBorrarEnCascada() throws Exception {
+        when(ubicaciones.findById(9)).thenReturn(Optional.of(laboratorio()));
+        doThrow(new org.springframework.dao.DataIntegrityViolationException("FK"))
+                .when(ubicaciones).flush();
+        mvc.perform(delete("/api/laboratorios/9").header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.error").value(
+                        "No se puede eliminar el laboratorio porque tiene registros asociados."));
+        verify(equipos, never()).delete(any());
+        verify(incidencias, never()).delete(any());
     }
 
     @Test void editarLaboratorioConservaIdYNoModificaSusEquipos() throws Exception {

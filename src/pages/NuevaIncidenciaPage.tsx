@@ -202,19 +202,19 @@ export default function NuevaIncidenciaPage() {
         subtitle="Reporta averías o problemas técnicos en laboratorios o aulas del campus universitario."
       />
 
-      <main className="flex-1 overflow-y-auto p-6 bg-slate-100 lg:p-8">
+      <main className="flex-1 overflow-y-auto p-6 bg-(--app-bg) lg:p-8">
         <div className="max-w-3xl w-full mx-auto">
           {success ? (
-            <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center shadow-sm space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center text-3xl">
+            <div className="bg-(--surface) border border-(--border-color) rounded-2xl p-8 text-center shadow-sm space-y-4">
+              <div className="w-16 h-16 rounded-full bg-(--tone-emerald-bg-50) text-(--tone-emerald-text-600) mx-auto flex items-center justify-center text-3xl">
                 <FontAwesomeIcon icon={faCircleCheck} />
               </div>
-              <h3 className="text-xl font-bold text-slate-900">¡Incidencia registrada con éxito!</h3>
-              <p className="text-sm text-slate-600">
+              <h3 className="text-xl font-bold text-(--text-primary)">¡Incidencia registrada con éxito!</h3>
+              <p className="text-sm text-(--text-secondary)">
                 Tu solicitud ha sido enviada al equipo de soporte técnico. Puedes dar seguimiento al estado de atención en tu panel.
               </p>
               <div className="pt-4 flex items-center justify-center gap-3">
-                <button
+                <Button variant="create" appearance="solid" size="custom"
                   type="button"
                   onClick={() => {
                     setSuccess(false);
@@ -225,52 +225,52 @@ export default function NuevaIncidenciaPage() {
                     setUbicacionId(0);
                     handleRemoveFile();
                   }}
-                  className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Registrar otra incidencia
-                </button>
-                <button
+                </Button>
+                <Button variant="info" appearance="soft" size="custom"
                   type="button"
                   onClick={() => navigate('/dashboard/incidencias')}
-                  className="px-6 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-linear-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 transition-all shadow-md shadow-orange-500/10 cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer"
                 >
                   Ver mis incidencias →
-                </button>
+                </Button>
               </div>
             </div>
           ) : (
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-(--surface) border border-(--border-color) rounded-2xl shadow-sm overflow-hidden">
               {/* Card Banner */}
-              <div className="px-6 py-4 border-b border-slate-100 bg-white flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-(--border-color) bg-(--surface) flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <FontAwesomeIcon icon={faPaperPlane} className="text-amber-500 text-sm" />
+                  <h3 className="text-base font-bold text-(--text-primary) flex items-center gap-2">
+                    <FontAwesomeIcon icon={faPaperPlane} className="text-(--tone-amber-text-500) text-sm" />
                     Formulario de Solicitud de Incidencia
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-xs text-(--text-secondary) mt-0.5">
                     Proporciona los datos del equipo o ambiente para que un técnico sea asignado.
                   </p>
                 </div>
-                <button
+                <Button variant="neutral" appearance="text" size="custom"
                   type="button"
                   onClick={() => navigate('/dashboard/incidencias')}
-                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <FontAwesomeIcon icon={faArrowLeft} />
                   <span>Volver</span>
-                </button>
+                </Button>
               </div>
 
               {loading ? (
-                <div className="p-12 text-center text-slate-400">
-                  <FontAwesomeIcon icon={faSpinner} spin className="text-2xl text-amber-500 mb-2" />
+                <div className="p-12 text-center text-(--text-secondary)">
+                  <FontAwesomeIcon icon={faSpinner} spin className="text-2xl text-(--tone-amber-text-500) mb-2" />
                   <p className="text-sm">Cargando formulario...</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
                   {/* Título */}
                   <div>
-                    <label htmlFor="nueva-titulo" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+                    <label htmlFor="nueva-titulo" className="block text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-1.5">
                       Título de la incidencia *
                     </label>
                     <input
@@ -279,21 +279,21 @@ export default function NuevaIncidenciaPage() {
                       value={titulo}
                       onChange={(e) => setTitulo(e.target.value)}
                       placeholder="Ej: Computadora no da vídeo o proyector sin señal"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-colors"
+                      className="w-full bg-(--surface-subtle) border border-(--border-color) rounded-xl px-4 py-2.5 text-sm text-(--text-primary) placeholder:text-(--text-secondary) focus:outline-none focus:border-blue-500 transition-colors"
                     />
                   </div>
 
                   {/* Categoría y Ubicación en 2 columnas */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="nueva-categoria" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+                      <label htmlFor="nueva-categoria" className="block text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-1.5">
                         Categoría de la falla *
                       </label>
                       <select
                         id="nueva-categoria"
                         value={categoriaId}
                         onChange={(e) => handleCategoriaChange(Number(e.target.value))}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-500 transition-colors"
+                        className="w-full bg-(--surface-subtle) border border-(--border-color) rounded-xl px-4 py-2.5 text-sm text-(--text-primary) focus:outline-none focus:border-blue-500 transition-colors"
                       >
                         <option value={0} disabled>
                           Seleccionar categoría
@@ -307,14 +307,14 @@ export default function NuevaIncidenciaPage() {
                     </div>
 
                     <div>
-                      <label htmlFor="nueva-ubicacion" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+                      <label htmlFor="nueva-ubicacion" className="block text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-1.5">
                         Ubicación (Aula o Laboratorio) *
                       </label>
                       <select
                         id="nueva-ubicacion"
                         value={ubicacionId}
                         onChange={(e) => setUbicacionId(Number(e.target.value))}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-blue-500 transition-colors"
+                        className="w-full bg-(--surface-subtle) border border-(--border-color) rounded-xl px-4 py-2.5 text-sm text-(--text-primary) focus:outline-none focus:border-blue-500 transition-colors"
                       >
                         <option value={0} disabled>
                           Seleccionar aula / laboratorio
@@ -330,7 +330,7 @@ export default function NuevaIncidenciaPage() {
 
                   {/* Descripción */}
                   <div>
-                    <label htmlFor="nueva-descripcion" className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+                    <label htmlFor="nueva-descripcion" className="block text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-1.5">
                       Descripción detallada del problema *
                     </label>
                     <textarea
@@ -339,33 +339,33 @@ export default function NuevaIncidenciaPage() {
                       value={descripcion}
                       onChange={(e) => setDescripcion(e.target.value)}
                       placeholder="Indica qué equipo presenta la falla, qué sucede al encenderlo, o cualquier detalle relevante..."
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-colors"
+                      className="w-full bg-(--surface-subtle) border border-(--border-color) rounded-xl px-4 py-2.5 text-sm text-(--text-primary) placeholder:text-(--text-secondary) focus:outline-none focus:border-blue-500 transition-colors"
                     />
                   </div>
 
                   {/* Evidencia Fotográfica */}
                   <div>
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center justify-between">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-1.5 flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
-                        <FontAwesomeIcon icon={faCamera} className="text-amber-600" />
+                        <FontAwesomeIcon icon={faCamera} className="text-(--tone-amber-text-600)" />
                         Evidencia fotográfica (Opcional)
                       </span>
-                      <span className="text-[11px] font-normal text-slate-600">JPG, PNG, WEBP (Máx. 10MB)</span>
+                      <span className="text-[11px] font-normal text-(--text-secondary)">JPG, PNG, WEBP (Máx. 10MB)</span>
                     </div>
 
                     {!previewUrl ? (
-                      <label htmlFor="nueva-evidencia" className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-300 hover:border-amber-600/60 rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-all duration-200 group">
+                      <label htmlFor="nueva-evidencia" className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-(--border-color) hover:border-amber-600/60 rounded-xl cursor-pointer bg-(--surface-subtle) hover:bg-(--surface-muted) transition-all duration-200 group">
                         <div className="flex flex-col items-center justify-center text-center px-4">
-                          <div className="w-9 h-9 rounded-full bg-slate-200 group-hover:bg-amber-500/20 flex items-center justify-center text-slate-600 group-hover:text-amber-800 transition-colors mb-1.5">
+                          <div className="w-9 h-9 rounded-full bg-(--surface-hover) group-hover:bg-amber-500/20 flex items-center justify-center text-(--text-secondary) group-hover:text-(--tone-amber-text-800) transition-colors mb-1.5">
                             <FontAwesomeIcon icon={faCamera} className="text-sm" />
                           </div>
-                          <p className="text-xs text-slate-800 font-medium">
-                            <span className="text-amber-800 font-semibold underline decoration-amber-700/50 underline-offset-2">
+                          <p className="text-xs text-(--text-primary) font-medium">
+                            <span className="text-(--tone-amber-text-800) font-semibold underline decoration-amber-700/50 underline-offset-2">
                               Haz clic para subir una foto
                             </span>{' '}
                             o arrastra aquí
                           </p>
-                          <p className="text-[11px] text-slate-600 mt-0.5">Captura el error, monitor o equipo afectado</p>
+                          <p className="text-[11px] text-(--text-secondary) mt-0.5">Captura el error, monitor o equipo afectado</p>
                         </div>
                         <input
                           id="nueva-evidencia"
@@ -377,8 +377,8 @@ export default function NuevaIncidenciaPage() {
                         />
                       </label>
                     ) : (
-                      <div className="relative flex items-center gap-3 p-3 bg-slate-50 border border-slate-300 rounded-xl overflow-hidden">
-                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-white border border-slate-300 shrink-0 flex items-center justify-center">
+                      <div className="relative flex items-center gap-3 p-3 bg-(--surface-subtle) border border-(--border-color) rounded-xl overflow-hidden">
+                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-(--surface) border border-(--border-color) shrink-0 flex items-center justify-center">
                           <img
                             src={previewUrl}
                             alt="Vista previa"
@@ -386,57 +386,57 @@ export default function NuevaIncidenciaPage() {
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-slate-900 truncate">{archivo?.name}</p>
-                          <p className="text-[11px] text-slate-500 mt-0.5">
+                          <p className="text-xs font-medium text-(--text-primary) truncate">{archivo?.name}</p>
+                          <p className="text-[11px] text-(--text-secondary) mt-0.5">
                             {archivo
                               ? archivo.size / 1024 < 1024
                                 ? `${(archivo.size / 1024).toFixed(1)} KB`
                                 : `${(archivo.size / (1024 * 1024)).toFixed(2)} MB`
                               : ''}
                           </p>
-                          <span className="inline-block px-1.5 py-0.5 mt-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-semibold rounded">
+                          <span className="inline-block px-1.5 py-0.5 mt-0.5 bg-(--tone-emerald-bg-100) text-(--tone-emerald-text-700) text-[10px] font-semibold rounded">
                             Foto lista para adjuntar
                           </span>
                         </div>
-                        <button
+                        <Button variant="danger" appearance="solid" size="custom"
                           type="button"
                           onClick={handleRemoveFile}
                           title="Eliminar imagen"
-                          className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-colors"
+                          className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                         >
                           <FontAwesomeIcon icon={faTrash} className="text-xs" />
-                        </button>
+                        </Button>
                       </div>
                     )}
                   </div>
 
                   {/* Mensaje de error si falla validación */}
                   {error && (
-                    <div className="text-red-700 text-sm bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                    <div className="text-(--tone-red-text-700) text-sm bg-(--tone-red-bg-50) border border-(--tone-red-border-200) rounded-xl px-4 py-3">
                       {error}
                     </div>
                   )}
 
                   {/* Botones de acción */}
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
-                    <span className="text-xs text-slate-500 flex items-center gap-1.5 order-2 sm:order-1">
-                      <FontAwesomeIcon icon={faShieldHalved} className="text-amber-500" />
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-(--border-color)">
+                    <span className="text-xs text-(--text-secondary) flex items-center gap-1.5 order-2 sm:order-1">
+                      <FontAwesomeIcon icon={faShieldHalved} className="text-(--tone-amber-text-500)" />
                       Tu solicitud será procesada por el equipo de soporte de ASIU.
                     </span>
                     <div className="flex items-center gap-3 w-full sm:w-auto justify-end order-1 sm:order-2">
-                      <button
+                      <Button variant="cancel" appearance="soft" size="custom"
                         type="button"
                         onClick={() => navigate('/dashboard/incidencias')}
-                        className="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
+                        className="px-4 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer"
                       >
                         Cancelar
-                      </button>
+                      </Button>
                       <Button
                           text={submitting ? 'Enviando...' : 'Registrar incidencia'}
                           icon={submitting ? <FontAwesomeIcon icon={faSpinner}/> : <FontAwesomeIcon icon={faPaperPlane}/>}
                           type="submit"
                           disabled={submitting}
-                          variant="secondary"
+                          variant="create" size="sm"
                       />
                     </div>
                   </div>

@@ -1,3 +1,4 @@
+import Button from '../Button';
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { X } from 'lucide-react';
@@ -13,7 +14,7 @@ export default function EspecialidadForm({ especialidad, onSave, onClose }: Espe
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const inputClass = 'w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm focus:outline-2 focus:outline-blue-600';
+  const inputClass = 'w-full rounded-xl border border-(--border-color) bg-(--surface-subtle) px-3 py-2 text-sm focus:outline-2 focus:outline-blue-600';
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -42,10 +43,10 @@ export default function EspecialidadForm({ especialidad, onSave, onClose }: Espe
   }
 
   return (
-    <dialog ref={dialogRef} aria-labelledby="especialidad-form-title" onCancel={(event) => { if (saving) event.preventDefault(); else onClose(); }} className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-white p-6 text-left text-slate-900 shadow-xl backdrop:bg-slate-950/50">
+    <dialog ref={dialogRef} aria-labelledby="especialidad-form-title" onCancel={(event) => { if (saving) event.preventDefault(); else onClose(); }} className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl bg-(--surface) p-6 text-left text-(--text-primary) shadow-xl backdrop:bg-slate-950/50">
       <div className="mb-5 flex items-center justify-between gap-4">
         <h3 id="especialidad-form-title" className="text-lg font-bold">{especialidad ? 'Editar especialidad' : 'Nueva especialidad'}</h3>
-        <button type="button" onClick={onClose} disabled={saving} aria-label="Cerrar formulario" className="cursor-pointer rounded-lg p-2 hover:bg-slate-100 disabled:opacity-50"><X className="h-5 w-5" aria-hidden="true" /></button>
+        <Button variant="cancel" appearance="soft" size="custom" type="button" onClick={onClose} disabled={saving} aria-label="Cerrar formulario" className="cursor-pointer rounded-lg p-2 disabled:opacity-50"><X className="h-5 w-5" aria-hidden="true" /></Button>
       </div>
       <form onSubmit={handleSubmit}>
         <fieldset disabled={saving} className="space-y-4">
@@ -57,10 +58,9 @@ export default function EspecialidadForm({ especialidad, onSave, onClose }: Espe
             <span className="block">Descripción (opcional)</span>
             <textarea name="descripcion" rows={3} maxLength={200} defaultValue={especialidad?.descripcion ?? ''} className={`${inputClass} resize-y`} />
           </label>
-          {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
-          <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={onClose} className="cursor-pointer rounded-xl border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50">Cancelar</button>
-            <button type="submit" className="cursor-pointer rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{saving ? 'Guardando…' : 'Guardar especialidad'}</button>
+          {error && <p role="alert" className="text-sm text-(--tone-red-text-700)">{error}</p>}
+          <div className="flex justify-end gap-4 pt-2">
+            <Button variant={especialidad ? 'info' : 'create'} appearance="solid" size="custom" type="submit" className="cursor-pointer rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-50">{saving ? 'Guardando…' : 'Guardar especialidad'}</Button>
           </div>
         </fieldset>
       </form>

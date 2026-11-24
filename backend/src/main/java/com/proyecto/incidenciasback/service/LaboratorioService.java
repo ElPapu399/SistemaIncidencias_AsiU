@@ -4,6 +4,7 @@ import com.proyecto.incidenciasback.dto.LaboratorioRequest;
 import com.proyecto.incidenciasback.dto.LaboratorioResponse;
 import com.proyecto.incidenciasback.model.Ubicacion;
 import com.proyecto.incidenciasback.repository.EquipoRepository;
+import com.proyecto.incidenciasback.repository.IncidenciaRepository;
 import com.proyecto.incidenciasback.repository.UbicacionRepository;
 import com.proyecto.incidenciasback.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,14 @@ public class LaboratorioService {
     private final UbicacionRepository ubicaciones;
     private final EquipoRepository equipos;
     private final UsuarioRepository usuarios;
+    private final IncidenciaRepository incidencias;
 
-    public LaboratorioService(UbicacionRepository ubicaciones, EquipoRepository equipos, UsuarioRepository usuarios) {
+    public LaboratorioService(UbicacionRepository ubicaciones, EquipoRepository equipos, UsuarioRepository usuarios,
+            IncidenciaRepository incidencias) {
         this.ubicaciones = ubicaciones;
         this.equipos = equipos;
         this.usuarios = usuarios;
+        this.incidencias = incidencias;
     }
 
     public List<LaboratorioResponse> listar() {
@@ -77,6 +81,21 @@ public class LaboratorioService {
         laboratorio.setEstado(request.estado());
         laboratorio.setTipo("Laboratorio");
         return obtener(ubicaciones.saveAndFlush(laboratorio).getId());
+    }
+
+    @Transactional
+    public void eliminar(Integer id) {
+        Ubicacion laboratorio = buscar(id);
+        if (equipos.existsByUbicacionId(id) || incidencias.existsByUbicacionId(id)) {
+            throw new IllegalArgumentException("No se puede eliminar el laboratorio porque tiene equipos o incidencias asociados.");
+        }
+        try {
+            ubicaciones.delete(laboratorio);
+            ubicaciones.flush();
+        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+            // Conserva las relaciones incluso si se agregó un registro durante la eliminación.
+            throw new IllegalArgumentException("No se puede eliminar el laboratorio porque tiene registros asociados.", ex);
+        }
     }
 
     private Ubicacion buscar(Integer id) {

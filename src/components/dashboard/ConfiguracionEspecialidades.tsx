@@ -1,3 +1,4 @@
+import Button from '../Button';
 import { useEffect, useState, useMemo } from 'react';
 import { Pencil, Plus } from 'lucide-react';
 import { guardarEspecialidad, obtenerEspecialidades } from '../../services/configuracionService';
@@ -59,9 +60,9 @@ export default function ConfiguracionEspecialidades() {
 
   if (loading) return <TableSkeleton rows={4} showFilters={false} />;
   if (error) return (
-    <div role="alert" className="space-y-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+    <div role="alert" className="space-y-3 rounded-xl border border-(--tone-red-border-200) bg-(--tone-red-bg-50) p-4 text-sm text-(--tone-red-text-700)">
       <p>{error}</p>
-      <button type="button" onClick={() => { setError(''); setLoading(true); setIntento((value) => value + 1); }} className="cursor-pointer font-semibold underline">Reintentar</button>
+      <Button variant="neutral" appearance="text" size="custom" type="button" onClick={() => { setError(''); setLoading(true); setIntento((value) => value + 1); }} className="cursor-pointer font-semibold underline">Reintentar</Button>
     </div>
   );
 
@@ -69,31 +70,31 @@ export default function ConfiguracionEspecialidades() {
     <div className="space-y-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-lg font-bold text-slate-900">Catálogo de Especialidades</h3>
-          <p className="mt-1 text-sm text-slate-500">{especialidades.length} especialidad{especialidades.length !== 1 ? 'es' : ''} registrada{especialidades.length !== 1 ? 's' : ''}</p>
+          <h3 className="text-lg font-bold text-(--text-primary)">Catálogo de Especialidades</h3>
+          <p className="mt-1 text-sm text-(--text-secondary)">{especialidades.length} especialidad{especialidades.length !== 1 ? 'es' : ''} registrada{especialidades.length !== 1 ? 's' : ''}</p>
         </div>
-        <button type="button" onClick={() => { setSeleccionada(null); setMensaje(''); setFormOpen(true); }} className="inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700">
+        <Button variant="create" appearance="solid" size="custom" type="button" onClick={() => { setSeleccionada(null); setMensaje(''); setFormOpen(true); }} className="inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold">
           <Plus className="h-5 w-5" aria-hidden="true" />Nueva especialidad
-        </button>
+        </Button>
       </div>
-      <p role="status" className="text-sm text-emerald-700">{mensaje}</p>
-      {especialidades.length === 0 ? <p className="py-8 text-center text-sm text-slate-500">Aún no hay especialidades registradas. Crea la primera para poder asignarla a categorías y técnicos.</p> : (
-        <div role="region" aria-label="Tabla de especialidades con desplazamiento" tabIndex={0} className="max-h-[min(55dvh,28rem)] overflow-auto overscroll-contain rounded-xl border border-slate-200 [scrollbar-gutter:stable] focus-visible:outline-2 focus-visible:outline-blue-600">
+      <p role="status" className="text-sm text-(--tone-emerald-text-700)">{mensaje}</p>
+      {especialidades.length === 0 ? <p className="py-8 text-center text-sm text-(--text-secondary)">Aún no hay especialidades registradas. Crea la primera para poder asignarla a categorías y técnicos.</p> : (
+        <div role="region" aria-label="Tabla de especialidades con desplazamiento" tabIndex={0} className="max-h-[min(55dvh,28rem)] overflow-auto overscroll-contain rounded-xl border border-(--border-color) [scrollbar-gutter:stable] focus-visible:outline-2 focus-visible:outline-blue-600">
           <table className="w-full min-w-125 text-left text-sm">
             <caption className="sr-only">Especialidades registradas y sus descripciones</caption>
-            <thead className="sticky top-0 z-10 bg-slate-100 text-xs uppercase tracking-wide text-slate-500">
+            <thead className="sticky top-0 z-10 bg-(--surface-muted) text-xs uppercase tracking-wide text-(--text-secondary)">
               <tr>
-                <SortableHeader label="Nombre" field="nombre" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-4" activeColorClass="text-blue-600" />
-                <SortableHeader label="Descripción" field="descripcion" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-4" activeColorClass="text-blue-600" />
+                <SortableHeader label="Nombre" field="nombre" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-4" activeColorClass="text-(--tone-blue-text-600)" />
+                <SortableHeader label="Descripción" field="descripcion" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-5 py-4" activeColorClass="text-(--tone-blue-text-600)" />
                 <th scope="col" className="px-5 py-4 font-semibold text-center">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody className="divide-y divide-(--border-color)">
               {sortedEspecialidades.map((especialidad) => (
-                <tr key={especialidad.id} className="hover:bg-slate-50 transition-colors">
-                  <th scope="row" className="max-w-60 wrap-anywhere px-5 py-5 font-semibold text-slate-900">{especialidad.nombre}</th>
-                  <td className="max-w-lg wrap-anywhere px-5 py-5 text-slate-500">{especialidad.descripcion || 'Sin descripción'}</td>
-                  <td className="px-5 py-5 text-center"><button type="button" onClick={() => { setSeleccionada(especialidad); setMensaje(''); setFormOpen(true); }} aria-label={`Editar especialidad ${especialidad.nombre}`} className="cursor-pointer rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600"><Pencil className="h-5 w-5" aria-hidden="true" /></button></td>
+                <tr key={especialidad.id} className="hover:bg-(--surface-subtle) transition-colors">
+                  <th scope="row" className="max-w-60 wrap-anywhere px-5 py-5 font-semibold text-(--text-primary)">{especialidad.nombre}</th>
+                  <td className="max-w-lg wrap-anywhere px-5 py-5 text-(--text-secondary)">{especialidad.descripcion || 'Sin descripción'}</td>
+                  <td className="px-5 py-5 text-center"><Button variant="info" appearance="soft" size="custom" type="button" onClick={() => { setSeleccionada(especialidad); setMensaje(''); setFormOpen(true); }} aria-label={`Editar especialidad ${especialidad.nombre}`} className="cursor-pointer rounded-lg p-2"><Pencil className="h-5 w-5" aria-hidden="true" /></Button></td>
                 </tr>
               ))}
             </tbody>

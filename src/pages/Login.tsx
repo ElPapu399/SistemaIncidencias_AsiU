@@ -223,14 +223,14 @@ const Login = () => {
         <p className="relative text-blue-200/70 text-xs">© {new Date().getFullYear()} Universidad Tecnológica del Perú · ASIU v1.0</p>
       </div>
 
-      <div className="flex flex-1 flex-col lg:items-center lg:justify-center bg-white px-5 lg:px-0 pt-8 pb-8 lg:py-0">
+      <div className="flex flex-1 flex-col lg:items-center lg:justify-center bg-(--surface) px-5 lg:px-0 pt-8 pb-8 lg:py-0">
         <div className="lg:hidden flex items-center gap-3 mb-8">
           <div className="w-14 h-14 rounded-xl bg-linear-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20 mb-4">
             <FontAwesomeIcon icon={faGraduationCap} className="text-slate-950 text-xl" />
           </div>
           <div>
-            <div className="font-extrabold text-xl text-slate-900">ASIU</div>
-            <p className="text-xs text-slate-600">
+            <div className="font-extrabold text-xl text-(--text-primary)">ASIU</div>
+            <p className="text-xs text-(--text-secondary)">
               Sistema de Incidencias Universitarias
             </p>
           </div>
@@ -239,11 +239,11 @@ const Login = () => {
         <div className="flex flex-1 lg:flex-none items-center justify-center w-full">
           <div className="w-full max-w-md">
             <div className="mb-8">
-              <div className="text-2xl font-bold text-black">{titles[view].heading}</div>
-              <p className="text-black">{titles[view].subtitle}</p>
+              <div className="text-2xl font-bold text-(--text-primary)">{titles[view].heading}</div>
+              <p className="text-(--text-primary)">{titles[view].subtitle}</p>
             </div>
 
-            <div className="bg-gray-900/70 backdrop-blur-xl border border-slate-700/50 p-9 rounded-3xl w-full relative">
+            <div className="bg-(--auth-panel) backdrop-blur-xl border border-slate-700/50 p-9 rounded-3xl w-full relative">
               {view === 'login' && (
                 <form className="space-y-5" onSubmit={handleSubmit}>
                   <div className="relative w-full">
@@ -306,7 +306,8 @@ const Login = () => {
                   <div>
                     <Button
                       type="submit"
-                      variant="primary"
+                      variant="create" size="md" fullWidth
+                      className="shadow-lg shadow-orange-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                       text={loading ? '' : 'Ingresar'}
                       disabled={loading}
                       icon={loading ? <FontAwesomeIcon icon={faSpinner} spin /> : undefined}
@@ -344,7 +345,8 @@ const Login = () => {
                   <div>
                     <Button
                       type="submit"
-                      variant="primary"
+                      variant="create" size="md" fullWidth
+                      className="shadow-lg shadow-orange-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                       text={loading ? '' : 'Enviar código'}
                       disabled={loading}
                       icon={loading ? <FontAwesomeIcon icon={faSpinner} spin /> : undefined}
@@ -436,7 +438,8 @@ const Login = () => {
                   <div>
                     <Button
                       type="submit"
-                      variant="primary"
+                      variant="create" size="md" fullWidth
+                      className="shadow-lg shadow-orange-500/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                       text={loading ? '' : 'Restablecer contraseña'}
                       disabled={loading}
                       icon={loading ? <FontAwesomeIcon icon={faSpinner} spin /> : undefined}

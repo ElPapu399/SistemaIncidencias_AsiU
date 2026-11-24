@@ -39,6 +39,7 @@ const HEADER_USER: TourStep = {
   target: 'header-user-info',
   title: 'Tu sesión',
   content: 'Aquí puedes ver tu nombre y rol actual. Tu sesión se cerrará automáticamente cuando expire el token.',
+  mobileContent: 'Este icono representa tu sesión. Puedes consultar tu información personal en «Perfil», dentro del menú. La sesión se cerrará automáticamente cuando expire el token.',
   position: 'bottom',
 };
 

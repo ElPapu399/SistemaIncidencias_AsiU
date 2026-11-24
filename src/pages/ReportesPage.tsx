@@ -1,3 +1,4 @@
+import Button from '../components/Button';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { BarChart3, CheckCircle2, CircleAlert, Clock3, Download, LoaderCircle, ShieldCheck, Star, TriangleAlert } from 'lucide-react';
 import Header from '../components/dashboard/Header';
@@ -97,13 +98,13 @@ export default function ReportesPage() {
   return (
     <>
       <Header title="Reportes" subtitle="Estadísticas del sistema de incidencias." />
-      <main className="flex-1 space-y-6 bg-slate-100 p-6 text-left lg:p-8">
+      <main className="flex-1 space-y-6 bg-(--app-bg) p-6 text-left lg:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
-            <h1 className="m-0! text-2xl! font-bold! tracking-normal! text-slate-900">
+            <h1 className="m-0! text-2xl! font-bold! tracking-normal! text-(--text-primary)">
               {activeTab === 'metricas' ? 'Reportes y estadísticas' : 'Bitácora de auditoría global'}
             </h1>
-            <p className="mt-1 text-slate-500">
+            <p className="mt-1 text-(--text-secondary)">
               {activeTab === 'metricas'
                 ? 'Análisis y métricas de desempeño del sistema de incidencias'
                 : 'Historial cronológico de cambios de estado, asignaciones y taller'}
@@ -111,32 +112,32 @@ export default function ReportesPage() {
           </div>
           {activeTab === 'metricas' && (
             <div className="ml-auto flex max-w-full flex-wrap items-center justify-end gap-2">
-              <button
+              <Button variant="info" appearance="solid" size="custom"
                 type="button"
                 onClick={exportarReporte}
                 disabled={loading || !!error || exportando}
                 aria-busy={exportando}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
               >
                 {exportando ? <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Download className="h-4 w-4" aria-hidden="true" />}
                 {exportando ? 'Exportando…' : 'Exportar reporte (PDF)'}
-              </button>
+              </Button>
             </div>
           )}
         </div>
-        {activeTab === 'metricas' && errorExportacion && <p role="alert" className="text-sm text-red-700">{errorExportacion}</p>}
+        {activeTab === 'metricas' && errorExportacion && <p role="alert" className="text-sm text-(--tone-red-text-700)">{errorExportacion}</p>}
         <p role="status" className="sr-only">{mensajeExportacion}</p>
 
         {/* Selector de Pestañas */}
-        <div className="border-b border-slate-200">
+        <div className="border-b border-(--border-color)">
           <nav className="flex space-x-4" aria-label="Secciones de reportes">
             <button
               type="button"
               onClick={() => setActiveTab('metricas')}
               className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
                 activeTab === 'metricas'
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
+                  ? 'border-blue-600 text-(--tone-blue-text-600)'
+                  : 'border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border-color)'
               }`}
             >
               <BarChart3 className="w-4 h-4" />
@@ -148,14 +149,14 @@ export default function ReportesPage() {
               onClick={() => setActiveTab('auditoria')}
               className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
                 activeTab === 'auditoria'
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
+                  ? 'border-blue-600 text-(--tone-blue-text-600)'
+                  : 'border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border-color)'
               }`}
             >
               <ShieldCheck className="w-4 h-4" />
               <span>Bitácora de Auditoría</span>
               {auditLoaded && (
-                <span className="ml-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                <span className="ml-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-(--tone-blue-bg-100) text-(--tone-blue-text-700)">
                   {auditLogs.length}
                 </span>
               )}
@@ -174,16 +175,16 @@ export default function ReportesPage() {
           <>
             <StatCardsGridSkeleton count={5} />
             <div className="grid auto-rows-[minmax(340px,auto)] grid-cols-1 gap-6 xl:grid-cols-2">
-              <div className="h-85 rounded-2xl border border-slate-200 bg-white p-6 animate-pulse" />
-              <div className="h-85 rounded-2xl border border-slate-200 bg-white p-6 animate-pulse" />
-              <div className="h-85 rounded-2xl border border-slate-200 bg-white p-6 animate-pulse" />
-              <div className="h-85 rounded-2xl border border-slate-200 bg-white p-6 animate-pulse" />
+              <div className="h-85 rounded-2xl border border-(--border-color) bg-(--surface) p-6 animate-pulse" />
+              <div className="h-85 rounded-2xl border border-(--border-color) bg-(--surface) p-6 animate-pulse" />
+              <div className="h-85 rounded-2xl border border-(--border-color) bg-(--surface) p-6 animate-pulse" />
+              <div className="h-85 rounded-2xl border border-(--border-color) bg-(--surface) p-6 animate-pulse" />
             </div>
           </>
         ) : error ? (
-          <div role="alert" className="space-y-3 rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+          <div role="alert" className="space-y-3 rounded-2xl border border-(--tone-red-border-200) bg-(--tone-red-bg-50) p-6 text-sm text-(--tone-red-text-700)">
             <p>{error}</p>
-            <button type="button" onClick={() => { setError(''); setLoading(true); setIntento((actual) => actual + 1); }} className="cursor-pointer font-semibold underline">Reintentar</button>
+            <Button variant="neutral" appearance="text" size="custom" type="button" onClick={() => { setError(''); setLoading(true); setIntento((actual) => actual + 1); }} className="cursor-pointer font-semibold underline">Reintentar</Button>
           </div>
         ) : (
           <>

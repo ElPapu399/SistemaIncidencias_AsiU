@@ -1,3 +1,4 @@
+import Button from './Button';
 import { useState, useMemo, useEffect } from 'react';
 import { Pencil } from 'lucide-react';
 import SearchBar from "./dashboard/SearchBar";
@@ -15,8 +16,8 @@ interface TechnTableProps {
 }
 
 const ESTADO_BADGES: Record<string, { bg: string; dot: string }> = {
-    Activo: { bg: 'bg-emerald-50 text-emerald-700 border-emerald-300', dot: 'bg-emerald-500' },
-    Inactivo: { bg: 'bg-slate-100 text-slate-500 border-slate-300', dot: 'bg-slate-400' },
+    Activo: { bg: 'bg-(--tone-emerald-bg-50) text-(--tone-emerald-text-700) border-(--tone-emerald-border-300)', dot: 'bg-emerald-500' },
+    Inactivo: { bg: 'bg-(--surface-muted) text-(--text-secondary) border-(--border-color)', dot: 'bg-(--track-color)' },
 };
 
 const matchSearch = (u: User, query: string) => {
@@ -125,8 +126,8 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
     }, [filtered, sortField, sortDirection]);
 
     return (
-        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-            <div className="px-5 py-4 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center gap-3">
+        <div className="bg-(--surface) border border-(--border-color) rounded-2xl overflow-hidden shadow-sm">
+            <div className="px-5 py-4 border-b border-(--border-color) bg-(--surface-subtle) flex flex-wrap items-center gap-3">
                 <div className="flex w-full min-w-0 flex-none items-center gap-2 lg:w-auto lg:flex-1 lg:min-w-50">
                     <div className="flex-1 min-w-50">
                         <SearchBar
@@ -136,17 +137,13 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                         />
                     </div>
                     {hasActiveFilters && (
-                        <button
+                        <Button variant="neutral" appearance="soft" size="custom"
                             type="button"
                             onClick={clearFilters}
-                            className="
-                                shrink-0 whitespace-nowrap px-3 py-2
-                                text-xs font-semibold text-rose-600
-                                bg-rose-50 hover:bg-rose-100 border
-                                border-rose-200 rounded-xl transition-colors cursor-pointer sm:hidden"
+                            className="shrink-0 whitespace-nowrap px-3 py-2 text-xs font-semibold border rounded-xl transition-colors cursor-pointer sm:hidden"
                         >   
                             Limpiar
-                        </button>
+                        </Button>
                     )}
                 </div>
 
@@ -155,7 +152,7 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                         aria-label="Filtrar por estado"
                         value={filterEstado}
                         onChange={e => setFilterEstado(e.target.value)}
-                        className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
+                        className="px-3 py-2 text-xs font-medium text-(--text-primary) bg-(--surface) border border-(--border-color) rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
                     >
                         <option value="">Todos los estados</option>
                         {hasActivo && <option value="Activo">Activo</option>}
@@ -165,7 +162,7 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                         aria-label="Filtrar por especialidad"
                         value={filterEspecialidad}
                         onChange={e => setFilterEspecialidad(e.target.value)}
-                        className="px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
+                        className="px-3 py-2 text-xs font-medium text-(--text-primary) bg-(--surface) border border-(--border-color) rounded-xl focus:outline-none focus:border-blue-400 transition-colors cursor-pointer"
                     >
                         <option value="">Todas las especialidades</option>
                         {availableEspecialidades.map(e => (
@@ -175,65 +172,65 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                 </div>
 
                 {hasActiveFilters && (
-                    <button
+                    <Button variant="neutral" appearance="soft" size="custom"
                         type="button"
                         onClick={clearFilters}
-                        className="px-3 py-2 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-colors cursor-pointer hidden sm:inline-flex"
+                        className="px-3 py-2 text-xs font-semibold border rounded-xl transition-colors cursor-pointer hidden sm:inline-flex"
                     >   
                         Limpiar
-                    </button>
+                    </Button>
                 )}
             </div>
 
             <div className="overflow-x-auto overflow-y-auto max-h-130">
                 <table className="w-full text-left">
-                    <thead className="sticky top-0 bg-slate-50 z-10">
-                        <tr className="border-b border-slate-200 bg-slate-50">
-                            <SortableHeader label="Usuario" field="nombre" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
-                            <SortableHeader label="Correo" field="correo" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
-                            <SortableHeader label="Especialidad" field="especialidad" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
-                            <SortableHeader label="Estado" field="estado" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
-                            <SortableHeader label="Teléfono" field="telefono" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-violet-600" />
-                            <th scope="col" className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">Acciones</th>
+                    <thead className="sticky top-0 bg-(--surface-subtle) z-10">
+                        <tr className="border-b border-(--border-color) bg-(--surface-subtle)">
+                            <SortableHeader label="Usuario" field="nombre" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-(--tone-violet-text-600)" />
+                            <SortableHeader label="Correo" field="correo" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-(--tone-violet-text-600)" />
+                            <SortableHeader label="Especialidad" field="especialidad" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-(--tone-violet-text-600)" />
+                            <SortableHeader label="Estado" field="estado" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-(--tone-violet-text-600)" />
+                            <SortableHeader label="Teléfono" field="telefono" currentSortField={sortField} currentDirection={sortDirection} onSort={handleSort} className="px-6 py-4" activeColorClass="text-(--tone-violet-text-600)" />
+                            <th scope="col" className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--text-secondary) text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-(--border-color)">
                         {sortedTecnicos.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-500">
+                                <td colSpan={6} className="px-6 py-12 text-center text-sm text-(--text-secondary)">
                                     No se encontraron técnicos con los filtros seleccionados.
                                 </td>
                             </tr>
                         ) : (
                             sortedTecnicos.map(user => {
-                                const badge = ESTADO_BADGES[user.estado] || { bg: 'bg-slate-100 text-slate-500 border-slate-300', dot: 'bg-slate-400' };
+                                const badge = ESTADO_BADGES[user.estado] || { bg: 'bg-(--surface-muted) text-(--text-secondary) border-(--border-color)', dot: 'bg-(--track-color)' };
                                 return (
-                                    <tr key={user.id} className="hover:bg-slate-50 transition-colors">
+                                    <tr key={user.id} className="hover:bg-(--surface-subtle) transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-9 h-9 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
                                                     {user.nombre.charAt(0)}{user.apellido.charAt(0)}
                                                 </div>
-                                                <p className="text-sm font-semibold text-slate-900">
+                                                <p className="text-sm font-semibold text-(--text-primary)">
                                                     {user.nombre} {user.apellido}
                                                 </p>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <p className="text-sm text-slate-600">{user.correo}</p>
+                                            <p className="text-sm text-(--text-secondary)">{user.correo}</p>
                                         </td>
                                         <td className="px-6 py-4">
                                             {user.rol === 'TECNICO_GENERAL' ? (
                                                 <div>
-                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-(--tone-blue-bg-50) text-(--tone-blue-text-700) border border-(--tone-blue-border-200)">
                                                         Soporte General
                                                     </span>
-                                                    <p className="text-[11px] text-slate-400 mt-0.5">Mesa de ayuda / Asignador</p>
+                                                    <p className="text-[11px] text-(--text-secondary) mt-0.5">Mesa de ayuda / Asignador</p>
                                                 </div>
                                             ) : (
                                                 <div>
-                                                    <p className="text-sm font-semibold text-slate-800">{user.especialidad || 'General'}</p>
-                                                    <span className="text-[11px] text-amber-700 font-medium">Soporte Especializado</span>
+                                                    <p className="text-sm font-semibold text-(--text-primary)">{user.especialidad || 'General'}</p>
+                                                    <span className="text-[11px] text-(--tone-amber-text-700) font-medium">Soporte Especializado</span>
                                                 </div>
                                             )}
                                         </td>
@@ -246,17 +243,17 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <p className="text-sm text-slate-500">{user.telefono || '—'}</p>
+                                            <p className="text-sm text-(--text-secondary)">{user.telefono || '—'}</p>
                                         </td>
                                         <td className="px-6 py-4 text-center">
-                                            <button
+                                            <Button variant="info" appearance="soft" size="custom"
                                                 type="button"
                                                 onClick={() => onEdit(user)}
-                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors cursor-pointer"
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer"
                                             >
                                                 <Pencil className="h-3.5 w-3.5" />
                                                 Editar
-                                            </button>
+                                            </Button>
                                         </td>
                                     </tr>
                                 );
@@ -265,7 +262,7 @@ export default function TechnTable({ usuarios, onEdit }: TechnTableProps) {
                     </tbody>
                 </table>
             </div>
-            <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
+            <div className="px-5 py-3 bg-(--surface-subtle) border-t border-(--border-color) text-xs text-(--text-secondary) flex items-center justify-between">
                 <span>Mostrando {sortedTecnicos.length} de {totalTecnicos} técnicos</span>
             </div>
         </div>

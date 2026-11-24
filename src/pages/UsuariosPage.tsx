@@ -96,14 +96,14 @@ export default function UsuariosPage({
   return (
     <>
       <Header title={title} subtitle={description} />
-      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-100">
+      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-(--app-bg)">
         {/* Encabezado y Acción */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="text-left">
-            <h3 className="text-2xl font-bold text-slate-900">
+        <div className="flex items-start justify-between gap-3 sm:items-center sm:gap-4">
+          <div className="min-w-0 flex-1 text-left">
+            <h3 className="text-2xl font-bold text-(--text-primary)">
               {isEstudiantes ? 'Directorio de Estudiantes' : 'Directorio de Personal Técnico'}
             </h3>
-            <p className="text-sm text-slate-500 mt-0.5">
+            <p className="text-sm text-(--text-secondary) mt-0.5">
               {totalCount} {isEstudiantes ? 'estudiante' : 'técnico'}{totalCount !== 1 ? 's' : ''} registrado{totalCount !== 1 ? 's' : ''} en el sistema
             </p>
           </div>
@@ -113,27 +113,29 @@ export default function UsuariosPage({
             ariaLabel={isEstudiantes ? 'Nuevo Estudiante' : 'Nuevo Técnico'}
             type="button"
             onClick={handleCreate}
-            variant="secondary"
+            variant="create"
+            iconOnly
+            className="text-sm font-bold"
           />
         </div>
 
         {/* Selector de Pestañas */}
-        <div className="border-b border-slate-200">
+        <div className="border-b border-(--border-color)">
           <nav className="flex space-x-4" aria-label="Pestañas de usuarios">
             <button
               type="button"
               onClick={() => handleTabChange('estudiantes')}
               className={`flex items-center gap-2.5 px-4 py-3 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
                 isEstudiantes
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
+                  ? 'border-blue-600 text-(--tone-blue-text-600)'
+                  : 'border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border-color)'
               }`}
             >
               <GraduationCap className="w-4 h-4 text-base" />
               <span>Estudiantes</span>
               <span
                 className={`ml-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
-                  isEstudiantes ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-600'
+                  isEstudiantes ? 'bg-(--tone-blue-bg-100) text-(--tone-blue-text-700)' : 'bg-(--surface-hover) text-(--text-secondary)'
                 }`}
               >
                 {estudiantes.length}
@@ -145,15 +147,15 @@ export default function UsuariosPage({
               onClick={() => handleTabChange('tecnicos')}
               className={`flex items-center gap-2.5 px-4 py-3 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
                 !isEstudiantes
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
+                  ? 'border-blue-600 text-(--tone-blue-text-600)'
+                  : 'border-transparent text-(--text-secondary) hover:text-(--text-primary) hover:border-(--border-color)'
               }`}
             >
               <Wrench className="w-4 h-4 text-base" />
               <span>Personal Técnico</span>
               <span
                 className={`ml-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
-                  !isEstudiantes ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-600'
+                  !isEstudiantes ? 'bg-(--tone-blue-bg-100) text-(--tone-blue-text-700)' : 'bg-(--surface-hover) text-(--text-secondary)'
                 }`}
               >
                 {tecnicos.length}
@@ -164,7 +166,7 @@ export default function UsuariosPage({
 
         {/* Mensaje de error si ocurre */}
         {error && (
-          <div className="text-red-600 text-sm bg-red-100 border border-red-300 rounded-xl px-4 py-3 text-left">
+          <div className="text-(--tone-red-text-600) text-sm bg-(--tone-red-bg-100) border border-(--tone-red-border-300) rounded-xl px-4 py-3 text-left">
             {error}
           </div>
         )}
@@ -174,12 +176,12 @@ export default function UsuariosPage({
           <TableSkeleton rows={5} showFilters={true} />
         ) : isEstudiantes ? (
           estudiantes.length === 0 ? (
-            <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-                <Users className="w-8 h-8 text-slate-400" />
+            <div className="text-center py-20 bg-(--surface) rounded-2xl border border-(--border-color)">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-(--surface-muted) flex items-center justify-center mb-4">
+                <Users className="w-8 h-8 text-(--text-secondary)" />
               </div>
-              <h4 className="text-lg font-semibold text-slate-900">Sin estudiantes registrados</h4>
-              <p className="text-sm text-slate-500 mt-1">
+              <h4 className="text-lg font-semibold text-(--text-primary)">Sin estudiantes registrados</h4>
+              <p className="text-sm text-(--text-secondary) mt-1">
                 Aún no hay estudiantes registrados en el sistema. Puedes añadir uno nuevo.
               </p>
             </div>
@@ -189,12 +191,12 @@ export default function UsuariosPage({
             </div>
           )
         ) : tecnicos.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-              <Users className="w-8 h-8 text-slate-400" />
+          <div className="text-center py-20 bg-(--surface) rounded-2xl border border-(--border-color)">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-(--surface-muted) flex items-center justify-center mb-4">
+              <Users className="w-8 h-8 text-(--text-secondary)" />
             </div>
-            <h4 className="text-lg font-semibold text-slate-900">Sin técnicos registrados</h4>
-            <p className="text-sm text-slate-500 mt-1">
+            <h4 className="text-lg font-semibold text-(--text-primary)">Sin técnicos registrados</h4>
+            <p className="text-sm text-(--text-secondary) mt-1">
               Aún no hay personal técnico registrado en el sistema. Puedes añadir uno nuevo.
             </p>
           </div>

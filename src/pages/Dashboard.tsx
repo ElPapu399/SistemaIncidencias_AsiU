@@ -59,18 +59,18 @@ export default function Dashboard() {
   }, [incidencias, isEstudiante, usuario?.id]);
 
   const statCards = [
-    { title: 'Total', value: total, icon: faClipboardList, trend: 'Incidencias registradas', accent: 'bg-violet-500/15 text-violet-400' },
-    { title: 'Pendientes', value: pendientes, icon: faClock, trend: 'Requieren asignación', accent: 'bg-amber-500/15 text-amber-400' },
-    { title: 'En atención', value: enProceso, icon: faSpinner, trend: 'En seguimiento activo', accent: 'bg-blue-500/15 text-blue-400' },
-    { title: 'Resueltas', value: resueltas, icon: faCircleCheck, trend: `${total > 0 ? Math.round((resueltas / total) * 100) : 0}% del total`, accent: 'bg-emerald-500/15 text-emerald-400' },
-    ...(!isEstudiante ? [{ title: 'Alta prioridad', value: altas, icon: faTriangleExclamation, trend: 'Atención prioritaria', accent: 'bg-rose-500/15 text-rose-400' }] : []),
+    { title: 'Total', value: total, icon: faClipboardList, trend: 'Incidencias registradas', accent: 'bg-violet-500/15 text-(--tone-violet-text-400)' },
+    { title: 'Pendientes', value: pendientes, icon: faClock, trend: 'Requieren asignación', accent: 'bg-amber-500/15 text-(--tone-amber-text-400)' },
+    { title: 'En atención', value: enProceso, icon: faSpinner, trend: 'En seguimiento activo', accent: 'bg-blue-500/15 text-(--tone-blue-text-400)' },
+    { title: 'Resueltas', value: resueltas, icon: faCircleCheck, trend: `${total > 0 ? Math.round((resueltas / total) * 100) : 0}% del total`, accent: 'bg-emerald-500/15 text-(--tone-emerald-text-400)' },
+    ...(!isEstudiante ? [{ title: 'Alta prioridad', value: altas, icon: faTriangleExclamation, trend: 'Atención prioritaria', accent: 'bg-rose-500/15 text-(--tone-rose-text-400)' }] : []),
   ];
 
   return (
     <>
       <Header title="Panel principal" subtitle="Resumen de incidencias universitarias" />
 
-      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-100">
+      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-(--app-bg) text-(--text-primary)">
         <RoleWelcomeBanner nombre={usuario?.nombre} rol={usuario?.rol} />
 
         {loading ? (
@@ -88,7 +88,7 @@ export default function Dashboard() {
             </div>
           </>
         ) : error ? (
-          <div className="bg-red-100 text-red-700 p-4 rounded-lg">{error}</div>
+          <div className="bg-(--tone-red-bg-100) text-(--tone-red-text-700) p-4 rounded-lg">{error}</div>
         ) : (
           <>
             <div

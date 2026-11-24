@@ -31,7 +31,7 @@ async function consultar<T>(endpoint: string, options?: RequestInit): Promise<T>
     const data = await response.json().catch(() => null);
     throw new Error(data?.error ?? 'No se pudo completar la operación. Verifica que el backend esté actualizado.');
   }
-  return response.json();
+  return response.status === 204 ? undefined as T : response.json();
 }
 
 function laboratorioDesdeDto(data: LaboratorioDto): Laboratorio {
@@ -56,6 +56,10 @@ export async function guardarLaboratorio(datos: LaboratorioFormulario, id?: stri
 
 export function obtenerEncargadosLaboratorio() {
   return consultar<{ id: number; nombre: string }[]>('/laboratorios/encargados');
+}
+
+export function eliminarLaboratorio(id: string) {
+  return consultar<void>(`/laboratorios/${encodeURIComponent(id)}`, { method: 'DELETE' });
 }
 
 export function obtenerEquiposLaboratorio(id: string) {

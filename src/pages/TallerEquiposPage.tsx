@@ -29,10 +29,10 @@ const ESTADOS_DISPONIBLES: EstadoEquipo[] = [
 ];
 
 const BADGE_ESTADOS: Record<string, { bg: string; text: string; border: string }> = {
-  Operativo: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
-  'En reparación': { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
-  Mantenimiento: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
-  'Dado de baja': { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200' },
+  Operativo: { bg: 'bg-(--tone-emerald-bg-50)', text: 'text-(--tone-emerald-text-700)', border: 'border-(--tone-emerald-border-200)' },
+  'En reparación': { bg: 'bg-(--tone-orange-bg-50)', text: 'text-(--tone-orange-text-700)', border: 'border-(--tone-orange-border-200)' },
+  Mantenimiento: { bg: 'bg-(--tone-amber-bg-50)', text: 'text-(--tone-amber-text-700)', border: 'border-(--tone-amber-border-200)' },
+  'Dado de baja': { bg: 'bg-(--tone-rose-bg-50)', text: 'text-(--tone-rose-text-700)', border: 'border-(--tone-rose-border-200)' },
 };
 
 export default function TallerEquiposPage() {
@@ -169,53 +169,53 @@ export default function TallerEquiposPage() {
         subtitle="Supervisión de hardware del campus que requiere mantenimiento o reparación técnica."
       />
 
-      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-100 text-left">
+      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-(--app-bg) text-left">
         {/* Banner de Métricas Rápidas */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
+          <div className="bg-(--surface) rounded-2xl p-4 border border-(--border-color) shadow-xs">
+            <span className="text-xs font-bold uppercase tracking-wider text-(--text-secondary)">
               Equipos Afectados
             </span>
-            <div className="text-2xl font-bold text-amber-600 mt-1">
+            <div className="text-2xl font-bold text-(--tone-amber-text-600) mt-1">
               {metricas.afectados}
             </div>
-            <p className="text-[11px] text-slate-600 mt-0.5">
+            <p className="text-[11px] text-(--text-secondary) mt-0.5">
               Requieren atención técnica
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
+          <div className="bg-(--surface) rounded-2xl p-4 border border-(--border-color) shadow-xs">
+            <span className="text-xs font-bold uppercase tracking-wider text-(--text-secondary)">
               En Reparación
             </span>
-            <div className="text-2xl font-bold text-orange-600 mt-1">
+            <div className="text-2xl font-bold text-(--tone-orange-text-600) mt-1">
               {metricas.enReparacion}
             </div>
-            <p className="text-[11px] text-slate-600 mt-0.5">
+            <p className="text-[11px] text-(--text-secondary) mt-0.5">
               Intervención en curso
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
+          <div className="bg-(--surface) rounded-2xl p-4 border border-(--border-color) shadow-xs">
+            <span className="text-xs font-bold uppercase tracking-wider text-(--text-secondary)">
               En Mantenimiento
             </span>
-            <div className="text-2xl font-bold text-amber-600 mt-1">
+            <div className="text-2xl font-bold text-(--tone-amber-text-600) mt-1">
               {metricas.mantenimiento}
             </div>
-            <p className="text-[11px] text-slate-600 mt-0.5">
+            <p className="text-[11px] text-(--text-secondary) mt-0.5">
               Preventivo o revisión
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
+          <div className="bg-(--surface) rounded-2xl p-4 border border-(--border-color) shadow-xs">
+            <span className="text-xs font-bold uppercase tracking-wider text-(--text-secondary)">
               Operativos
             </span>
-            <div className="text-2xl font-bold text-emerald-600 mt-1">
+            <div className="text-2xl font-bold text-(--tone-emerald-text-600) mt-1">
               {metricas.operativos}
             </div>
-            <p className="text-[11px] text-slate-600 mt-0.5">
+            <p className="text-[11px] text-(--text-secondary) mt-0.5">
               Disponibles en el campus
             </p>
           </div>
@@ -223,17 +223,17 @@ export default function TallerEquiposPage() {
 
         {/* Notificación de éxito */}
         {mensajeExito && (
-          <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2">
-            <FontAwesomeIcon icon={faCircleCheck} className="text-emerald-600" />
+          <div className="p-3.5 bg-(--tone-emerald-bg-50) border border-(--tone-emerald-border-200) text-(--tone-emerald-text-800) rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2">
+            <FontAwesomeIcon icon={faCircleCheck} className="text-(--tone-emerald-text-600)" />
             <span>{mensajeExito}</span>
           </div>
         )}
 
         {/* Barra de Filtros */}
-        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+        <div className="bg-(--surface) rounded-2xl p-4 border border-(--border-color) shadow-xs space-y-3">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-(--text-secondary)">
                 <FontAwesomeIcon icon={faMagnifyingGlass} className="text-sm" />
               </div>
               <input
@@ -241,7 +241,7 @@ export default function TallerEquiposPage() {
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
                 placeholder="Buscar por código (ej. PC-01), laboratorio, marca o tipo..."
-                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white transition-colors"
+                className="w-full pl-10 pr-4 py-2 bg-(--surface-subtle) border border-(--border-color) rounded-xl text-xs sm:text-sm text-(--text-primary) placeholder:text-(--text-secondary) focus:outline-none focus:border-blue-600 focus:bg-(--surface) transition-colors"
               />
             </div>
 
@@ -252,7 +252,7 @@ export default function TallerEquiposPage() {
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors border ${
                   filtroEstado === 'afectados'
                     ? 'bg-amber-600 text-white border-amber-600'
-                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                    : 'bg-(--surface-subtle) text-(--text-secondary) border-(--border-color) hover:bg-(--surface-muted)'
                 }`}
               >
                 Solo Afectados ({metricas.afectados})
@@ -264,7 +264,7 @@ export default function TallerEquiposPage() {
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors border ${
                   filtroEstado === 'todos'
                     ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                    : 'bg-(--surface-subtle) text-(--text-secondary) border-(--border-color) hover:bg-(--surface-muted)'
                 }`}
               >
                 Todos ({metricas.total})
@@ -276,7 +276,7 @@ export default function TallerEquiposPage() {
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors border ${
                   filtroEstado === 'Operativo'
                     ? 'bg-emerald-600 text-white border-emerald-600'
-                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                    : 'bg-(--surface-subtle) text-(--text-secondary) border-(--border-color) hover:bg-(--surface-muted)'
                 }`}
               >
                 Operativos ({metricas.operativos})
@@ -289,24 +289,24 @@ export default function TallerEquiposPage() {
         {loading ? (
           <TableSkeleton rows={6} showFilters={true} />
         ) : equiposFiltrados.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 p-6">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center mb-3">
-              <FontAwesomeIcon icon={faComputer} className="text-2xl text-slate-400" />
+          <div className="text-center py-16 bg-(--surface) rounded-2xl border border-(--border-color) p-6">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-(--surface-muted) flex items-center justify-center mb-3">
+              <FontAwesomeIcon icon={faComputer} className="text-2xl text-(--text-secondary)" />
             </div>
-            <h4 className="text-base font-bold text-slate-800">
+            <h4 className="text-base font-bold text-(--text-primary)">
               No hay equipos para mostrar
             </h4>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-(--text-secondary) mt-1">
               {filtroEstado === 'afectados'
                 ? '¡Excelente! No hay equipos averiados ni en mantenimiento actualmente.'
                 : 'No se encontraron equipos que coincidan con los filtros seleccionados.'}
             </p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+          <div className="bg-(--surface) rounded-2xl border border-(--border-color) overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs sm:text-sm">
-                <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
+                <thead className="bg-(--surface-subtle) text-(--text-secondary) font-semibold border-b border-(--border-color) text-xs uppercase tracking-wider">
                   <tr>
                     <th className="px-5 py-3.5">Equipo</th>
                     <th className="px-5 py-3.5">Ubicación</th>
@@ -315,26 +315,26 @@ export default function TallerEquiposPage() {
                     <th className="px-5 py-3.5 text-center">Acciones de Campo</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
+                <tbody className="divide-y divide-(--border-color) text-(--text-primary)">
                   {equiposFiltrados.map((equipo) => {
                     const badge = BADGE_ESTADOS[equipo.estado] || {
-                      bg: 'bg-slate-50',
-                      text: 'text-slate-600',
-                      border: 'border-slate-200',
+                      bg: 'bg-(--surface-subtle)',
+                      text: 'text-(--text-secondary)',
+                      border: 'border-(--border-color)',
                     };
                     const incAsociada = incidenciasPorEquipo.get(equipo.codigo);
                     const estaAfectado = equipo.estado !== 'Operativo';
 
                     return (
-                      <tr key={equipo.id} className="hover:bg-slate-50/60 transition-colors">
+                      <tr key={equipo.id} className="hover:bg-(--surface-subtle)/60 transition-colors">
                         <td className="px-5 py-3.5 font-medium">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-(--tone-blue-bg-50) text-(--tone-blue-text-600) flex items-center justify-center shrink-0">
                               <FontAwesomeIcon icon={faComputer} className="text-xs" />
                             </div>
                             <div>
-                              <div className="font-bold text-slate-900">{equipo.codigo}</div>
-                              <div className="text-[11px] text-slate-400">
+                              <div className="font-bold text-(--text-primary)">{equipo.codigo}</div>
+                              <div className="text-[11px] text-(--text-secondary)">
                                 {equipo.tipo} {equipo.marca ? `• ${equipo.marca}` : ''}
                               </div>
                             </div>
@@ -342,7 +342,7 @@ export default function TallerEquiposPage() {
                         </td>
 
                         <td className="px-5 py-3.5">
-                          <span className="font-medium text-slate-800">
+                          <span className="font-medium text-(--text-primary)">
                             {equipo.ubicacionTexto || 'Sin ubicación'}
                           </span>
                         </td>
@@ -358,16 +358,16 @@ export default function TallerEquiposPage() {
                         <td className="px-5 py-3.5">
                           {incAsociada ? (
                             <div className="space-y-0.5">
-                              <span className="inline-flex items-center gap-1 font-mono text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                              <span className="inline-flex items-center gap-1 font-mono text-[11px] font-bold text-(--tone-amber-text-700) bg-(--tone-amber-bg-50) px-2 py-0.5 rounded border border-(--tone-amber-border-200)">
                                 <FontAwesomeIcon icon={faTriangleExclamation} className="text-[10px]" />
                                 {incAsociada.id}
                               </span>
-                              <p className="text-[11px] text-slate-500 truncate max-w-xs">
+                              <p className="text-[11px] text-(--text-secondary) truncate max-w-xs">
                                 {incAsociada.title}
                               </p>
                             </div>
                           ) : (
-                            <span className="text-slate-400 text-xs italic">
+                            <span className="text-(--text-secondary) text-xs italic">
                               Sin ticket activo
                             </span>
                           )}
@@ -376,25 +376,25 @@ export default function TallerEquiposPage() {
                         <td className="px-5 py-3.5 text-center">
                           <div className="flex items-center justify-center gap-2">
                             {estaAfectado && (
-                              <button
+                              <Button variant="success" appearance="soft" size="custom"
                                 type="button"
                                 onClick={() => abrirModalCambio(equipo, 'Operativo')}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 transition-colors cursor-pointer"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer"
                                 title="Marcar como reparado y operativo"
                               >
                                 <FontAwesomeIcon icon={faCheckCircle} className="text-xs" />
                                 <span>Operativo</span>
-                              </button>
+                              </Button>
                             )}
-                            <button
+                            <Button variant="success" appearance="soft" size="custom"
                               type="button"
                               onClick={() => abrirModalCambio(equipo)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 transition-colors cursor-pointer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer"
                               title="Cambiar estado y registrar diagnóstico"
                             >
-                              <FontAwesomeIcon icon={faWrench} className="text-xs text-slate-500" />
+                              <FontAwesomeIcon icon={faWrench} className="text-xs " />
                               <span>Actualizar</span>
-                            </button>
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -404,7 +404,7 @@ export default function TallerEquiposPage() {
               </table>
             </div>
 
-            <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500">
+            <div className="px-5 py-3 bg-(--surface-subtle) border-t border-(--border-color) text-xs text-(--text-secondary)">
               Mostrando {equiposFiltrados.length} de {equipos.length} equipos registrados
             </div>
           </div>
@@ -413,45 +413,45 @@ export default function TallerEquiposPage() {
         {/* Modal de Cambio de Estado */}
         {modalAbierto && equipoSeleccionado && (
           <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="bg-(--surface) rounded-2xl max-w-md w-full p-6 shadow-2xl border border-(--border-color) space-y-4">
+              <div className="flex items-center justify-between border-b border-(--border-color) pb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-(--tone-blue-bg-100) text-(--tone-blue-text-700) flex items-center justify-center">
                     <FontAwesomeIcon icon={faWrench} className="text-sm" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-slate-900">
+                    <h3 className="text-base font-bold text-(--text-primary)">
                       Actualizar Estado Técnico
                     </h3>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-(--text-secondary)">
                       {equipoSeleccionado.codigo} • {equipoSeleccionado.ubicacionTexto}
                     </p>
                   </div>
                 </div>
-                <button
+                <Button variant="cancel" appearance="soft" size="custom"
                   type="button"
                   onClick={() => setModalAbierto(false)}
-                  className="text-slate-400 hover:text-slate-600 text-sm p-1 cursor-pointer"
+                  className="text-sm p-1 cursor-pointer"
                 >
                   <FontAwesomeIcon icon={faXmark} />
-                </button>
+                </Button>
               </div>
 
               {error && (
-                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs">
+                <div className="p-3 bg-(--tone-rose-bg-50) border border-(--tone-rose-border-200) text-(--tone-rose-text-700) rounded-xl text-xs">
                   {error}
                 </div>
               )}
 
               <form onSubmit={handleGuardarEstado} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-(--text-primary) uppercase tracking-wider mb-1.5">
                     Nuevo Estado del Equipo
                   </label>
                   <select
                     value={nuevoEstado}
                     onChange={(e) => setNuevoEstado(e.target.value as EstadoEquipo)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white"
+                    className="w-full px-3 py-2 bg-(--surface-subtle) border border-(--border-color) rounded-xl text-sm text-(--text-primary) focus:outline-none focus:border-blue-600 focus:bg-(--surface)"
                   >
                     {ESTADOS_DISPONIBLES.map((est) => (
                       <option key={est} value={est}>
@@ -462,7 +462,7 @@ export default function TallerEquiposPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-(--text-primary) uppercase tracking-wider mb-1.5">
                     Motivo / Diagnóstico de Campo *
                   </label>
                   <textarea
@@ -471,25 +471,25 @@ export default function TallerEquiposPage() {
                     value={motivo}
                     onChange={(e) => setMotivo(e.target.value)}
                     placeholder="Describe la reparación realizada, cambio de piezas o motivo del mantenimiento..."
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white resize-none"
+                    className="w-full px-3 py-2 bg-(--surface-subtle) border border-(--border-color) rounded-xl text-sm text-(--text-primary) focus:outline-none focus:border-blue-600 focus:bg-(--surface) resize-none"
                   />
-                  <p className="text-[11px] text-slate-400 mt-1">
+                  <p className="text-[11px] text-(--text-secondary) mt-1">
                     Este diagnóstico quedará registrado en el historial técnico del equipo con tu usuario.
                   </p>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                  <button
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-(--border-color)">
+                  <Button variant="cancel" appearance="soft" size="custom"
                     type="button"
                     onClick={() => setModalAbierto(false)}
                     disabled={guardando}
-                    className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                    className="px-4 py-2 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
                   >
                     Cancelar
-                  </button>
+                  </Button>
                   <Button
                     type="submit"
-                    variant="primary"
+                    variant={nuevoEstado === 'Dado de baja' ? 'danger' : 'success'} size="md" fullWidth
                     disabled={guardando}
                     text={guardando ? 'Guardando...' : 'Guardar Cambio'}
                   />

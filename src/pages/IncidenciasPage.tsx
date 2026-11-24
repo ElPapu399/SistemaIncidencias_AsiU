@@ -1,5 +1,5 @@
+import Button, { ButtonLink } from '../components/Button';
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import {
   Plus,
   Check,
@@ -214,37 +214,33 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
     : `${n} incidencia${n !== 1 ? 's' : ''} ${soloMisIncidencias ? 'asignada' : isEstudiante ? 'reportada' : 'registrada'}${n !== 1 ? 's' : ''}`;
 
   const tecnicoTabs = [
-    { key: 'mine' as const, label: 'Mis asignadas', icon: ClipboardCheck, count: myAssignedCount, activeClass: 'bg-violet-600 text-white shadow-sm', badgeClass: 'bg-violet-500 text-white', inactiveClass: 'bg-violet-100 text-violet-800' },
-    { key: 'available' as const, label: 'Disponibles para tomar', icon: Handshake, count: availableCount, activeClass: 'bg-emerald-600 text-white shadow-sm', badgeClass: 'bg-emerald-500 text-white', inactiveClass: 'bg-emerald-100 text-emerald-800' },
-    { key: 'all' as const, label: 'Todas las incidencias', icon: ListFilter, count: incidents.length, activeClass: 'bg-white text-slate-900 shadow-sm', badgeClass: 'bg-slate-100 text-slate-700' },
+    { key: 'mine' as const, label: 'Mis asignadas', icon: ClipboardCheck, count: myAssignedCount, activeClass: 'bg-violet-600 text-white shadow-sm', badgeClass: 'bg-violet-500 text-white', inactiveClass: 'bg-(--tone-violet-bg-100) text-(--tone-violet-text-800)' },
+    { key: 'available' as const, label: 'Disponibles para tomar', icon: Handshake, count: availableCount, activeClass: 'bg-emerald-600 text-white shadow-sm', badgeClass: 'bg-emerald-500 text-white', inactiveClass: 'bg-(--tone-emerald-bg-100) text-(--tone-emerald-text-800)' },
+    { key: 'all' as const, label: 'Todas las incidencias', icon: ListFilter, count: incidents.length, activeClass: 'bg-(--surface) text-(--text-primary) shadow-sm', badgeClass: 'bg-(--surface-muted) text-(--text-primary)' },
   ];
 
   return (
     <>
       <Header title={pageTitle} subtitle={pageSubtitle} />
 
-      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-100">
+      <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-(--app-bg)">
         {/* Header section */}
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1 text-left">
-            <h3 className="text-2xl font-bold text-black">{sectionHeading}</h3>
-            <p className="text-sm text-slate-600 mt-1">{countLabel}</p>
+            <h3 className="text-2xl font-bold text-(--text-primary)">{sectionHeading}</h3>
+            <p className="text-sm text-(--text-secondary) mt-1">{countLabel}</p>
           </div>
-          <div className="flex items-center gap-3">
-            {isSupportOrAdmin && solicitudesPendientes.length > 0 && (
-              <button type="button" onClick={() => openModal('manageReassign')} className="inline-flex items-center gap-2 px-3.5 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer">
-                <ArrowRightLeft className="w-3.5 h-3.5" />
-                <span>Reasignaciones ({solicitudesPendientes.length})</span>
-              </button>
-            )}
+          <div className="flex shrink-0 items-center gap-3">
             {isEstudiante && (
-              <Link
+              <ButtonLink variant="create" appearance="solid" size="custom"
                 to="/dashboard/nueva"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors cursor-pointer"
+                aria-label="Nueva incidencia"
+                title="Nueva incidencia"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-xl p-0 font-semibold text-xs shadow-xs transition-colors cursor-pointer sm:h-auto sm:w-auto sm:px-4 sm:py-2.5"
               >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Nueva incidencia</span>
-              </Link>
+                <Plus className="h-4 w-4 shrink-0 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
+                <span className="hidden sm:inline">Nueva incidencia</span>
+              </ButtonLink>
             )}
           </div>
         </div>
@@ -256,36 +252,36 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
               <Check className="w-4 h-4 text-white" />
               <span>{successToast}</span>
             </div>
-            <button onClick={() => setSuccessToast(null)} className="text-emerald-100 hover:text-white ml-4 text-xs underline cursor-pointer">Cerrar</button>
+            <Button variant="cancel" appearance="soft" size="custom" onClick={() => setSuccessToast(null)} className="ml-4 text-xs underline cursor-pointer">Cerrar</Button>
           </div>
         )}
 
         {/* Banner reasignaciones */}
         {isSupportOrAdmin && solicitudesPendientes.length > 0 && (
-          <div className="bg-linear-to-r from-violet-50 to-purple-50 border border-violet-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-xs">
+          <div className="bg-linear-to-r from-(--tone-violet-bg-50) to-(--tone-purple-bg-50) border border-(--tone-violet-border-200) rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-xs">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-violet-100 border border-violet-200 flex items-center justify-center text-violet-700 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-(--tone-violet-bg-100) border border-(--tone-violet-border-200) flex items-center justify-center text-(--tone-violet-text-700) shrink-0">
                 <ArrowRightLeft className="w-5 h-5" />
               </div>
               <div className="text-left">
-                <h4 className="text-sm font-bold text-slate-900">
+                <h4 className="text-sm font-bold text-(--text-primary)">
                   {solicitudesPendientes.length === 1
                     ? 'Tienes 1 solicitud de reasignación pendiente'
                     : `Tienes ${solicitudesPendientes.length} solicitudes de reasignación pendientes`}
                 </h4>
-                <p className="text-xs text-slate-600">Técnicos especialistas han solicitado transferir incidencias. Puedes revisarlas y reasignar o rechazar.</p>
+                <p className="text-xs text-(--text-secondary)">Técnicos especialistas han solicitado transferir incidencias. Puedes revisarlas y reasignar o rechazar.</p>
               </div>
             </div>
-            <button type="button" onClick={() => openModal('manageReassign')} className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer shrink-0">
+            <Button variant="assignment" appearance="solid" size="custom" type="button" onClick={() => openModal('manageReassign')} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer shrink-0">
               <ArrowRightLeft className="w-3.5 h-3.5" />
               <span>Revisar Solicitudes ({solicitudesPendientes.length})</span>
-            </button>
+            </Button>
           </div>
         )}
 
         {/* Tabs técnico especialista */}
         {isTecnicoEspecialista && !soloMisIncidencias && (
-          <div className="flex w-full items-center gap-2 p-1 bg-slate-200/80 rounded-2xl sm:w-fit">
+          <div className="flex w-full items-center gap-2 p-1 bg-(--surface-hover)/80 rounded-2xl sm:w-fit">
             {tecnicoTabs.map((tab) => {
               const isActive = tecnicoFilter === tab.key;
               return (
@@ -301,7 +297,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
                     transition-all cursor-pointer ${
                       isActive
                         ? tab.activeClass
-                        : 'text-slate-700 hover:text-slate-900 hover:bg-white/50'
+                        : 'text-(--text-primary) hover:text-(--text-primary) hover:bg-(--surface)/50'
                     }`}
                 >
                   <tab.icon className="w-4 h-4 text-lg sm:text-sm shrink-0" />
@@ -320,7 +316,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
         )}
 
         {error && (
-          <div className="bg-red-100 border border-red-300 text-red-700 rounded-2xl p-6">{error}</div>
+          <div className="bg-(--tone-red-bg-100) border border-(--tone-red-border-300) text-(--tone-red-text-700) rounded-2xl p-6">{error}</div>
         )}
 
         {!loading && !error && (
@@ -367,37 +363,37 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
       {activeModal === 'selfAssign' && selectedIncident && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={closeModal} />
-          <div className="relative bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md z-10 overflow-hidden">
-            <div className="px-6 py-5 border-b border-slate-200 bg-linear-to-r from-emerald-50 to-teal-50">
-              <h3 className="text-base font-bold text-slate-900">Autoasignar incidencia</h3>
-              <p className="text-xs text-slate-500 mt-0.5">Confirma que deseas tomar esta incidencia</p>
+          <div className="relative bg-(--surface) rounded-2xl shadow-2xl border border-(--border-color) w-full max-w-md z-10 overflow-hidden">
+            <div className="px-6 py-5 border-b border-(--border-color) bg-linear-to-r from-(--tone-emerald-bg-50) to-(--tone-teal-bg-50)">
+              <h3 className="text-base font-bold text-(--text-primary)">Autoasignar incidencia</h3>
+              <p className="text-xs text-(--text-secondary) mt-0.5">Confirma que deseas tomar esta incidencia</p>
             </div>
             <div className="p-6 space-y-4">
-              <div className="bg-slate-50 border border-slate-200/70 rounded-xl p-3">
-                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Incidencia</p>
-                <p className="text-sm text-slate-800 font-medium mt-0.5">
-                  <span className="font-mono text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-lg border border-emerald-200 mr-2">{selectedIncident.id}</span>
+              <div className="bg-(--surface-subtle) border border-(--border-color)/70 rounded-xl p-3">
+                <p className="text-xs text-(--text-secondary) font-semibold uppercase tracking-wider">Incidencia</p>
+                <p className="text-sm text-(--text-primary) font-medium mt-0.5">
+                  <span className="font-mono text-xs font-bold text-(--tone-emerald-text-600) bg-(--tone-emerald-bg-100) px-2 py-0.5 rounded-lg border border-(--tone-emerald-border-200) mr-2">{selectedIncident.id}</span>
                   {selectedIncident.title}
                 </p>
               </div>
-              <p className="text-sm text-slate-600">
-                Al autoasignarte, esta incidencia quedará bajo tu responsabilidad y pasará a estado <span className="font-semibold text-slate-800">"Asignada"</span>.
+              <p className="text-sm text-(--text-secondary)">
+                Al autoasignarte, esta incidencia quedará bajo tu responsabilidad y pasará a estado <span className="font-semibold text-(--text-primary)">"Asignada"</span>.
               </p>
             </div>
-            <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
-              <button
+            <div className="px-6 py-4 bg-(--surface-subtle) border-t border-(--border-color) flex items-center justify-end gap-3">
+              <Button variant="cancel" appearance="soft" size="custom"
                 type="button"
                 onClick={closeModal}
                 disabled={selfAssigning}
-                className="px-4 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 text-xs font-bold border rounded-xl transition-colors cursor-pointer disabled:opacity-50"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button variant="assignment" appearance="solid" size="custom"
                 type="button"
                 onClick={confirmSelfAssign}
                 disabled={selfAssigning}
-                className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-300 text-white transition-all shadow-sm cursor-pointer disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer disabled:cursor-not-allowed"
               >
                 {selfAssigning ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -405,7 +401,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
                   <Check className="w-3.5 h-3.5" />
                 )}
                 <span>{selfAssigning ? 'Asignando...' : 'Sí, tomar incidencia'}</span>
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -416,7 +412,7 @@ export default function IncidenciasPage({ title, description, soloMisIncidencias
         <div className="fixed bottom-6 right-6 z-50 bg-red-600 text-white px-5 py-3 rounded-xl shadow-xl text-sm font-medium flex items-center gap-2 animate-[slideUp_0.3s_ease-out]">
           <span>⚠️</span>
           <span>{errorToast}</span>
-          <button type="button" onClick={() => setErrorToast(null)} className="ml-2 text-white/70 hover:text-white cursor-pointer">✕</button>
+          <Button variant="cancel" appearance="soft" size="custom" type="button" onClick={() => setErrorToast(null)} className="ml-2 cursor-pointer">✕</Button>
         </div>
       )}
     </>

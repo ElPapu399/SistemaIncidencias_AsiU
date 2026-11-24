@@ -1,5 +1,5 @@
+import Button, { ButtonLink } from '../Button';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import {
   PlusCircle,
   ClipboardList,
@@ -56,7 +56,7 @@ const ROLE_CONFIGS: Record<string, RoleConfig> = {
   ADMIN: {
     badge: 'Administración ASIU',
     badgeIcon: ShieldCheck,
-    badgeStyle: 'bg-slate-100 text-slate-700 border-slate-200',
+    badgeStyle: 'bg-(--surface-muted) text-(--text-primary) border-(--border-color)',
     greetingTitle: (name) => `Hola, ${name || 'bienvenido'}`,
     description:
       'Gestiona usuarios, revisa las incidencias activas en el campus y supervisa los reportes de atención del equipo técnico.',
@@ -103,7 +103,7 @@ const ROLE_CONFIGS: Record<string, RoleConfig> = {
   TECNICO_GENERAL: {
     badge: 'Mesa de Ayuda',
     badgeIcon: Headphones,
-    badgeStyle: 'bg-sky-50 text-sky-700 border-sky-200',
+    badgeStyle: 'bg-(--tone-sky-bg-50) text-(--tone-sky-text-700) border-(--tone-sky-border-200)',
     greetingTitle: (name) => `Hola, ${name || 'bienvenido'}`,
     description:
       'Revisa los reportes nuevos de los estudiantes, valida los datos de cada falla y asigna el técnico especialista correspondiente.',
@@ -150,7 +150,7 @@ const ROLE_CONFIGS: Record<string, RoleConfig> = {
   TECNICO_ESPECIALISTA: {
     badge: 'Soporte Técnico',
     badgeIcon: Wrench,
-    badgeStyle: 'bg-amber-50 text-amber-700 border-amber-200',
+    badgeStyle: 'bg-(--tone-amber-bg-50) text-(--tone-amber-text-700) border-(--tone-amber-border-200)',
     greetingTitle: (name) => `Hola, ${name || 'bienvenido'}`,
     description:
       'Atiende las incidencias asignadas a tu área en laboratorios y aulas, realiza el diagnóstico presencial y registra la solución aplicada.',
@@ -196,7 +196,7 @@ const ROLE_CONFIGS: Record<string, RoleConfig> = {
 
   ESTUDIANTE: {
     badge: 'Portal del Estudiante',
-    badgeStyle: 'bg-blue-50 text-blue-700 border-blue-200',
+    badgeStyle: 'bg-(--tone-blue-bg-50) text-(--tone-blue-text-700) border-(--tone-blue-border-200)',
     greetingTitle: (name) => `Hola, ${name || 'bienvenido'}`,
     description:
       'Reporta fallas con computadoras, proyectores, internet o infraestructura en tus aulas y sigue el avance de tu atención.',
@@ -276,7 +276,7 @@ export default function RoleWelcomeBanner({ nombre, rol }: RoleWelcomeBannerProp
   const BadgeIcon = config.badgeIcon;
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
+    <div className="bg-(--surface) border border-(--border-color) rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
       {/* Header bar */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="space-y-1.5 max-w-2xl text-left">
@@ -286,47 +286,47 @@ export default function RoleWelcomeBanner({ nombre, rol }: RoleWelcomeBannerProp
               <span>{config.badge}</span>
             </span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-bold text-(--text-primary) tracking-tight">
             {config.greetingTitle(nombre)}
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+          <p className="text-xs sm:text-sm text-(--text-secondary) leading-relaxed">
             {config.description}
           </p>
         </div>
 
         {/* Action buttons + toggle */}
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 shrink-0">
-          <Link
+          <ButtonLink variant={config.primaryAction.to === '/dashboard/nueva' ? 'create' : 'info'} appearance="solid" size="custom"
             to={config.primaryAction.to}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow-xs transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm shadow-xs transition-colors cursor-pointer"
           >
             <PrimaryIcon className="w-4 h-4 shrink-0" />
             <span>{config.primaryAction.label}</span>
-          </Link>
-          <Link
+          </ButtonLink>
+          <ButtonLink variant={config.secondaryAction.to === '/dashboard/nueva' ? 'create' : 'info'} appearance="soft" size="custom"
             to={config.secondaryAction.to}
-            className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm border border-slate-300 transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm border transition-colors cursor-pointer"
           >
-            <SecondaryIcon className="w-4 h-4 shrink-0 text-slate-500" />
+            <SecondaryIcon className="w-4 h-4 shrink-0 " />
             <span>{config.secondaryAction.label}</span>
-          </Link>
-          <button
+          </ButtonLink>
+          <Button variant="neutral" appearance="text" size="custom"
             type="button"
             onClick={toggleGuide}
-            className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-colors cursor-pointer"
             title={showGuide ? 'Ocultar guía rápida' : 'Mostrar guía rápida'}
           >
             <span>{showGuide ? 'Ocultar guía' : 'Guía rápida'}</span>
             {showGuide ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Collapsible Flow Section */}
       {showGuide && (
-        <div className="pt-4 border-t border-slate-100 space-y-3.5">
+        <div className="pt-4 border-t border-(--border-color) space-y-3.5">
           <div className="flex items-center justify-between text-left">
-            <span className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+            <span className="text-[11px] font-bold tracking-wider text-(--text-secondary) uppercase">
               {config.flowTitle}
             </span>
           </div>
@@ -337,17 +337,17 @@ export default function RoleWelcomeBanner({ nombre, rol }: RoleWelcomeBannerProp
               return (
                 <div
                   key={step.num}
-                  className="bg-slate-50/70 border border-slate-200/90 rounded-xl p-3.5 flex flex-col justify-between hover:bg-slate-50 transition-colors text-left"
+                  className="bg-(--surface-subtle)/70 border border-(--border-color)/90 rounded-xl p-3.5 flex flex-col justify-between hover:bg-(--surface-subtle) transition-colors text-left"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] font-bold text-slate-400 font-mono">
+                      <span className="text-[11px] font-bold text-(--text-secondary) font-mono">
                         {step.num}
                       </span>
-                      <Icon className="w-4 h-4 text-slate-400" />
+                      <Icon className="w-4 h-4 text-(--text-secondary)" />
                     </div>
-                    <h4 className="text-xs font-bold text-slate-800 mb-1">{step.title}</h4>
-                    <p className="text-[11px] text-slate-500 leading-normal">{step.desc}</p>
+                    <h4 className="text-xs font-bold text-(--text-primary) mb-1">{step.title}</h4>
+                    <p className="text-[11px] text-(--text-secondary) leading-normal">{step.desc}</p>
                   </div>
                 </div>
               );
@@ -355,8 +355,8 @@ export default function RoleWelcomeBanner({ nombre, rol }: RoleWelcomeBannerProp
           </div>
 
           {/* Simple Institutional Note */}
-          <div className="bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2.5 flex items-center gap-2 text-xs text-slate-600 text-left">
-            <Info className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <div className="bg-(--surface-subtle) border border-(--border-color)/80 rounded-xl px-3.5 py-2.5 flex items-center gap-2 text-xs text-(--text-secondary) text-left">
+            <Info className="w-3.5 h-3.5 text-(--text-secondary) shrink-0" />
             <span>{config.noteText}</span>
           </div>
         </div>

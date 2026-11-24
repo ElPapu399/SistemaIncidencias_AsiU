@@ -1,3 +1,4 @@
+import Button from '../Button';
 import { useState, useEffect } from 'react';
 import { UserCheck, X, Loader2 } from 'lucide-react';
 import type { Incident, Tecnico } from '../../types/incident';
@@ -79,56 +80,56 @@ export default function AssignTechnicianModal({
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal Card */}
-      <div className="relative bg-white border border-slate-700 rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden z-10">
+      <div className="relative bg-(--surface) border border-(--border-color) rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden z-10">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-          <div>
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <UserCheck className="w-5 h-5 text-amber-500" />
+        <div className="flex items-start justify-between gap-4 px-6 py-4 border-b border-(--border-color)">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-lg font-bold text-(--text-primary) flex items-center gap-2">
+              <UserCheck className="w-5 h-5 shrink-0 text-(--tone-amber-text-500)" />
               Asignar Técnico
             </h3>
-            <p className="text-xs text-slate-600 mt-0.5">
-              Ticket: <span className="font-mono text-amber-600 font-semibold">{incident.id}</span> — {incident.title}
+            <p className="text-xs text-(--text-secondary) mt-0.5 wrap-anywhere">
+              Ticket: <span className="font-mono text-(--tone-amber-text-600) font-semibold">{incident.id}</span> — {incident.title}
             </p>
           </div>
-          <button
+          <Button variant="cancel" appearance="soft" size="custom"
             onClick={onClose}
             aria-label="Cerrar modal"
-            className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+            className="w-8 h-8 shrink-0 rounded-lg flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
 
         {/* Body */}
         <div className="p-6 space-y-4">
-          <div className="bg-slate-100 p-3.5 rounded-xl border border-slate-200 text-xs text-slate-300 space-y-1">
+          <div className="bg-(--surface-muted) p-3.5 rounded-xl border border-(--border-color) text-xs text-(--text-secondary) space-y-1">
             <p>
-              <strong className="text-slate-500">Categoría:</strong>{' '}
-              <span className="text-slate-800 font-semibold">{incident.category}</span>
+              <strong className="text-(--text-secondary)">Categoría:</strong>{' '}
+              <span className="text-(--text-primary) font-semibold">{incident.category}</span>
             </p>
             <p>
-              <strong className="text-slate-500">Especialidad requerida:</strong>{' '}
-              <span className="text-amber-500 font-semibold">{incident.especialidad || 'General'}</span>
+              <strong className="text-(--text-secondary)">Especialidad requerida:</strong>{' '}
+              <span className="text-(--tone-amber-text-500) font-semibold">{incident.especialidad || 'General'}</span>
             </p>
             <p>
-              <strong className="text-slate-500">Ubicación:</strong> {' '}
-              <span className="text-slate-800 font-semibold">{incident.location}</span>
+              <strong className="text-(--text-secondary)">Ubicación:</strong> {' '}
+              <span className="text-(--text-primary) font-semibold">{incident.location}</span>
             </p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-2">
               Seleccionar técnico disponible
             </label>
 
             {fetching ? (
-              <div className="text-center py-6 text-slate-400">
-                <Loader2 className="w-6 h-6 animate-spin mx-auto text-amber-500" />
+              <div className="text-center py-6 text-(--text-secondary)">
+                <Loader2 className="w-6 h-6 animate-spin mx-auto text-(--tone-amber-text-500)" />
                 <p className="text-xs mt-2">Cargando técnicos...</p>
               </div>
             ) : tecnicos.length === 0 ? (
-              <div className="text-sm text-slate-400 bg-slate-800 p-4 rounded-xl text-center">
+              <div className="text-sm text-(--text-secondary) bg-(--surface-muted) p-4 rounded-xl text-center">
                 No hay técnicos registrados en el sistema.
               </div>
             ) : (
@@ -143,8 +144,8 @@ export default function AssignTechnicianModal({
                       onClick={() => setSelectedTecnicoId(t.id)}
                       className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${
                         isSelected
-                          ? 'bg-amber-600/50 border-amber-500/50 text-white'
-                          : 'bg-slate-700/30 border-slate-700/50 hover:bg-slate-800/40'
+                          ? 'bg-(--tone-amber-bg-100) border-(--tone-amber-border-300)'
+                          : 'bg-(--surface-subtle) border-(--border-color) hover:bg-(--surface-hover)'
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -153,7 +154,7 @@ export default function AssignTechnicianModal({
                           {t.apellido.charAt(0)}
                         </div>
                         <div>
-                          <p className={`text-white transition-all ${
+                          <p className={`text-(--text-primary) transition-all ${
                             isSelected
                               ? 'text-base font-bold'
                               : 'text-sm'
@@ -161,17 +162,17 @@ export default function AssignTechnicianModal({
                           >
                             {t.nombre} {t.apellido}
                           </p>
-                          <p className={`text-slate-700 transition-all ${
+                          <p className={`text-(--text-primary) transition-all ${
                             isSelected
                               ? 'text-[14px] font-bold'
                               : 'text-xs'
                           }`}>
                             {t.especialidad || 'Sin especialidad'}
                             {isMatch && (
-                              <span className={`ml-2 px-2 py-0.5 text-emerald-200 rounded-md font-semibold ${
+                              <span className={`ml-2 px-2 py-0.5 text-(--tone-emerald-text-700) bg-(--tone-emerald-bg-100) rounded-md font-semibold ${
                                 isSelected
-                                 ? 'text-[12px] bg-emerald-600/40'
-                                 : 'text-[10px] bg-emerald-500/30'
+                                 ? 'text-[12px]'
+                                 : 'text-[10px]'
                               }`}
                               >
                                 Recomendado
@@ -182,7 +183,7 @@ export default function AssignTechnicianModal({
                       </div>
 
                       <div className="text-right">
-                        <span className="text-xs font-mono px-2 py-1 rounded-md bg-slate-700/50 text-slate-300">
+                        <span className="text-xs font-mono px-2 py-1 rounded-md bg-(--surface-muted) text-(--text-secondary)">
                           {t.incidenciasActivas} activa{t.incidenciasActivas !== 1 ? 's' : ''}
                         </span>
                       </div>
@@ -194,28 +195,21 @@ export default function AssignTechnicianModal({
           </div>
 
           {error && (
-            <div className="text-red-400 text-sm bg-red-950/40 border border-red-800/50 rounded-xl px-4 py-3">
+            <div className="text-(--tone-red-text-700) text-sm bg-(--tone-red-bg-50) border border-(--tone-red-border-200) rounded-xl px-4 py-3">
               {error}
             </div>
           )}
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-700">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-red-600/70 transition-colors"
-            >
-              Cancelar
-            </button>
-            <button
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-(--border-color)">
+            <Button variant="assignment" appearance="solid" size="custom"
               type="button"
               onClick={handleAssign}
               disabled={loading || !selectedTecnicoId}
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Asignar Técnico'}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

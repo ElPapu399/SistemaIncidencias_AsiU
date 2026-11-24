@@ -1,3 +1,5 @@
+import Button from '../Button';
+import MobileGuidedTour from './MobileGuidedTour';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -13,6 +15,7 @@ export interface TourStep {
   target: string;       // data-tour attribute value
   title: string;
   content: string;
+  mobileContent?: string;
   position?: 'top' | 'bottom' | 'left' | 'right';
 }
 
@@ -34,6 +37,14 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
   const [arrowClass, setArrowClass] = useState('');
   const [fadeIn, setFadeIn] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const [mobile, setMobile] = useState(() => window.matchMedia('(max-width: 767px)').matches);
+
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 767px)');
+    const update = () => setMobile(query.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
 
   const currentStep = steps[stepIndex];
 
@@ -65,9 +76,6 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
       height: rect.height + PADDING * 2,
       borderRadius: '12px',
     });
-
-    // Scroll element into view if needed
-    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     // Determine best position
     const pos = currentStep.position || autoBestPosition(rect, tooltipWidth, tooltipHeight);
@@ -101,11 +109,11 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
   }, [currentStep, active]);
 
   useEffect(() => {
-    if (!active) return;
-    setFadeIn(false);
+    if (!active || mobile) return;
     const raf = requestAnimationFrame(() => {
-      positionTooltip();
-      requestAnimationFrame(() => setFadeIn(true));
+      setFadeIn(false);
+      document.querySelector(`[data-tour="${currentStep?.target}"]`)?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+      requestAnimationFrame(() => { positionTooltip(); setFadeIn(true); });
     });
     window.addEventListener('resize', positionTooltip);
     window.addEventListener('scroll', positionTooltip, true);
@@ -114,7 +122,7 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
       window.removeEventListener('resize', positionTooltip);
       window.removeEventListener('scroll', positionTooltip, true);
     };
-  }, [active, stepIndex, positionTooltip]);
+  }, [active, stepIndex, positionTooltip, mobile, currentStep?.target]);
 
   const closeTour = useCallback(() => {
     setActive(false);
@@ -140,25 +148,21 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
 
   if (!active) {
     return (
-      <button
+      <Button variant="info" appearance="solid" size="custom"
         type="button"
         onClick={() => { setStepIndex(0); setActive(true); }}
-        className="
-          fixed bottom-6 right-6 z-9999
-          w-10 h-12 rounded-full
-          bg-linear-to-br from-violet-500 to-indigo-600
-          text-white shadow-lg shadow-violet-500/30
-          flex items-center justify-center
-          hover:scale-110 hover:shadow-xl hover:shadow-violet-500/40
-          transition-all duration-300 cursor-pointer
-          animate-[tour-pulse_2s_ease-in-out_infinite]
-        "
+        className="fixed bottom-6 right-6 z-9999 w-10 h-12 rounded-full shadow-lg flex items-center justify-center hover:scale-110 hover:shadow-xl transition-all duration-300 cursor-pointer animate-[tour-pulse_2s_ease-in-out_infinite]"
         title="Iniciar tutorial"
         aria-label="Iniciar tutorial guiado"
       >
         <FontAwesomeIcon icon={faCircleQuestion} className="text-lg" />
-      </button>
+      </Button>
     );
+  }
+
+  if (mobile) {
+    return <MobileGuidedTour steps={steps} stepIndex={stepIndex} onNext={next} onPrevious={prev}
+      onClose={closeTour} noShowAgain={noShowAgain} onNoShowAgain={setNoShowAgain} />;
   }
 
   return (
@@ -166,7 +170,7 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
       {/* Overlay */}
       <div
         className="fixed inset-0 z-9990 transition-opacity duration-300"
-        style={{ background: 'rgba(0,0,0,0.55)' }}
+        style={{ background: highlightStyle.width ? 'transparent' : 'rgba(0,0,0,0.55)' }}
         onClick={closeTour}
       />
 
@@ -175,7 +179,7 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
         className="fixed z-9991 pointer-events-none transition-all duration-400 ease-out"
         style={{
           ...highlightStyle,
-          boxShadow: '0 0 0 9999px rgba(0,0,0,0.55), 0 0 20px 4px rgba(139,92,246,0.35)',
+          boxShadow: '0 0 0 9999px rgba(0,0,0,0.8), 0 0 20px 4px rgba(139,92,246,0.35)',
         }}
       />
 
@@ -184,8 +188,8 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
         ref={tooltipRef}
         className={`
           fixed z-9995 w-90 max-w-[calc(100vw-24px)]
-          bg-white rounded-2xl shadow-2xl shadow-black/20
-          border border-slate-200
+          bg-(--surface) rounded-2xl shadow-2xl shadow-black/20
+          border border-(--border-color)
           transition-all duration-300 ease-out
           ${arrowClass}
           ${fadeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}
@@ -197,7 +201,7 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl"
         >
-          <div className="h-1 bg-slate-100">
+          <div className="h-1 bg-(--surface-muted)">
             <div
               className="h-full bg-linear-to-r from-violet-500 to-indigo-500 transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
@@ -208,31 +212,31 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
         {/* Header */}
         <div className="flex items-start justify-between px-5 pt-4 pb-2">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center shrink-0">
-              <FontAwesomeIcon icon={isLastStep ? faCheckCircle : faRocket} className="text-violet-600 text-sm" />
+            <div className="w-8 h-8 rounded-lg bg-(--tone-violet-bg-100) flex items-center justify-center shrink-0">
+              <FontAwesomeIcon icon={isLastStep ? faCheckCircle : faRocket} className="text-(--tone-violet-text-600) text-sm" />
             </div>
             <div>
-              <p className="text-[11px] font-semibold text-violet-500 uppercase tracking-wider">
+              <p className="text-[11px] font-semibold text-(--tone-violet-text-500) uppercase tracking-wider">
                 Paso {stepIndex + 1} de {steps.length}
               </p>
-              <h3 className="text-[15px] font-bold text-slate-900 leading-snug">
+              <h3 className="text-[15px] font-bold text-(--text-primary) leading-snug">
                 {currentStep?.title}
               </h3>
             </div>
           </div>
-          <button
+          <Button variant="cancel" appearance="soft" size="custom"
             type="button"
             onClick={closeTour}
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
+            className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors cursor-pointer shrink-0"
             aria-label="Cerrar tutorial"
           >
             <FontAwesomeIcon icon={faXmark} />
-          </button>
+          </Button>
         </div>
 
         {/* Content */}
         <div className="px-5 pb-3">
-          <p className="text-[13px] text-slate-600 leading-relaxed">
+          <p className="text-[13px] text-(--text-secondary) leading-relaxed">
             {currentStep?.content}
           </p>
         </div>
@@ -246,35 +250,28 @@ export default function GuidedTour({ steps, storageKey, onComplete }: GuidedTour
               onChange={(e) => setNoShowAgain(e.target.checked)}
               className="w-3.5 h-3.5 rounded accent-violet-500"
             />
-            <span className="text-[11px] text-slate-400">No mostrar</span>
+            <span className="text-[11px] text-(--text-secondary)">No mostrar</span>
           </label>
 
           <div className="flex items-center gap-2">
             {!isFirstStep && (
-              <button
+              <Button variant="neutral" appearance="soft" size="custom"
                 type="button"
                 onClick={prev}
-                className="h-8 px-3 rounded-lg text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer flex items-center gap-1.5"
+                className="h-8 px-3 rounded-lg text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5"
               >
                 <FontAwesomeIcon icon={faArrowLeft} className="text-[10px]" />
                 Anterior
-              </button>
+              </Button>
             )}
-            <button
+            <Button variant="info" appearance="solid" size="custom"
               type="button"
               onClick={next}
-              className={`
-                h-8 px-4 rounded-lg text-xs font-semibold text-white
-                flex items-center gap-1.5 cursor-pointer transition-all duration-200
-                ${isLastStep
-                  ? 'bg-linear-to-r from-emerald-500 to-green-500 hover:shadow-lg hover:shadow-emerald-500/30'
-                  : 'bg-linear-to-r from-violet-500 to-indigo-600 hover:shadow-lg hover:shadow-violet-500/30'
-                }
-              `}
+              className={`h-8 px-4 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all duration-200 ${isLastStep ? ' hover:shadow-lg ' : ' hover:shadow-lg ' }`}
             >
               {isLastStep ? '¡Entendido!' : 'Siguiente'}
               {!isLastStep && <FontAwesomeIcon icon={faArrowRight} className="text-[10px]" />}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

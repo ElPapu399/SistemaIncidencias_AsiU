@@ -1,3 +1,4 @@
+import Button from '../Button';
 import { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -158,50 +159,50 @@ export default function ChangeStatusModal({
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
         {/* Modal Card */}
-        <div className="relative bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-xl mx-4 overflow-hidden z-10">
+        <div className="relative bg-(--surface) border border-(--border-color) rounded-2xl shadow-2xl w-full max-w-xl mx-4 overflow-hidden z-10">
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-(--border-color)">
             <div>
-              <span className="text-xs font-mono text-amber-600 font-semibold">{incident.id}</span>
-              <h3 className="text-lg font-bold text-slate-900 leading-tight mt-0.5">{incident.title}</h3>
+              <span className="text-xs font-mono text-(--tone-amber-text-600) font-semibold">{incident.id}</span>
+              <h3 className="text-lg font-bold text-(--text-primary) leading-tight mt-0.5">{incident.title}</h3>
             </div>
-            <button
+            <Button variant="cancel" appearance="soft" size="custom"
               onClick={onClose}
-              className="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-400 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
             >
               <FontAwesomeIcon icon={faXmark} />
-            </button>
+            </Button>
           </div>
 
           {/* Content */}
           <div className="p-6 space-y-4 max-h-[78vh] overflow-y-auto">
             {/* Badges & Meta */}
-            <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-slate-200">
+            <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-(--border-color)">
               <StatusBadge status={incident.status} />
               <PriorityBadge priority={incident.priority} />
-              <span className="text-xs text-slate-600 ml-auto flex items-center gap-1.5">
+              <span className="text-xs text-(--text-secondary) ml-auto flex items-center gap-1.5">
                 <FontAwesomeIcon icon={faClock} />
                 {formatDate(incident.createdAt)}
               </span>
             </div>
 
             {/* Details Grid */}
-            <div className="grid grid-cols-2 gap-3 text-xs bg-slate-100 p-4 rounded-xl border border-slate-200">
+            <div className="grid grid-cols-2 gap-3 text-xs bg-(--surface-muted) p-4 rounded-xl border border-(--border-color)">
               <div>
-                <span className="text-slate-500 uppercase tracking-wider block font-semibold">Reportado por</span>
-                <span className="text-slate-800 font-medium">{incident.reporter}</span>
+                <span className="text-(--text-secondary) uppercase tracking-wider block font-semibold">Reportado por</span>
+                <span className="text-(--text-primary) font-medium">{incident.reporter}</span>
               </div>
               <div>
-                <span className="text-slate-500 uppercase tracking-wider block font-semibold">Técnico Asignado</span>
-                <span className="text-slate-800 font-medium">{incident.assignee}</span>
+                <span className="text-(--text-secondary) uppercase tracking-wider block font-semibold">Técnico Asignado</span>
+                <span className="text-(--text-primary) font-medium">{incident.assignee}</span>
               </div>
               <div>
-                <span className="text-slate-500 uppercase tracking-wider block font-semibold">Ubicación</span>
-                <span className="text-slate-800 font-medium">{incident.location}</span>
+                <span className="text-(--text-secondary) uppercase tracking-wider block font-semibold">Ubicación</span>
+                <span className="text-(--text-primary) font-medium">{incident.location}</span>
               </div>
               <div>
-                <span className="text-slate-500 uppercase tracking-wider block font-semibold">Categoría</span>
-                <span className="text-slate-800 font-medium">
+                <span className="text-(--text-secondary) uppercase tracking-wider block font-semibold">Categoría</span>
+                <span className="text-(--text-primary) font-medium">
                   {incident.category} {incident.especialidad ? `(${incident.especialidad})` : ''}
                 </span>
               </div>
@@ -209,24 +210,24 @@ export default function ChangeStatusModal({
 
             {/* Description */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-1">
                 Descripción
               </label>
-              <div className="bg-slate-100 border border-slate-200 rounded-xl p-3.5 text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+              <div className="bg-(--surface-muted) border border-(--border-color) rounded-xl p-3.5 text-sm text-(--text-primary) leading-relaxed whitespace-pre-wrap">
                 {incident.description}
               </div>
             </div>
 
             {/* SECCIÓN DE EVIDENCIA FOTOGRÁFICA / ADJUNTOS */}
-            <div className="pt-2 border-t border-slate-200">
+            <div className="pt-2 border-t border-(--border-color)">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                    <FontAwesomeIcon icon={faCamera} className="text-amber-500" />
+                  <label className="text-xs font-semibold uppercase tracking-wider text-(--text-secondary) flex items-center gap-1.5">
+                    <FontAwesomeIcon icon={faCamera} className="text-(--tone-amber-text-500)" />
                     Evidencia Fotográfica
                   </label>
                   {adjuntos.length > 0 && (
-                    <span className="px-2 py-0.5 bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold rounded-full">
+                    <span className="px-2 py-0.5 bg-(--tone-amber-bg-50) border border-(--tone-amber-border-200) text-(--tone-amber-text-700) text-[10px] font-bold rounded-full">
                       {adjuntos.length} {adjuntos.length === 1 ? 'foto' : 'fotos'}
                     </span>
                   )}
@@ -234,24 +235,24 @@ export default function ChangeStatusModal({
 
                 {/* Botón para subir nueva foto */}
                 <div>
-                  <button
+                  <Button variant="info" appearance="soft" size="custom"
                     type="button"
                     disabled={uploadingAdjunto}
                     onClick={() => fileInputRef.current?.click()}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-300 rounded-lg text-xs font-medium transition-colors cursor-pointer disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-lg text-xs font-medium transition-colors cursor-pointer disabled:opacity-50"
                   >
                     {uploadingAdjunto ? (
                       <>
-                        <FontAwesomeIcon icon={faSpinner} spin className="text-amber-500 text-xs" />
+                        <FontAwesomeIcon icon={faSpinner} spin className=" text-xs" />
                         <span>Subiendo...</span>
                       </>
                     ) : (
                       <>
-                        <FontAwesomeIcon icon={faPlus} className="text-amber-500 text-xs" />
+                        <FontAwesomeIcon icon={faPlus} className=" text-xs" />
                         <span>Adjuntar foto</span>
                       </>
                     )}
-                  </button>
+                  </Button>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -264,8 +265,8 @@ export default function ChangeStatusModal({
 
               {/* Contenedor de fotos */}
               {loadingAdjuntos ? (
-                <div className="py-6 text-center text-xs text-slate-500 bg-slate-50 rounded-xl border border-slate-800 flex items-center justify-center gap-2">
-                  <FontAwesomeIcon icon={faSpinner} spin className="text-amber-500" />
+                <div className="py-6 text-center text-xs text-(--text-secondary) bg-(--surface-subtle) rounded-xl border border-(--border-color) flex items-center justify-center gap-2">
+                  <FontAwesomeIcon icon={faSpinner} spin className="text-(--tone-amber-text-500)" />
                   <span>Cargando fotos de evidencia...</span>
                 </div>
               ) : adjuntos.length > 0 ? (
@@ -276,10 +277,10 @@ export default function ChangeStatusModal({
                       <div
                         key={adj.id}
                         onClick={() => setSelectedImage(adj)}
-                        className="group relative bg-white border border-slate-200 hover:border-amber-400 rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:shadow-black/40"
+                        className="group relative bg-(--surface) border border-(--border-color) hover:border-amber-400 rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:shadow-black/40"
                       >
                         {/* Thumbnail */}
-                        <div className="w-full h-24 sm:h-28 overflow-hidden bg-slate-100 flex items-center justify-center">
+                        <div className="w-full h-24 sm:h-28 overflow-hidden bg-(--surface-muted) flex items-center justify-center">
                           <img
                             src={fullUrl}
                             alt={adj.nombreOriginal}
@@ -292,16 +293,16 @@ export default function ChangeStatusModal({
 
                         {/* Hover Overlay */}
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white">
-                          <FontAwesomeIcon icon={faMagnifyingGlassPlus} className="text-lg text-amber-400" />
+                          <FontAwesomeIcon icon={faMagnifyingGlassPlus} className="text-lg text-(--tone-amber-text-400)" />
                           <span className="text-[10px] font-semibold tracking-wider uppercase">Ver grande</span>
                         </div>
 
                         {/* Caption */}
-                        <div className="p-2 bg-white border-t border-slate-200">
-                          <p className="text-[11px] font-medium text-slate-700 truncate" title={adj.nombreOriginal}>
+                        <div className="p-2 bg-(--surface) border-t border-(--border-color)">
+                          <p className="text-[11px] font-medium text-(--text-primary) truncate" title={adj.nombreOriginal}>
                             {adj.nombreOriginal}
                           </p>
-                          <p className="text-[10px] text-slate-400 mt-0.5">
+                          <p className="text-[10px] text-(--text-secondary) mt-0.5">
                             {(adj.tamanioByte / 1024 < 1024
                               ? `${(adj.tamanioByte / 1024).toFixed(0)} KB`
                               : `${(adj.tamanioByte / (1024 * 1024)).toFixed(1)} MB`)}
@@ -314,11 +315,11 @@ export default function ChangeStatusModal({
               ) : (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="py-5 px-4 text-center bg-slate-50 hover:bg-slate-100 border border-dashed border-slate-300 hover:border-amber-400 rounded-xl cursor-pointer transition-colors"
+                  className="py-5 px-4 text-center bg-(--surface-subtle) hover:bg-(--surface-muted) border border-dashed border-(--border-color) hover:border-amber-400 rounded-xl cursor-pointer transition-colors"
                 >
-                  <FontAwesomeIcon icon={faImage} className="text-slate-500 text-lg mb-1 block mx-auto" />
-                  <p className="text-xs text-slate-400 font-medium">No hay fotos de evidencia adjuntas</p>
-                  <p className="text-[11px] text-amber-600 mt-0.5 underline decoration-amber-400/30">
+                  <FontAwesomeIcon icon={faImage} className="text-(--text-secondary) text-lg mb-1 block mx-auto" />
+                  <p className="text-xs text-(--text-secondary) font-medium">No hay fotos de evidencia adjuntas</p>
+                  <p className="text-[11px] text-(--tone-amber-text-600) mt-0.5 underline decoration-amber-400/30">
                     Haz clic aquí para agregar una foto ahora
                   </p>
                 </div>
@@ -326,22 +327,22 @@ export default function ChangeStatusModal({
             </div>
 
             {/* SECCIÓN DE TRAZABILIDAD / HISTORIAL DE ACCIONES */}
-            <div className="pt-2 border-t border-slate-200">
+            <div className="pt-2 border-t border-(--border-color)">
               <div className="flex items-center gap-2 mb-2.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                  <FontAwesomeIcon icon={faClockRotateLeft} className="text-violet-500" />
+                <label className="text-xs font-semibold uppercase tracking-wider text-(--text-secondary) flex items-center gap-1.5">
+                  <FontAwesomeIcon icon={faClockRotateLeft} className="text-(--tone-violet-text-500)" />
                   Trazabilidad e Historial de Acciones
                 </label>
                 {historial.length > 0 && (
-                  <span className="px-2 py-0.5 bg-violet-50 border border-violet-200 text-violet-700 text-[10px] font-bold rounded-full">
+                  <span className="px-2 py-0.5 bg-(--tone-violet-bg-50) border border-(--tone-violet-border-200) text-(--tone-violet-text-700) text-[10px] font-bold rounded-full">
                     {historial.length} eventos
                   </span>
                 )}
               </div>
 
               {loadingHistorial ? (
-                <div className="py-4 text-center text-xs text-slate-500 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-center gap-2">
-                  <FontAwesomeIcon icon={faSpinner} spin className="text-violet-500" />
+                <div className="py-4 text-center text-xs text-(--text-secondary) bg-(--surface-subtle) rounded-xl border border-(--border-color) flex items-center justify-center gap-2">
+                  <FontAwesomeIcon icon={faSpinner} spin className="text-(--tone-violet-text-500)" />
                   <span>Cargando traza de la incidencia...</span>
                 </div>
               ) : historial.length > 0 ? (
@@ -355,10 +356,10 @@ export default function ChangeStatusModal({
                         key={item.id || idx}
                         className={`p-2.5 rounded-xl border text-xs transition-colors ${
                           isReasignacion
-                            ? 'bg-violet-50/70 border-violet-200 text-violet-900'
+                            ? 'bg-(--tone-violet-bg-50)/70 border-(--tone-violet-border-200) text-(--tone-violet-text-900)'
                             : isAsignacion
-                            ? 'bg-amber-50/70 border-amber-200 text-amber-900'
-                            : 'bg-slate-50 border-slate-200 text-slate-800'
+                            ? 'bg-(--tone-amber-bg-50)/70 border-(--tone-amber-border-200) text-(--tone-amber-text-900)'
+                            : 'bg-(--surface-subtle) border-(--border-color) text-(--text-primary)'
                         }`}
                       >
                         <div className="flex items-center justify-between text-[11px] mb-1">
@@ -375,29 +376,29 @@ export default function ChangeStatusModal({
                               </>
                             ) : (
                               <>
-                                <span className="w-2 h-2 rounded-full bg-slate-400 inline-block" />
+                                <span className="w-2 h-2 rounded-full bg-(--track-color) inline-block" />
                                 Cambio de Estado: {item.estadoAnterior} → {item.estadoNuevo}
                               </>
                             )}
                           </span>
-                          <span className="text-slate-500 text-[10px]">
+                          <span className="text-(--text-secondary) text-[10px]">
                             {formatDate(item.fechaCambio)}
                           </span>
                         </div>
 
-                        <div className="text-[11px] text-slate-700 space-y-0.5">
+                        <div className="text-[11px] text-(--text-primary) space-y-0.5">
                           <p>
-                            <span className="font-semibold text-slate-600">Realizado por:</span>{' '}
+                            <span className="font-semibold text-(--text-secondary)">Realizado por:</span>{' '}
                             <strong>{item.usuarioNombre || 'Sistema'}</strong>
                           </p>
                           {item.tecnicoAnteriorNombre && item.tecnicoNuevoNombre && (
-                            <p className="text-violet-800 font-medium">
+                            <p className="text-(--tone-violet-text-800) font-medium">
                               De: <span className="line-through">{item.tecnicoAnteriorNombre}</span> → A:{' '}
                               <strong>{item.tecnicoNuevoNombre}</strong>
                             </p>
                           )}
                           {item.comentario && (
-                            <p className="text-[10px] text-slate-600 italic bg-white/70 p-1.5 rounded border border-slate-200/50 mt-1 whitespace-pre-wrap">
+                            <p className="text-[10px] text-(--text-secondary) italic bg-(--surface)/70 p-1.5 rounded border border-(--border-color)/50 mt-1 whitespace-pre-wrap">
                               {item.comentario}
                             </p>
                           )}
@@ -407,7 +408,7 @@ export default function ChangeStatusModal({
                   })}
                 </div>
               ) : (
-                <div className="py-3 px-4 text-center bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500">
+                <div className="py-3 px-4 text-center bg-(--surface-subtle) border border-(--border-color) rounded-xl text-xs text-(--text-secondary)">
                   No hay registros en el historial de trazabilidad todavía.
                 </div>
               )}
@@ -416,10 +417,10 @@ export default function ChangeStatusModal({
             {/* Technical Solution (if resolved or editing) */}
             {incident.solucionTecnica && !canEdit && (
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-(--tone-emerald-text-600) mb-1 flex items-center gap-1.5">
                   <FontAwesomeIcon icon={faCheckCircle} /> Solución Técnica
                 </label>
-                <div className="bg-emerald-950/20 border border-emerald-800/40 rounded-xl p-3.5 text-sm text-emerald-200">
+                <div className="bg-(--tone-emerald-bg-50) border border-(--tone-emerald-border-200) rounded-xl p-3.5 text-sm text-(--tone-emerald-text-700)">
                   {incident.solucionTecnica}
                 </div>
               </div>
@@ -427,15 +428,15 @@ export default function ChangeStatusModal({
 
             {/* Edit section for Admin/Technician */}
             {canEdit && (
-              <form onSubmit={handleSubmit} className="space-y-4 pt-2 border-t border-slate-200">
+              <form onSubmit={handleSubmit} className="space-y-4 pt-2 border-t border-(--border-color)">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-1.5">
                     Cambiar estado *
                   </label>
                   <select
                     value={nuevoEstado}
                     onChange={(e) => setNuevoEstado(e.target.value as IncidentStatus)}
-                    className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-amber-500 transition-colors"
+                    className="w-full bg-(--surface) border border-(--border-color) rounded-xl px-4 py-2.5 text-sm text-(--text-primary) focus:outline-none focus:border-amber-500 transition-colors"
                   >
                     <option value="Pendiente">Pendiente</option>
                     <option value="Asignada">Asignada</option>
@@ -447,7 +448,7 @@ export default function ChangeStatusModal({
 
                 {(nuevoEstado === 'Resuelta' || nuevoEstado === 'Resuelto') && (
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1.5">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-(--tone-emerald-text-400) mb-1.5">
                       Solución técnica aplicada *
                     </label>
                     <textarea
@@ -455,45 +456,38 @@ export default function ChangeStatusModal({
                       value={solucionTecnica}
                       onChange={(e) => setSolucionTecnica(e.target.value)}
                       placeholder="Describe los pasos y repuestos aplicados para solucionar la incidencia..."
-                      className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                      className="w-full bg-(--surface) border border-(--border-color) rounded-xl px-4 py-2.5 text-sm text-(--text-primary) placeholder:text-(--text-secondary) focus:outline-none focus:border-emerald-500/50 transition-colors"
                     />
                   </div>
                 )}
 
                 {error && (
-                  <div className="text-red-400 text-sm bg-red-950/40 border border-red-800/50 rounded-xl px-4 py-3">
+                  <div className="text-(--tone-red-text-700) text-sm bg-(--tone-red-bg-50) border border-(--tone-red-border-200) rounded-xl px-4 py-3">
                     {error}
                   </div>
                 )}
 
                 <div className="flex items-center justify-end gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-red-600/70 transition-colors"
-                  >
-                    Cancelar
-                  </button>
-                  <button
+                  <Button variant="success" appearance="solid" size="custom"
                     type="submit"
                     disabled={loading}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : 'Guardar Estado'}
-                  </button>
+                  </Button>
                 </div>
               </form>
             )}
 
             {!canEdit && (
               <div className="flex justify-end pt-2">
-                <button
+                <Button variant="cancel" appearance="soft" size="custom"
                   type="button"
                   onClick={onClose}
-                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-red-400 hover:bg-red-600 transition-colors"
+                  className="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors"
                 >
                   Cerrar
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -507,14 +501,14 @@ export default function ChangeStatusModal({
           onClick={() => setSelectedImage(null)}
         >
           <div
-            className="relative max-w-4xl max-h-[90vh] flex flex-col items-center bg-white border border-slate-800 rounded-2xl overflow-hidden shadow-2xl"
+            className="relative max-w-4xl max-h-[90vh] flex flex-col items-center bg-(--surface) border border-(--border-color) rounded-2xl overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top Toolbar */}
-            <div className="w-full flex items-center justify-between px-5 py-3 bg-slate-800 border-b border-slate-800 text-white">
+            <div className="w-full flex items-center justify-between px-5 py-3 bg-(--surface-subtle) border-b border-(--border-color) text-(--text-primary)">
               <div className="flex items-center gap-2 min-w-0 pr-4">
-                <FontAwesomeIcon icon={faImage} className="text-amber-400 shrink-0" />
-                <span className="text-xs font-semibold truncate text-slate-200">
+                <FontAwesomeIcon icon={faImage} className="text-(--tone-amber-text-400) shrink-0" />
+                <span className="text-xs font-semibold truncate text-(--text-secondary)">
                   {selectedImage.nombreOriginal}
                 </span>
               </div>
@@ -523,25 +517,25 @@ export default function ChangeStatusModal({
                   href={getAttachmentUrl(selectedImage.urlArchivo)}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-slate-500 hover:bg-slate-600 text-slate-300 hover:text-white text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-(--surface-muted) hover:bg-(--surface-hover) text-(--text-primary) text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
                   title="Abrir en pestaña nueva"
                 >
                   <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-[11px]" />
                   <span>Abrir original</span>
                 </a>
-                <button
+                <Button variant="cancel" appearance="soft" size="custom"
                   type="button"
                   onClick={() => setSelectedImage(null)}
-                  className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 flex items-center justify-center transition-colors"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
                   title="Cerrar visor"
                 >
                   <FontAwesomeIcon icon={faXmark} />
-                </button>
+                </Button>
               </div>
             </div>
 
             {/* Main Image */}
-            <div className="p-4 flex items-center justify-center overflow-auto max-h-[75vh] bg-white">
+            <div className="p-4 flex items-center justify-center overflow-auto max-h-[75vh] bg-(--surface)">
               <img
                 src={getAttachmentUrl(selectedImage.urlArchivo)}
                 alt={selectedImage.nombreOriginal}
@@ -550,7 +544,7 @@ export default function ChangeStatusModal({
             </div>
 
             {/* Footer with metadata */}
-            <div className="w-full px-5 py-2.5 bg-slate-800 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+            <div className="w-full px-5 py-2.5 bg-(--surface-subtle) border-t border-(--border-color) flex items-center justify-between text-[11px] text-(--text-secondary)">
               <span>Subido: {formatDate(selectedImage.fechaSubida)}</span>
               <span>
                 Tamaño:{' '}

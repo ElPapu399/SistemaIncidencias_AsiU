@@ -1,3 +1,4 @@
+import Button from '../Button';
 import { useState, useEffect } from 'react';
 import {
     X,
@@ -18,8 +19,8 @@ interface UserFormProps {
     mode?: 'estudiante' | 'tecnico';
 }
 
-const INPUT_STYLE = "w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-amber-500 transition-colors";
-const LABEL_STYLE = "block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5";
+const INPUT_STYLE = "w-full bg-(--surface) border border-(--border-color) rounded-xl px-4 py-2.5 text-sm text-(--text-primary) placeholder:text-(--text-secondary) focus:outline-none focus:border-amber-500 transition-colors";
+const LABEL_STYLE = "block text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-1.5";
 
 const ROLE_LABELS: Record<string, string> = {
     ADMIN: 'Administrador',
@@ -204,24 +205,24 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
             {/* Modal */}
-            <div className="relative bg-white border border-slate-700 rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
+            <div className="relative bg-(--surface) border border-(--border-color) rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-slate-50">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-(--border-color) bg-(--surface-subtle)">
                     <div className="flex items-center gap-3">
                         <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
                             mode === 'estudiante'
-                                ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20'
+                                ? 'bg-blue-500/10 text-(--tone-blue-text-500) border border-blue-500/20'
                                 : mode === 'tecnico'
-                                ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
-                                : 'bg-slate-700 text-slate-300'
+                                ? 'bg-amber-500/10 text-(--tone-amber-text-500) border border-amber-500/20'
+                                : 'bg-(--surface-hover) text-(--text-primary)'
                         }`}>
                             <HeaderIcon className="w-5 h-5" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-slate-900 leading-tight">
+                            <h3 className="text-lg font-bold text-(--text-primary) leading-tight">
                                 {getModalTitle()}
                             </h3>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-(--text-secondary)">
                                 {mode === 'estudiante'
                                     ? 'Formulario de registro para alumnos'
                                     : mode === 'tecnico'
@@ -230,13 +231,13 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
                             </p>
                         </div>
                     </div>
-                    <button
+                    <Button variant="cancel" appearance="soft" size="custom"
                         onClick={onClose}
                         aria-label="Cerrar modal"
-                        className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+                        className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer"
                     >
                         <X className="w-4 h-4" />
-                    </button>
+                    </Button>
                 </div>
 
                 {/* Form */}
@@ -367,14 +368,14 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
 
                             {/* Info card de apoyo para entender el tipo de técnico */}
                             {isTecnicoGeneral && (
-                                <div className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2.5">
-                                    <Info className="w-4 h-4 mt-0.5 text-amber-500 shrink-0" />
+                                <div className="text-xs text-(--tone-amber-text-800) bg-(--tone-amber-bg-50) border border-(--tone-amber-border-200) rounded-xl p-3 flex items-start gap-2.5">
+                                    <Info className="w-4 h-4 mt-0.5 text-(--tone-amber-text-500) shrink-0" />
                                     <span><strong>Soporte General:</strong> Mesa de ayuda y triaje inicial. Puede derivar y asignar incidencias a los especialistas.</span>
                                 </div>
                             )}
                             {isTecnicoEspecialista && (
-                                <div className="text-xs text-blue-800 bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start gap-2.5">
-                                    <Info className="w-4 h-4 mt-0.5 text-blue-500 shrink-0" />
+                                <div className="text-xs text-(--tone-blue-text-800) bg-(--tone-blue-bg-50) border border-(--tone-blue-border-200) rounded-xl p-3 flex items-start gap-2.5">
+                                    <Info className="w-4 h-4 mt-0.5 text-(--tone-blue-text-500) shrink-0" />
                                     <span><strong>Soporte Especializado:</strong> Resuelve incidencias técnicas en campo según la especialidad seleccionada.</span>
                                 </div>
                             )}
@@ -506,31 +507,24 @@ export default function UserFormModal({ isOpen, onClose, onSave, editingUser, mo
 
                     {/* Error */}
                     {error && (
-                        <div className="text-red-400 text-sm bg-red-950/40 border border-red-800/50 rounded-xl px-4 py-3">
+                        <div className="text-(--tone-red-text-700) text-sm bg-(--tone-red-bg-50) border border-(--tone-red-border-200) rounded-xl px-4 py-3">
                             {error}
                         </div>
                     )}
 
                     {/* Actions */}
                     <div className="flex items-center justify-end gap-3 pt-2">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-red-600/70 transition-colors cursor-pointer"
-                        >
-                            Cancelar
-                        </button>
-                        <button
+                        <Button variant={isEditing && estado === 'Inactivo' && editingUser?.estado !== 'Inactivo' ? 'danger' : isEditing ? 'info' : 'create'} appearance="solid" size="custom"
                             type="submit"
                             disabled={loading}
-                            className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
                             {loading ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                                 getSubmitButtonLabel()
                             )}
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

@@ -1,3 +1,5 @@
+import Button from '../Button';
+import { useDialogOutsideClose } from './useDialogOutsideClose';
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { X } from 'lucide-react';
@@ -18,7 +20,8 @@ export default function LaboratorioForm({ laboratorio, onSave, onClose }: Labora
   const [loadError, setLoadError] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const inputClass = 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-2 focus:outline-blue-600';
+  const outsideClose = useDialogOutsideClose(onClose, saving);
+  const inputClass = 'w-full rounded-lg border border-(--border-color) px-3 py-2 text-sm focus:outline-2 focus:outline-blue-600';
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -49,10 +52,10 @@ export default function LaboratorioForm({ laboratorio, onSave, onClose }: Labora
   }
 
   return (
-    <dialog ref={dialogRef} onCancel={(event) => { if (saving) event.preventDefault(); else onClose(); }} aria-labelledby="laboratorio-form-title" className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-2xl bg-white p-6 text-left text-slate-900 shadow-xl backdrop:bg-slate-950/50">
-      <div className="mb-5 flex items-center justify-between gap-4"><h3 id="laboratorio-form-title" className="text-xl font-bold">{laboratorio ? 'Editar laboratorio' : 'Nuevo laboratorio'}</h3><button type="button" disabled={saving} onClick={onClose} aria-label="Cerrar formulario" className="cursor-pointer rounded-lg p-2 hover:bg-slate-100"><X className="h-5 w-5" /></button></div>
-      {loading && <p role="status" className="mb-3 text-sm text-slate-500">Cargando encargados…</p>}
-      {loadError && <p role="alert" className="mb-3 text-sm text-red-700">{loadError}</p>}
+    <dialog ref={dialogRef} {...outsideClose} onCancel={(event) => { if (saving) event.preventDefault(); else onClose(); }} aria-labelledby="laboratorio-form-title" className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-2xl bg-(--surface) p-6 text-left text-(--text-primary) shadow-xl backdrop:bg-slate-950/50">
+      <div className="mb-5 flex items-center justify-between gap-4"><h3 id="laboratorio-form-title" className="text-xl font-bold">{laboratorio ? 'Editar laboratorio' : 'Nuevo laboratorio'}</h3><Button variant="cancel" appearance="soft" size="custom" type="button" disabled={saving} onClick={onClose} aria-label="Cerrar formulario" className="cursor-pointer rounded-lg p-2"><X className="h-5 w-5" /></Button></div>
+      {loading && <p role="status" className="mb-3 text-sm text-(--text-secondary)">Cargando encargados…</p>}
+      {loadError && <p role="alert" className="mb-3 text-sm text-(--tone-red-text-700)">{loadError}</p>}
       <form onSubmit={handleSubmit}><fieldset disabled={saving || loading || Boolean(loadError)} className="space-y-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="space-y-1 text-sm font-medium">Nombre<input name="nombre" required maxLength={50} defaultValue={laboratorio?.nombre ?? ''} className={inputClass} /></label>
@@ -62,9 +65,9 @@ export default function LaboratorioForm({ laboratorio, onSave, onClose }: Labora
           <label className="space-y-1 text-sm font-medium">Encargado<select name="encargadoId" defaultValue={laboratorio?.encargadoId ?? ''} className={inputClass}><option value="">Sin registrar</option>{laboratorio?.encargadoId && !encargados.some((item) => item.id === laboratorio.encargadoId) && <option value={laboratorio.encargadoId}>{laboratorio.encargado} (no disponible)</option>}{encargados.map((item) => <option key={item.id} value={item.id}>{item.nombre}</option>)}</select></label>
           <label className="space-y-1 text-sm font-medium">Estado<select name="estado" defaultValue={laboratorio && laboratorio.estado !== 'Sin definir' ? laboratorio.estado : laboratorio ? '' : 'Operativo'} className={inputClass}><option value="">Sin definir</option><option value="Operativo">Operativo</option><option value="Mantenimiento">Mantenimiento</option></select></label>
         </div>
-        <p className="text-xs text-slate-500">La cantidad de PCs y equipos se calcula desde el inventario registrado.</p>
-        {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
-        <div className="flex justify-end gap-3"><button type="button" onClick={onClose} className="cursor-pointer rounded-xl border border-slate-300 px-4 py-2">Cancelar</button><button type="submit" className="cursor-pointer rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-50">{saving ? 'Guardando…' : 'Guardar'}</button></div>
+        <p className="text-xs text-(--text-secondary)">La cantidad de PCs y equipos se calcula desde el inventario registrado.</p>
+        {error && <p role="alert" className="text-sm text-(--tone-red-text-700)">{error}</p>}
+        <div className="flex justify-end gap-3"><Button variant={laboratorio ? 'info' : 'create'} appearance="solid" size="custom" type="submit" className="cursor-pointer rounded-xl px-4 py-2 font-semibold disabled:opacity-50">{saving ? 'Guardando…' : 'Guardar'}</Button></div>
       </fieldset></form>
     </dialog>
   );

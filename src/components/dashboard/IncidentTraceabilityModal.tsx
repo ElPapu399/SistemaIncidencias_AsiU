@@ -1,3 +1,4 @@
+import Button from '../Button';
 import { useState, useEffect, useCallback } from 'react';
 import type { Incident } from '../../types/incident';
 import { obtenerDetalleIncidencia } from '../../services/incidenciasService';
@@ -89,79 +90,79 @@ export default function IncidentTraceabilityModal({
       return {
         label: 'Reasignación de Técnico',
         icon: ArrowRightLeft,
-        color: 'text-violet-600',
-        bgColor: 'bg-violet-100',
-        borderColor: 'border-violet-300',
-        badgeBg: 'bg-violet-50 text-violet-700 border-violet-200',
+        color: 'text-(--tone-violet-text-600)',
+        bgColor: 'bg-(--tone-violet-bg-100)',
+        borderColor: 'border-(--tone-violet-border-300)',
+        badgeBg: 'bg-(--tone-violet-bg-50) text-(--tone-violet-text-700) border-(--tone-violet-border-200)',
       };
     }
     if (t === 'SOLICITUD_REASIGNACION' || c.includes('solicitud de reasignación')) {
       return {
         label: 'Solicitud de Reasignación',
         icon: AlertCircle,
-        color: 'text-amber-600',
-        bgColor: 'bg-amber-100',
-        borderColor: 'border-amber-300',
-        badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
+        color: 'text-(--tone-amber-text-600)',
+        bgColor: 'bg-(--tone-amber-bg-100)',
+        borderColor: 'border-(--tone-amber-border-300)',
+        badgeBg: 'bg-(--tone-amber-bg-50) text-(--tone-amber-text-700) border-(--tone-amber-border-200)',
       };
     }
     if (t === 'RECHAZO_REASIGNACION' || c.includes('rechazad')) {
       return {
         label: 'Reasignación Rechazada',
         icon: X,
-        color: 'text-rose-600',
-        bgColor: 'bg-rose-100',
-        borderColor: 'border-rose-300',
-        badgeBg: 'bg-rose-50 text-rose-700 border-rose-200',
+        color: 'text-(--tone-rose-text-600)',
+        bgColor: 'bg-(--tone-rose-bg-100)',
+        borderColor: 'border-(--tone-rose-border-300)',
+        badgeBg: 'bg-(--tone-rose-bg-50) text-(--tone-rose-text-700) border-(--tone-rose-border-200)',
       };
     }
     if (t === 'ASIGNACION' || c.includes('técnico asignado') || c.includes('autoasignado')) {
       return {
         label: 'Asignación de Técnico',
         icon: UserCheck,
-        color: 'text-blue-600',
-        bgColor: 'bg-blue-100',
-        borderColor: 'border-blue-300',
-        badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
+        color: 'text-(--tone-blue-text-600)',
+        bgColor: 'bg-(--tone-blue-bg-100)',
+        borderColor: 'border-(--tone-blue-border-300)',
+        badgeBg: 'bg-(--tone-blue-bg-50) text-(--tone-blue-text-700) border-(--tone-blue-border-200)',
       };
     }
     if (t === 'CALIFICACION' || estadoNuevo === 'Cerrada' || c.includes('calificación')) {
       return {
         label: 'Cierre y Calificación',
         icon: ShieldCheck,
-        color: 'text-amber-600',
-        bgColor: 'bg-amber-100',
-        borderColor: 'border-amber-300',
-        badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
+        color: 'text-(--tone-amber-text-600)',
+        bgColor: 'bg-(--tone-amber-bg-100)',
+        borderColor: 'border-(--tone-amber-border-300)',
+        badgeBg: 'bg-(--tone-amber-bg-50) text-(--tone-amber-text-700) border-(--tone-amber-border-200)',
       };
     }
     if (estadoNuevo === 'Resuelta' || estadoNuevo === 'Resuelto' || c.includes('resuelta') || c.includes('solución')) {
       return {
         label: 'Incidencia Resuelta',
         icon: CheckCircle2,
-        color: 'text-emerald-600',
-        bgColor: 'bg-emerald-100',
-        borderColor: 'border-emerald-300',
-        badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        color: 'text-(--tone-emerald-text-600)',
+        bgColor: 'bg-(--tone-emerald-bg-100)',
+        borderColor: 'border-(--tone-emerald-border-300)',
+        badgeBg: 'bg-(--tone-emerald-bg-50) text-(--tone-emerald-text-700) border-(--tone-emerald-border-200)',
       };
     }
     if (c.includes('ticket registrado') || c.includes('cread') || !t) {
       return {
         label: 'Registro de Incidencia',
         icon: FileText,
-        color: 'text-sky-600',
-        bgColor: 'bg-sky-100',
-        borderColor: 'border-sky-300',
-        badgeBg: 'bg-sky-50 text-sky-700 border-sky-200',
+        color: 'text-(--tone-sky-text-600)',
+        bgColor: 'bg-(--tone-sky-bg-100)',
+        borderColor: 'border-(--tone-sky-border-300)',
+        badgeBg: 'bg-(--tone-sky-bg-50) text-(--tone-sky-text-700) border-(--tone-sky-border-200)',
       };
     }
     return {
       label: 'Actualización de Estado',
       icon: RefreshCw,
-      color: 'text-slate-600',
-      bgColor: 'bg-slate-100',
-      borderColor: 'border-slate-300',
-      badgeBg: 'bg-slate-50 text-slate-700 border-slate-200',
+      color: 'text-(--text-secondary)',
+      bgColor: 'bg-(--surface-muted)',
+      borderColor: 'border-(--border-color)',
+      badgeBg: 'bg-(--surface-subtle) text-(--text-primary) border-(--border-color)',
     };
   };
 
@@ -191,53 +192,53 @@ export default function IncidentTraceabilityModal({
       />
 
       {/* Modal Dialog */}
-      <div className="relative bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden z-10">
+      <div className="relative bg-(--surface) rounded-2xl shadow-2xl border border-(--border-color) w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden z-10">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-slate-200 bg-slate-50/80 flex items-start justify-between gap-4">
+        <div className="px-6 py-5 border-b border-(--border-color) bg-(--surface-subtle)/80 flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-violet-100 border border-violet-200 flex items-center justify-center text-violet-700 shrink-0 shadow-xs">
+            <div className="w-10 h-10 rounded-2xl bg-(--tone-violet-bg-100) border border-(--tone-violet-border-200) flex items-center justify-center text-(--tone-violet-text-700) shrink-0 shadow-xs">
               <History className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-mono text-xs font-bold text-violet-700 bg-violet-100/70 px-2 py-0.5 rounded-lg border border-violet-200">
+                <span className="font-mono text-xs font-bold text-(--tone-violet-text-700) bg-(--tone-violet-bg-100)/70 px-2 py-0.5 rounded-lg border border-(--tone-violet-border-200)">
                   {incident.id}
                 </span>
-                <span className="text-xs text-slate-500 font-medium">Trazabilidad de Acciones</span>
+                <span className="text-xs text-(--text-secondary) font-medium">Trazabilidad de Acciones</span>
               </div>
-              <h3 className="text-base font-bold text-slate-900 leading-snug mt-1">
+              <h3 className="text-base font-bold text-(--text-primary) leading-snug mt-1">
                 {incident.title}
               </h3>
             </div>
           </div>
 
-          <button
+          <Button variant="cancel" appearance="soft" size="custom"
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-xl bg-slate-200/70 hover:bg-slate-300 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+            className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors cursor-pointer shrink-0"
             title="Cerrar modal"
           >
             <X className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
 
         {/* Resumen Superior de Trazabilidad */}
-        <div className="px-6 py-3 bg-white border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="px-6 py-3 bg-(--surface) border-b border-(--border-color) flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 flex-wrap">
             <StatusBadge status={incident.status} />
             <PriorityBadge priority={incident.priority} />
 
             {/* Técnico Asignado / Reasignado */}
             {incident.fueReasignada && incident.tecnicoAnteriorNombre ? (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-violet-50 text-violet-800 rounded-xl border border-violet-200 font-medium">
-                <ArrowRightLeft className="w-3.5 h-3.5 text-violet-600" />
-                <span className="line-through text-slate-400">{incident.tecnicoAnteriorNombre}</span>
-                <span className="text-violet-600 font-bold">➔</span>
-                <span className="font-bold text-slate-900">{incident.assignee}</span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-(--tone-violet-bg-50) text-(--tone-violet-text-800) rounded-xl border border-(--tone-violet-border-200) font-medium">
+                <ArrowRightLeft className="w-3.5 h-3.5 text-(--tone-violet-text-600)" />
+                <span className="line-through text-(--text-secondary)">{incident.tecnicoAnteriorNombre}</span>
+                <span className="text-(--tone-violet-text-600) font-bold">➔</span>
+                <span className="font-bold text-(--text-primary)">{incident.assignee}</span>
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 text-slate-700 rounded-xl border border-slate-200 font-medium">
-                <User className="w-3.5 h-3.5 text-slate-500" />
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-(--surface-muted) text-(--text-primary) rounded-xl border border-(--border-color) font-medium">
+                <User className="w-3.5 h-3.5 text-(--text-secondary)" />
                 <span>Asignado: <strong>{incident.assignee}</strong></span>
               </div>
             )}
@@ -245,47 +246,47 @@ export default function IncidentTraceabilityModal({
 
           {/* Botón para ordenar cronología */}
           <div className="flex items-center gap-2">
-            <button
+            <Button variant="neutral" appearance="soft" size="custom"
               type="button"
               onClick={() => setSortAsc((prev) => !prev)}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer border border-slate-200"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer border"
               title="Alternar orden cronológico"
             >
-              <ArrowUpDown className="w-3 h-3 text-slate-500" />
+              <ArrowUpDown className="w-3 h-3 " />
               <span>{sortAsc ? 'Más antiguos primero' : 'Más recientes primero'}</span>
-            </button>
+            </Button>
 
-            <button
+            <Button variant="neutral" appearance="text" size="custom"
               type="button"
               onClick={cargarHistorial}
               disabled={loading}
-              className="p-1 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="p-1 rounded-lg transition-colors cursor-pointer"
               title="Refrescar trazabilidad"
             >
               <RotateCcw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Timeline Body */}
-        <div className="p-6 overflow-y-auto flex-1 space-y-4 bg-slate-50/50">
+        <div className="p-6 overflow-y-auto flex-1 space-y-4 bg-(--surface-subtle)/50">
           {loading ? (
-            <div className="py-16 text-center text-slate-500">
-              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-3 text-violet-500" />
+            <div className="py-16 text-center text-(--text-secondary)">
+              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-3 text-(--tone-violet-text-500)" />
               <p className="font-medium text-sm">Cargando línea de tiempo de trazabilidad...</p>
             </div>
           ) : error ? (
-            <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-xs">
+            <div className="p-4 bg-(--tone-rose-bg-50) border border-(--tone-rose-border-200) rounded-2xl text-(--tone-rose-text-700) text-xs">
               {error}
             </div>
           ) : sortedHistorial.length === 0 ? (
-            <div className="py-16 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">
-              <Clock className="w-10 h-10 mx-auto mb-2 text-slate-300" />
-              <p className="font-medium text-sm text-slate-600">Sin eventos de trazabilidad</p>
-              <p className="text-xs text-slate-400 mt-1">Aún no se han registrado cambios en esta incidencia.</p>
+            <div className="py-16 text-center text-(--text-secondary) bg-(--surface) rounded-2xl border border-(--border-color)">
+              <Clock className="w-10 h-10 mx-auto mb-2 text-(--text-secondary)" />
+              <p className="font-medium text-sm text-(--text-secondary)">Sin eventos de trazabilidad</p>
+              <p className="text-xs text-(--text-secondary) mt-1">Aún no se han registrado cambios en esta incidencia.</p>
             </div>
           ) : (
-            <div className="relative pl-6 space-y-6 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+            <div className="relative pl-6 space-y-6 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-(--surface-hover)">
               {sortedHistorial.map((item, idx) => {
                 const config = getActionConfig(item.tipoAccion, item.estadoNuevo, item.comentario);
                 const ActionIcon = config.icon;
@@ -300,7 +301,7 @@ export default function IncidentTraceabilityModal({
                     </div>
 
                     {/* Event Card */}
-                    <div className="ml-3 bg-white border border-slate-200/80 rounded-2xl p-4 shadow-xs hover:shadow-md transition-shadow">
+                    <div className="ml-3 bg-(--surface) border border-(--border-color)/80 rounded-2xl p-4 shadow-xs hover:shadow-md transition-shadow">
                       {/* Top Header of Card */}
                       <div className="flex items-start justify-between gap-2 flex-wrap mb-2">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -313,24 +314,24 @@ export default function IncidentTraceabilityModal({
 
                           {/* Transición de Estado */}
                           {item.estadoAnterior && item.estadoNuevo && item.estadoAnterior !== item.estadoNuevo && (
-                            <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                              {item.estadoAnterior} ➔ <strong className="text-slate-800">{item.estadoNuevo}</strong>
+                            <span className="text-[10px] font-semibold text-(--text-secondary) bg-(--surface-muted) px-2 py-0.5 rounded border border-(--border-color)">
+                              {item.estadoAnterior} ➔ <strong className="text-(--text-primary)">{item.estadoNuevo}</strong>
                             </span>
                           )}
                         </div>
 
-                        <span className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+                        <span className="text-[11px] text-(--text-secondary) font-medium flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {formatDateTime(item.fechaCambio)}
                         </span>
                       </div>
 
                       {/* Responsable de la acción */}
-                      <div className="flex items-center gap-1.5 text-xs text-slate-700 font-medium mb-2">
-                        <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <div className="flex items-center gap-1.5 text-xs text-(--text-primary) font-medium mb-2">
+                        <User className="w-3.5 h-3.5 text-(--text-secondary) shrink-0" />
                         <span>
                           Ejecutado por:{' '}
-                          <strong className="text-slate-900 font-semibold">
+                          <strong className="text-(--text-primary) font-semibold">
                             {item.usuarioNombre || 'Sistema'}
                           </strong>
                         </span>
@@ -338,20 +339,20 @@ export default function IncidentTraceabilityModal({
 
                       {/* Detalle de reasignación si hubo técnicos */}
                       {item.tecnicoAnteriorNombre && item.tecnicoNuevoNombre && (
-                        <div className="mb-2 p-2 bg-violet-50/70 border border-violet-200/70 rounded-xl text-xs flex items-center gap-2 flex-wrap">
-                          <span className="text-violet-800 font-semibold flex items-center gap-1">
-                            <ArrowRightLeft className="w-3 h-3 text-violet-600" />
+                        <div className="mb-2 p-2 bg-(--tone-violet-bg-50)/70 border border-(--tone-violet-border-200)/70 rounded-xl text-xs flex items-center gap-2 flex-wrap">
+                          <span className="text-(--tone-violet-text-800) font-semibold flex items-center gap-1">
+                            <ArrowRightLeft className="w-3 h-3 text-(--tone-violet-text-600)" />
                             Cambio de Técnico:
                           </span>
-                          <span className="line-through text-slate-400">{item.tecnicoAnteriorNombre}</span>
-                          <span className="text-violet-600 font-bold">➔</span>
-                          <span className="font-bold text-slate-900">{item.tecnicoNuevoNombre}</span>
+                          <span className="line-through text-(--text-secondary)">{item.tecnicoAnteriorNombre}</span>
+                          <span className="text-(--tone-violet-text-600) font-bold">➔</span>
+                          <span className="font-bold text-(--text-primary)">{item.tecnicoNuevoNombre}</span>
                         </div>
                       )}
 
                       {/* Comentario / Justificación / Motivo */}
                       {item.comentario && (
-                        <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-3 text-xs text-slate-700 leading-relaxed font-sans whitespace-pre-wrap">
+                        <div className="bg-(--surface-subtle) border border-(--border-color)/60 rounded-xl p-3 text-xs text-(--text-primary) leading-relaxed font-sans whitespace-pre-wrap">
                           {item.comentario}
                         </div>
                       )}
@@ -364,19 +365,19 @@ export default function IncidentTraceabilityModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+        <div className="px-6 py-4 bg-(--surface-subtle) border-t border-(--border-color) flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-(--text-secondary)">
+            <ShieldCheck className="w-4 h-4 text-(--tone-emerald-text-600)" />
             <span>Registro inmutable de trazabilidad y auditoría de campus</span>
           </div>
 
-          <button
+          <Button variant="cancel" appearance="soft" size="custom"
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+            className="px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
           >
             Cerrar
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import Button from '../Button';
 import { useState, useEffect, useRef } from 'react';
 import { X, Loader2, Camera, Trash2 } from 'lucide-react';
 import type { Categoria, Ubicacion, Prioridad } from '../../types/incident';
@@ -16,8 +17,8 @@ interface IncidentFormProps {
   onSave: () => void;
 }
 
-const INPUT_STYLE = "w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-amber-500 transition-colors";
-const LABEL_STYLE = "block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5";
+const INPUT_STYLE = "w-full bg-(--surface) border border-(--border-color) rounded-xl px-4 py-2.5 text-sm text-(--text-primary) placeholder:text-(--text-secondary) focus:outline-none focus:border-amber-500 transition-colors";
+const LABEL_STYLE = "block text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-1.5";
 
 export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentFormProps) {
   const [titulo, setTitulo] = useState('');
@@ -180,17 +181,17 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal Card */}
-      <div className="relative bg-white border border-slate-700 rounded-2xl shadow-2xl w-full max-w-xl mx-4 overflow-hidden z-10">
+      <div className="relative bg-(--surface) border border-(--border-color) rounded-2xl shadow-2xl w-full max-w-xl mx-4 overflow-hidden z-10">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
-          <h3 className="text-lg font-bold text-slate-900">Registrar Nueva Incidencia</h3>
-          <button
+        <div className="flex items-center justify-between px-6 py-4 border-b border-(--border-color)">
+          <h3 className="text-lg font-bold text-(--text-primary)">Registrar Nueva Incidencia</h3>
+          <Button variant="cancel" appearance="soft" size="custom"
             onClick={onClose}
             aria-label="Cerrar modal"
-            className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
 
         {/* Form */}
@@ -331,22 +332,22 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
 
           {/* Adjuntar imagen de evidencia */}
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5 flex items-center justify-between">
+            <label className="text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-1.5 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <Camera className="w-4 h-4 text-amber-500" />
+                <Camera className="w-4 h-4 text-(--tone-amber-text-500)" />
                 Evidencia fotográfica (Opcional)
               </span>
-              <span className="text-[11px] font-normal text-slate-500">JPG, PNG, WEBP (Máx. 10MB)</span>
+              <span className="text-[11px] font-normal text-(--text-secondary)">JPG, PNG, WEBP (Máx. 10MB)</span>
             </label>
 
             {!previewUrl ? (
-              <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-700 hover:border-amber-500/60 rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-all duration-200 group">
+              <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-(--border-color) hover:border-amber-500/60 rounded-xl cursor-pointer bg-(--surface-subtle) hover:bg-(--surface-muted) transition-all duration-200 group">
                 <div className="flex flex-col items-center justify-center text-center px-4">
-                  <div className="w-8 h-8 rounded-full bg-slate-200 group-hover:bg-amber-500/20 flex items-center justify-center text-slate-400 group-hover:text-amber-400 transition-colors mb-1">
+                  <div className="w-8 h-8 rounded-full bg-(--surface-hover) group-hover:bg-amber-500/20 flex items-center justify-center text-(--text-secondary) group-hover:text-(--tone-amber-text-400) transition-colors mb-1">
                     <Camera className="w-4 h-4 text-xs" />
                   </div>
-                  <p className="text-xs text-slate-700 font-medium">
-                    <span className="text-amber-600 font-semibold underline decoration-amber-400/40 underline-offset-2">Haz clic para subir una foto</span> o arrastra aquí
+                  <p className="text-xs text-(--text-primary) font-medium">
+                    <span className="text-(--tone-amber-text-600) font-semibold underline decoration-amber-400/40 underline-offset-2">Haz clic para subir una foto</span> o arrastra aquí
                   </p>
                 </div>
                 <input
@@ -358,8 +359,8 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
                 />
               </label>
             ) : (
-              <div className="relative flex items-center gap-3 p-3 bg-slate-50 border border-slate-700 rounded-xl overflow-hidden">
-                <div className="w-14 h-14 rounded-lg overflow-hidden bg-white border border-slate-700 shrink-0 flex items-center justify-center">
+              <div className="relative flex items-center gap-3 p-3 bg-(--surface-subtle) border border-(--border-color) rounded-xl overflow-hidden">
+                <div className="w-14 h-14 rounded-lg overflow-hidden bg-(--surface) border border-(--border-color) shrink-0 flex items-center justify-center">
                   <img
                     src={previewUrl}
                     alt="Vista previa"
@@ -367,49 +368,49 @@ export default function IncidentFormModal({ isOpen, onClose, onSave }: IncidentF
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-slate-900 truncate">{archivo?.name}</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="text-xs font-medium text-(--text-primary) truncate">{archivo?.name}</p>
+                  <p className="text-[11px] text-(--text-secondary) mt-0.5">
                     {archivo ? (archivo.size / 1024 < 1024 ? `${(archivo.size / 1024).toFixed(1)} KB` : `${(archivo.size / (1024 * 1024)).toFixed(2)} MB`) : ''}
                   </p>
-                  <span className="inline-block px-1.5 py-0.5 mt-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-semibold rounded">
+                  <span className="inline-block px-1.5 py-0.5 mt-0.5 bg-emerald-500/20 text-(--tone-emerald-text-400) text-[10px] font-semibold rounded">
                     Foto lista para adjuntar
                   </span>
                 </div>
-                <button
+                <Button variant="danger" appearance="solid" size="custom"
                   type="button"
                   onClick={handleRemoveFile}
                   title="Eliminar imagen"
-                  className="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             )}
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="text-red-400 text-sm bg-red-950/40 border border-red-800/50 rounded-xl px-4 py-3">
+            <div className="text-(--tone-red-text-700) text-sm bg-(--tone-red-bg-50) border border-(--tone-red-border-200) rounded-xl px-4 py-3">
               {error}
             </div>
           )}
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-3 pt-3">
-            <button
+            <Button variant="cancel" appearance="soft" size="custom"
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-red-600/70 transition-colors"
+              className="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors"
             >
               Cancelar
-            </button>
-            <button
+            </Button>
+            <Button variant="create" appearance="solid" size="custom"
               type="submit"
               disabled={loading}
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-slate-950 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-500/10 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Crear incidencia'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

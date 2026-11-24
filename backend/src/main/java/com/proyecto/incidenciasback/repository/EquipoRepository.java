@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface EquipoRepository extends JpaRepository<Equipo, Integer> {
+    boolean existsByUbicacionId(Integer ubicacionId);
 
     @EntityGraph(attributePaths = {"ubicacion"})
     List<Equipo> findAll();

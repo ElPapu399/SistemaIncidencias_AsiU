@@ -23,7 +23,7 @@ export default function SortableHeader({
   className = '',
   align = 'left',
   title,
-  activeColorClass = 'text-blue-600',
+  activeColorClass = 'text-(--tone-blue-text-600)',
 }: SortableHeaderProps) {
   const isActive = currentSortField === field;
   const isAsc = isActive && currentDirection === 'asc';
@@ -37,7 +37,7 @@ export default function SortableHeader({
     <th
       scope="col"
       aria-sort={isActive ? (currentDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
-      className={`select-none transition-colors group cursor-pointer hover:bg-slate-200/50 ${
+      className={`select-none transition-colors group cursor-pointer hover:bg-(--surface-hover)/50 ${
         align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left'
       } ${className}`}
       onClick={() => onSort(field)}
@@ -46,7 +46,7 @@ export default function SortableHeader({
         type="button"
         className={`inline-flex items-center gap-1.5 font-semibold text-xs uppercase tracking-wider transition-colors cursor-pointer w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded ${
           align === 'center' ? 'justify-center' : align === 'right' ? 'justify-end' : 'justify-start'
-        } ${isActive ? activeColorClass : 'text-slate-600 group-hover:text-slate-900'}`}
+        } ${isActive ? activeColorClass : 'text-(--text-secondary) group-hover:text-(--text-primary)'}`}
         title={title || defaultTitle}
       >
         <span>{label}</span>
@@ -57,7 +57,7 @@ export default function SortableHeader({
             <ArrowDown className={`w-3.5 h-3.5 ${activeColorClass}`} aria-hidden="true" />
           ) : (
             <ArrowUpDown
-              className="w-3.5 h-3.5 text-slate-400 opacity-40 group-hover:opacity-100 transition-opacity"
+              className="w-3.5 h-3.5 text-(--text-secondary) opacity-40 group-hover:opacity-100 transition-opacity"
               aria-hidden="true"
             />
           )}

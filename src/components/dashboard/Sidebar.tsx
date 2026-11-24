@@ -1,3 +1,4 @@
+import Button from '../Button';
 import { NavLink, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -147,8 +148,8 @@ export default function Sidebar({ onClose }: SidebarProps) {
   );
 
   return (
-    <div className="w-64 shrink-0 bg-blue-900/50 border-r border-slate-800 flex flex-col relative overflow-hidden h-full">
-      <div data-tour="sidebar-logo" className="flex items-center gap-3 px-5 py-5 border-b border-sidebar-border shrink-0">
+    <div className="w-64 shrink-0 bg-(--sidebar-bg) border-r border-white/10 flex flex-col relative overflow-hidden h-full">
+      <div data-tour="sidebar-logo" className="flex items-center gap-3 px-5 py-5 border-b border-white/10 shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-linear-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
             <FontAwesomeIcon
@@ -160,27 +161,21 @@ export default function Sidebar({ onClose }: SidebarProps) {
             <div className="text-lg font-bold text-white leading-tight mt-1">
               ASIU
             </div>
-            <div className="hidden lg:block text-[10px] uppercase tracking-widest text-slate-400 font-semibold -mt-1">
+            <div className="hidden lg:block text-[10px] uppercase tracking-widest text-(--sidebar-text) font-semibold -mt-1">
               Incidencias Universitarias
             </div>
           </div>
         </div>
-        <button
+        <Button variant="cancel" appearance="soft" size="custom"
           type="button"
           onClick={onClose}
           aria-label="Cerrar menú"
-          className="
-              ml-auto inline-flex h-7 w-7 shrink-0
-              items-center justify-center rounded-lg
-              border border-red-500/60
-              bg-red-500/30 text-red-400
-              hover:bg-red-500/30 hover:text-red-300
-              transition-colors cursor-pointer md:hidden"
+          className="ml-auto inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors cursor-pointer md:hidden"
         >
           <span aria-hidden="true" className="text-lg leading-none">
             x
           </span>
-        </button>
+        </Button>
       </div>
 
       <nav data-tour="sidebar-nav" className="flex-1 min-h-0 overflow-y-auto p-4 space-y-0.5">
@@ -200,7 +195,7 @@ export default function Sidebar({ onClose }: SidebarProps) {
                 `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? "bg-linear-to-r from-yellow-400/10 to-orange-500/10 text-yellow-400 border border-orange-500/20"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                    : "text-(--sidebar-text) hover:text-white hover:bg-(--sidebar-hover)"
                 }`
               }
             >
@@ -209,17 +204,17 @@ export default function Sidebar({ onClose }: SidebarProps) {
             </NavLink>
           );
         })}
-        <button
+        <Button variant="logout" appearance="text" size="custom"
           type="button"
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-medium text-slate-400 hover:text-white hover:bg-red-800/20 transition-all duration-200 cursor-pointer"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-medium transition-all duration-200 cursor-pointer"
         >
           <FontAwesomeIcon icon={faRightFromBracket} className="w-4 h-4" />
           Cerrar Sesión
-        </button>
+        </Button>
         <div className="pt-3">
-          <div className="bg-slate-900/80 rounded-xl py-5 text-center flex flex-col gap-0.5">
-            <p className="text-[14px] text-slate-500 uppercase tracking-wider font-semibold leading-none">
+          <div className="bg-(--sidebar-panel) rounded-xl py-5 text-center flex flex-col gap-0.5">
+            <p className="text-[14px] text-(--sidebar-text) uppercase tracking-wider font-semibold leading-none">
               Periodo
             </p>
             <p className="text-[17px] text-slate-200 font-medium">
