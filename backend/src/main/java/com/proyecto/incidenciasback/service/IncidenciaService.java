@@ -133,7 +133,7 @@ public class IncidenciaService {
                 incidencia.setUbicacion(ubicacion);
                 incidencia.setFechaCreacion(LocalDateTime.now());
 
-                if (request.getEquipoId() != null) {
+                if (request.getEquipoId() != null && request.getEquipoId() > 0) {
                         Equipo equipo = equipoRepository.findById(request.getEquipoId())
                                         .orElseThrow(() -> new RuntimeException(
                                                         "Equipo no encontrado con id: " + request.getEquipoId()));
@@ -480,6 +480,7 @@ public class IncidenciaService {
                                 inc.getFechaCreacion(),
                                 inc.getFechaInicioAtencion(),
                                 inc.getFechaCierre());
+                resp.setEquipoTipo(inc.getEquipo() != null ? inc.getEquipo().getTipo() : null);
                 resp.setCalificacion(inc.getCalificacion());
                 resp.setMotivoCalificacion(inc.getMotivoCalificacion());
                 resp.setComentarioCalificacion(inc.getComentarioCalificacion());

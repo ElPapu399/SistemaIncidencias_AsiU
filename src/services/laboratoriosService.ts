@@ -76,6 +76,23 @@ export function guardarEquipo(datos: EquipoFormulario, id?: number) {
   });
 }
 
+export interface HistorialEquipoItem {
+  id: number;
+  equipoId: number;
+  equipoCodigo: string;
+  equipoTipo: string;
+  usuarioId: number | null;
+  usuarioNombre: string;
+  estadoAnterior: string;
+  estadoNuevo: string;
+  motivo: string;
+  fecha: string;
+}
+
 export function cambiarEstadoEquipo(id: number, datos: EquipoEstadoFormulario) {
   return consultar<Equipo>(`/equipos/${id}/estado`, { method: 'PUT', body: JSON.stringify(datos) });
+}
+
+export function obtenerHistorialEquiposLaboratorio(ubicacionId: string | number) {
+  return consultar<HistorialEquipoItem[]>(`/equipos/historial?ubicacionId=${encodeURIComponent(ubicacionId)}`);
 }

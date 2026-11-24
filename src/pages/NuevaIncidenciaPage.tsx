@@ -13,6 +13,7 @@ import {
 import Header from '../components/dashboard/Header';
 import Button from '../components/Button';
 import type { Categoria, Ubicacion, Prioridad } from '../types/incident';
+import type { Equipo } from '../types/equipo';
 import {
   crearIncidencia,
   obtenerCategorias,
@@ -20,6 +21,7 @@ import {
   obtenerPrioridades,
   subirAdjunto,
 } from '../services/incidenciasService';
+import { obtenerEquiposLaboratorio } from '../services/laboratoriosService';
 import { getCurrentUser } from '../utils/auth';
 
 export default function NuevaIncidenciaPage() {
@@ -31,6 +33,9 @@ export default function NuevaIncidenciaPage() {
   const [categoriaId, setCategoriaId] = useState<number>(0);
   const [prioridadId, setPrioridadId] = useState<number>(0);
   const [ubicacionId, setUbicacionId] = useState<number>(0);
+  const [equipoId, setEquipoId] = useState<number>(0);
+  const [equipos, setEquipos] = useState<Equipo[]>([]);
+  const [cargandoEquipos, setCargandoEquipos] = useState(false);
   const [archivo, setArchivo] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -91,6 +96,26 @@ export default function NuevaIncidenciaPage() {
         setLoading(false);
       });
   }, [searchParams]);
+
+  useEffect(() => {
+    if (ubicacionId > 0) {
+      setCargandoEquipos(true);
+      setEquipoId(0);
+      obtenerEquiposLaboratorio(String(ubicacionId))
+        .then((data) => {
+          setEquipos(Array.isArray(data) ? data : []);
+        })
+        .catch(() => {
+          setEquipos([]);
+        })
+        .finally(() => {
+          setCargandoEquipos(false);
+        });
+    } else {
+      setEquipos([]);
+      setEquipoId(0);
+    }
+  }, [ubicacionId]);
 
   const handleCategoriaChange = (selectedCatId: number) => {
     setCategoriaId(selectedCatId);
@@ -177,6 +202,7 @@ export default function NuevaIncidenciaPage() {
         prioridadId: effectivePrioridadId,
         ubicacionId,
         estudianteId,
+        equipoId: equipoId > 0 ? equipoId : undefined,
       });
 
       if (archivo && nuevaIncidencia?.id) {
@@ -223,6 +249,8 @@ export default function NuevaIncidenciaPage() {
                     setCategoriaId(0);
                     setPrioridadId(0);
                     setUbicacionId(0);
+                    setEquipoId(0);
+                    setEquipos([]);
                     handleRemoveFile();
                   }}
                   className="px-5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
@@ -327,6 +355,36 @@ export default function NuevaIncidenciaPage() {
                       </select>
                     </div>
                   </div>
+
+                  {/* Selector de Equipo Afectado (Opcional) */}
+                  {ubicacionId > 0 && (
+                    <div>
+                      <label htmlFor="nueva-equipo" className="block text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-1.5">
+                        Equipo Afectado (Opcional)
+                      </label>
+                      <select
+                        id="nueva-equipo"
+                        value={equipoId}
+                        onChange={(e) => setEquipoId(Number(e.target.value))}
+                        disabled={cargandoEquipos}
+                        className="w-full bg-(--surface-subtle) border border-(--border-color) rounded-xl px-4 py-2.5 text-sm text-(--text-primary) focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50"
+                      >
+                        <option value={0}>
+                          {cargandoEquipos ? 'Cargando equipos del ambiente...' : 'Ninguno / Problema general del ambiente'}
+                        </option>
+                        {equipos.map((eq) => (
+                          <option key={eq.id} value={eq.id}>
+                            {eq.codigo} ({eq.tipo}{eq.marca ? ` · ${eq.marca}` : ''}) — [{eq.estado}]
+                          </option>
+                        ))}
+                      </select>
+                      <p className="mt-1 text-[11px] text-(--text-secondary)">
+                        {equipos.length > 0
+                          ? 'Si identificas la máquina afectada, elígela para vincularla a su ficha técnica.'
+                          : 'Este ambiente no tiene equipos individuales registrados (se registrará como problema general).'}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Descripción */}
                   <div>

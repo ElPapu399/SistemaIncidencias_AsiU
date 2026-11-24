@@ -31,6 +31,7 @@ public class IncidenciaResponse {
     private String ubicacionTexto;
     private Integer equipoId;
     private String equipoCodigo;
+    private String equipoTipo;
     private String solucionTecnica;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaInicioAtencion;
@@ -59,7 +60,7 @@ public class IncidenciaResponse {
                 estudianteId, estudianteNombre, tecnicoId, tecnicoNombre,
                 categoriaId, categoriaNombre, especialidadNombre,
                 prioridadId, prioridadNivel, ubicacionId, ubicacionTexto,
-                equipoId, equipoCodigo, solucionTecnica, fechaCreacion,
+                equipoId, equipoCodigo, null, solucionTecnica, fechaCreacion,
                 fechaInicioAtencion, fechaCierre,
                 false, null, null, null, null, null, null,
                 null, null, null);

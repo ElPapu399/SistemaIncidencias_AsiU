@@ -45,6 +45,7 @@ export interface Incident {
   motivoReasignacion?: string | null;
   fechaReasignacion?: string | null;
   asignadoPorNombre?: string | null;
+  equipoId?: number | null;
   equipoCodigo?: string | null;
   equipoTipo?: string | null;
   calificacion?: number | null;
@@ -110,4 +111,5 @@ export interface CreateIncidentData {
   prioridadId: number;
   ubicacionId: number;
   estudianteId: number;
+  equipoId?: number | null;
 }

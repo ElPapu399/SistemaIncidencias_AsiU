@@ -3,6 +3,7 @@ package com.proyecto.incidenciasback.controller;
 import com.proyecto.incidenciasback.dto.EquipoResponse;
 import com.proyecto.incidenciasback.dto.EquipoRequest;
 import com.proyecto.incidenciasback.dto.EquipoEstadoRequest;
+import com.proyecto.incidenciasback.dto.HistorialEquipoResponse;
 import jakarta.validation.Valid;
 import com.proyecto.incidenciasback.service.EquipoService;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,19 @@ public class EquipoController {
             return ResponseEntity.ok(equipoService.listarPorUbicacion(ubicacionId));
         }
         return ResponseEntity.ok(equipoService.listarTodos());
+    }
+
+    @GetMapping("/historial")
+    public ResponseEntity<List<HistorialEquipoResponse>> obtenerHistorial(
+            @RequestParam(required = false) Integer ubicacionId,
+            @RequestParam(required = false) Integer equipoId) {
+        if (ubicacionId != null) {
+            return ResponseEntity.ok(equipoService.obtenerHistorialPorUbicacion(ubicacionId));
+        }
+        if (equipoId != null) {
+            return ResponseEntity.ok(equipoService.obtenerHistorialPorEquipo(equipoId));
+        }
+        return ResponseEntity.ok(equipoService.obtenerTodoElHistorial());
     }
 
     @GetMapping("/{id}")

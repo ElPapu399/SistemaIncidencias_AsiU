@@ -3,6 +3,7 @@ package com.proyecto.incidenciasback.service;
 import com.proyecto.incidenciasback.dto.EquipoResponse;
 import com.proyecto.incidenciasback.dto.EquipoRequest;
 import com.proyecto.incidenciasback.dto.EquipoEstadoRequest;
+import com.proyecto.incidenciasback.dto.HistorialEquipoResponse;
 import com.proyecto.incidenciasback.model.Equipo;
 import com.proyecto.incidenciasback.model.HistorialEquipo;
 import com.proyecto.incidenciasback.repository.EquipoRepository;
@@ -99,6 +100,40 @@ public class EquipoService {
         Equipo guardado = equipoRepository.save(equipo);
         historial.save(cambio);
         return toResponse(guardado);
+    }
+
+    public List<HistorialEquipoResponse> obtenerHistorialPorUbicacion(Integer ubicacionId) {
+        return historial.findByEquipoUbicacionIdOrderByFechaDesc(ubicacionId).stream()
+                .map(this::toHistorialResponse)
+                .toList();
+    }
+
+    public List<HistorialEquipoResponse> obtenerHistorialPorEquipo(Integer equipoId) {
+        return historial.findByEquipoIdOrderByFechaDesc(equipoId).stream()
+                .map(this::toHistorialResponse)
+                .toList();
+    }
+
+    public List<HistorialEquipoResponse> obtenerTodoElHistorial() {
+        return historial.findAll().stream()
+                .sorted((a, b) -> b.getFecha().compareTo(a.getFecha()))
+                .map(this::toHistorialResponse)
+                .toList();
+    }
+
+    private HistorialEquipoResponse toHistorialResponse(HistorialEquipo h) {
+        return new HistorialEquipoResponse(
+                h.getId(),
+                h.getEquipo() != null ? h.getEquipo().getId() : null,
+                h.getEquipo() != null ? h.getEquipo().getCodigo() : null,
+                h.getEquipo() != null ? h.getEquipo().getTipo() : null,
+                h.getUsuario() != null ? h.getUsuario().getId() : null,
+                h.getUsuario() != null ? h.getUsuario().getNombre() + " " + h.getUsuario().getApellido() : "Sistema",
+                h.getEstadoAnterior(),
+                h.getEstadoNuevo(),
+                h.getMotivo(),
+                h.getFecha()
+        );
     }
 
     private Equipo buscar(Integer id) {

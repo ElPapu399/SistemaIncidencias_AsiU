@@ -14,6 +14,7 @@ import {
   faClockRotateLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import type { Incident, IncidentStatus, ArchivoAdjunto } from '../../types/incident';
+import type { EstadoEquipo } from '../../types/equipo';
 import {
   cambiarEstado,
   obtenerAdjuntos,
@@ -21,6 +22,7 @@ import {
   getAttachmentUrl,
   obtenerDetalleIncidencia,
 } from '../../services/incidenciasService';
+import { cambiarEstadoEquipo } from '../../services/laboratoriosService';
 import { StatusBadge, PriorityBadge, formatDate } from './IncidentBadges';
 
 interface ChangeStatusModalProps {
@@ -40,6 +42,7 @@ export default function ChangeStatusModal({
 }: ChangeStatusModalProps) {
   const [nuevoEstado, setNuevoEstado] = useState<IncidentStatus>('Pendiente');
   const [solucionTecnica, setSolucionTecnica] = useState('');
+  const [nuevoEstadoEquipo, setNuevoEstadoEquipo] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -57,6 +60,7 @@ export default function ChangeStatusModal({
     setError('');
     setNuevoEstado(incident.status);
     setSolucionTecnica(incident.solucionTecnica || '');
+    setNuevoEstadoEquipo('');
     setSelectedImage(null);
 
     if (incident.numericId) {
@@ -135,6 +139,18 @@ export default function ChangeStatusModal({
         nuevoEstado,
         isResolving ? solucionTecnica.trim() : undefined
       );
+
+      if (incident.equipoId && nuevoEstadoEquipo) {
+        try {
+          await cambiarEstadoEquipo(incident.equipoId, {
+            estado: nuevoEstadoEquipo as EstadoEquipo,
+            motivo: `Ticket ${incident.id} (${nuevoEstado})${solucionTecnica.trim() ? ': ' + solucionTecnica.trim() : ''}`,
+          });
+        } catch (eqErr: any) {
+          console.warn('No se pudo actualizar el estado del equipo:', eqErr);
+        }
+      }
+
       onUpdated();
       onClose();
     } catch (err: any) {
@@ -207,6 +223,26 @@ export default function ChangeStatusModal({
                 </span>
               </div>
             </div>
+
+            {/* Equipo Afectado (si aplica) */}
+            {incident.equipoCodigo && (
+              <div className="p-3 bg-(--surface-subtle) border border-(--border-color) rounded-xl flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">💻</span>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-(--text-secondary) block">
+                      Equipo Afectado
+                    </span>
+                    <span className="font-semibold text-(--text-primary)">
+                      {incident.equipoCodigo}
+                    </span>
+                    <span className="text-(--text-secondary) ml-1.5">
+                      ({incident.equipoTipo || 'Equipo'})
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Description */}
             <div>
@@ -445,6 +481,28 @@ export default function ChangeStatusModal({
                     <option value="Cerrada">Cerrada</option>
                   </select>
                 </div>
+
+                {incident.equipoId && (
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-(--text-secondary) mb-1.5">
+                      Estado del equipo ({incident.equipoCodigo || 'Máquina'})
+                    </label>
+                    <select
+                      value={nuevoEstadoEquipo}
+                      onChange={(e) => setNuevoEstadoEquipo(e.target.value)}
+                      className="w-full bg-(--surface) border border-(--border-color) rounded-xl px-4 py-2.5 text-sm text-(--text-primary) focus:outline-none focus:border-amber-500 transition-colors"
+                    >
+                      <option value="">(Sin cambios en el equipo)</option>
+                      <option value="Operativo">Operativo (listo para usar)</option>
+                      <option value="En reparación">En reparación (interviniendo máquina)</option>
+                      <option value="Mantenimiento">Mantenimiento (revisión preventiva)</option>
+                      <option value="Dado de baja">Dado de baja (daño irreparable / obsoleto)</option>
+                    </select>
+                    <p className="mt-1 text-[11px] text-(--text-secondary)">
+                      El cambio de estado del equipo se reflejará en el inventario del laboratorio y su historial técnico.
+                    </p>
+                  </div>
+                )}
 
                 {(nuevoEstado === 'Resuelta' || nuevoEstado === 'Resuelto') && (
                   <div>
